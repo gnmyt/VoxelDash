@@ -6,6 +6,7 @@
 **/mcdash.db
 ui/dist
 /dist/
+**/src/main/resources/webui/
 
 # Dev server
 modules/spigot/run/

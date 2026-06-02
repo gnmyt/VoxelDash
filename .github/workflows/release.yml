@@ -53,7 +53,7 @@ jobs:
             webui: true
           - module: vanilla
             tool: maven
-            webui: false
+            webui: true
           - module: fabric
             tool: gradle
             webui: true
