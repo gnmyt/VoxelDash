@@ -1,45 +1,261 @@
-name: Java CI
+name: Release
 
 on:
   push:
-    tags: [ "v*" ]
+    tags: ["v*"]
+
+permissions:
+  contents: write
+
+concurrency:
+  group: release-${{ github.ref_name }}
+  cancel-in-progress: false
+
+env:
+  BUILDKITE_ORG: voxeldash
+  BUILDKITE_MAVEN_REGISTRY: maven
 
 jobs:
-  create_release:
+  create-release:
     name: Create Release
     runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.meta.outputs.version }}
+      prerelease: ${{ steps.meta.outputs.prerelease }}
     steps:
-      - uses: actions/checkout@v2
-      - name: Set up JDK 8
-        uses: actions/setup-java@v2
+      - name: Resolve version & channel
+        id: meta
+        run: |
+          TAG="${GITHUB_REF_NAME}"
+          VERSION="${TAG#v}"
+          if [[ "$VERSION" == *-* ]]; then
+            PRERELEASE=true
+          else
+            PRERELEASE=false
+          fi
+          echo "version=$VERSION"       >> "$GITHUB_OUTPUT"
+          echo "prerelease=$PRERELEASE" >> "$GITHUB_OUTPUT"
+          echo "Tag $TAG -> version=$VERSION prerelease=$PRERELEASE"
+
+      - name: Create draft release
+        uses: softprops/action-gh-release@v2
         with:
-          java-version: '8'
-          distribution: 'adopt'
+          tag_name: ${{ github.ref_name }}
+          name: VoxelDash ${{ steps.meta.outputs.version }}
+          draft: true
+          prerelease: ${{ steps.meta.outputs.prerelease }}
+          generate_release_notes: true
+
+  build:
+    name: Build ${{ matrix.module }}
+    needs: create-release
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - module: spigot
+            tool: maven
+            webui: true
+          - module: bungeecord
+            tool: maven
+            webui: true
+          - module: vanilla
+            tool: maven
+            webui: false
+          - module: fabric
+            tool: gradle
+            webui: true
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          java-version: "21"
+          distribution: temurin
+          cache: maven
+
+      - name: Set up pnpm
+        if: matrix.webui
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9
 
       - name: Set up Node.js
-        uses: actions/setup-node@v3
+        if: matrix.webui
+        uses: actions/setup-node@v4
         with:
-          node-version: 18
+          node-version: 20
+          cache: pnpm
+          cache-dependency-path: ui/pnpm-lock.yaml
 
-      - name: Build with Maven
-        run: mvn clean compile assembly:single
+      - name: Set up Gradle
+        if: matrix.tool == 'gradle'
+        uses: gradle/actions/setup-gradle@v4
 
-      - name: Get version
-        id: get_version
-        run: echo "::set-output name=version::$(mvn -q -Dexec.executable=echo -Dexec.args='${project.version}' exec:exec)"
+      - name: Stamp release version
+        run: bash .github/scripts/set-version.sh "${{ needs.create-release.outputs.version }}"
 
-      - name: Get artifact id
-        id: get_artifact_id
-        run: echo "::set-output name=name::$(mvn -q -Dexec.executable=echo -Dexec.args='${project.artifactId}' exec:exec)"
+      - name: Install voxeldash-api into local Maven repo
+        run: mvn -B -ntp -f modules/api/pom.xml install -DskipTests
 
-      - name: Rename artifact
-        run: mv ./target/${{ steps.get_artifact_id.outputs.name }}-${{ steps.get_version.outputs.version }}-jar-with-dependencies.jar ./target/${{ steps.get_artifact_id.outputs.name }}-${{ steps.get_version.outputs.version }}.jar
+      - name: Build module (Maven)
+        if: matrix.tool == 'maven'
+        run: mvn -B -ntp -f modules/${{ matrix.module }}/pom.xml package -DskipTests
 
-      - name: Automatic Releases
-        uses: marvinpinto/action-automatic-releases@latest
+      - name: Build module (Gradle)
+        if: matrix.tool == 'gradle'
+        working-directory: modules/${{ matrix.module }}
+        run: |
+          chmod +x ./gradlew
+          ./gradlew build --no-daemon
+
+      - name: Stage release artifact
+        id: stage
+        run: |
+          set -euo pipefail
+          VERSION="${{ needs.create-release.outputs.version }}"
+          MODULE="${{ matrix.module }}"
+          mkdir -p dist
+          if [[ "${{ matrix.tool }}" == "maven" ]]; then
+            SRC=$(ls modules/$MODULE/target/voxeldash-$MODULE-*.jar \
+                  | grep -Ev '\-sources|\-javadoc' | head -n1)
+          else
+            SRC=$(ls modules/$MODULE/build/libs/voxeldash-*.jar \
+                  | grep -Ev '\-dev|\-sources' | head -n1)
+          fi
+          DEST="dist/voxeldash-$MODULE-$VERSION.jar"
+          cp "$SRC" "$DEST"
+          echo "Staged $SRC -> $DEST"
+          echo "asset=$DEST" >> "$GITHUB_OUTPUT"
+
+      - name: Upload artifact to release
+        uses: softprops/action-gh-release@v2
         with:
-          repo_token: ${{ secrets.GITHUB_TOKEN }}
-          prerelease: false
-          title: Release ${{ steps.get_version.outputs.version }}
-          files: |
-            ./target/${{ steps.get_artifact_id.outputs.name }}-${{ steps.get_version.outputs.version }}.jar
+          tag_name: ${{ github.ref_name }}
+          draft: true
+          prerelease: ${{ needs.create-release.outputs.prerelease }}
+          files: ${{ steps.stage.outputs.asset }}
+
+  deploy-maven:
+    name: Publish API to Buildkite
+    needs: [create-release, build]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          java-version: "21"
+          distribution: temurin
+          cache: maven
+
+      - name: Stamp release version
+        run: bash .github/scripts/set-version.sh "${{ needs.create-release.outputs.version }}"
+
+      - name: Configure Maven settings for Buildkite
+        env:
+          BUILDKITE_API_TOKEN: ${{ secrets.BUILDKITE_API_TOKEN }}
+        run: |
+          if [ -z "$BUILDKITE_API_TOKEN" ]; then
+            echo "::error::BUILDKITE_API_TOKEN secret must be set"
+            exit 1
+          fi
+          mkdir -p ~/.m2
+          cat > ~/.m2/settings.xml <<EOF
+          <settings>
+            <servers>
+              <server>
+                <id>buildkite</id>
+                <configuration>
+                  <httpHeaders>
+                    <property>
+                      <name>Authorization</name>
+                      <value>Bearer ${BUILDKITE_API_TOKEN}</value>
+                    </property>
+                  </httpHeaders>
+                </configuration>
+              </server>
+            </servers>
+          </settings>
+          EOF
+
+      - name: Deploy voxeldash-api
+        run: |
+          REPO_URL="https://packages.buildkite.com/${BUILDKITE_ORG}/${BUILDKITE_MAVEN_REGISTRY}/maven2/"
+          mvn -B -ntp -f modules/api/pom.xml deploy -DskipTests \
+            -DaltDeploymentRepository="buildkite::default::${REPO_URL}"
+
+  finalize-release:
+    name: Finalize Release
+    needs: [create-release, build, deploy-maven]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Stamp release version
+        run: bash .github/scripts/set-version.sh "${{ needs.create-release.outputs.version }}"
+
+      - name: Commit & push version bump
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          if git diff-index --quiet HEAD; then
+            echo "No version changes to commit"
+          else
+            git commit -m "chore: bump version to ${{ needs.create-release.outputs.version }} [skip ci]"
+            git push origin "HEAD:${{ github.event.repository.default_branch }}"
+          fi
+
+      - name: Publish release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ github.ref_name }}
+          draft: false
+          prerelease: ${{ needs.create-release.outputs.prerelease }}
+
+  cleanup-on-failure:
+    name: Cleanup on Failure
+    needs: [create-release, build, deploy-maven]
+    if: failure()
+    runs-on: ubuntu-latest
+    steps:
+      - name: Delete draft release and tag
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const tag = context.ref.replace('refs/tags/', '');
+            try {
+              const { data: release } = await github.rest.repos.getReleaseByTag({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                tag,
+              });
+              await github.rest.repos.deleteRelease({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                release_id: release.id,
+              });
+              console.log(`Deleted release ${release.id}`);
+            } catch (e) {
+              console.log(`Could not delete release: ${e.message}`);
+            }
+            try {
+              await github.rest.git.deleteRef({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                ref: `tags/${tag}`,
+              });
+              console.log(`Deleted tag ${tag}`);
+            } catch (e) {
+              console.log(`Could not delete tag: ${e.message}`);
+            }
