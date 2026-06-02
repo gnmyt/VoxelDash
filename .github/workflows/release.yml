@@ -183,18 +183,12 @@ jobs:
     needs: [setup, build]
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
+      - name: Checkout default branch
         uses: actions/checkout@v4
         with:
+          ref: ${{ github.event.repository.default_branch }}
           fetch-depth: 0
           token: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Download build artifacts
-        uses: actions/download-artifact@v4
-        with:
-          path: dist
-          pattern: dist-*
-          merge-multiple: true
 
       - name: Stamp release version
         run: bash .github/scripts/set-version.sh "${{ needs.setup.outputs.version }}"
@@ -210,6 +204,13 @@ jobs:
             git commit -m "chore: bump version to ${{ needs.setup.outputs.version }} [skip ci]"
             git push origin "HEAD:${{ github.event.repository.default_branch }}"
           fi
+
+      - name: Download build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: dist
+          pattern: dist-*
+          merge-multiple: true
 
       - name: Publish GitHub release
         uses: softprops/action-gh-release@v2
