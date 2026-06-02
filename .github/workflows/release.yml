@@ -16,8 +16,8 @@ env:
   BUILDKITE_MAVEN_REGISTRY: maven
 
 jobs:
-  create-release:
-    name: Create Release
+  setup:
+    name: Resolve version
     runs-on: ubuntu-latest
     outputs:
       version: ${{ steps.meta.outputs.version }}
@@ -37,18 +37,9 @@ jobs:
           echo "prerelease=$PRERELEASE" >> "$GITHUB_OUTPUT"
           echo "Tag $TAG -> version=$VERSION prerelease=$PRERELEASE"
 
-      - name: Create draft release
-        uses: softprops/action-gh-release@v2
-        with:
-          tag_name: ${{ github.ref_name }}
-          name: VoxelDash ${{ steps.meta.outputs.version }}
-          draft: true
-          prerelease: ${{ steps.meta.outputs.prerelease }}
-          generate_release_notes: true
-
   build:
     name: Build ${{ matrix.module }}
-    needs: create-release
+    needs: setup
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
@@ -96,7 +87,7 @@ jobs:
         uses: gradle/actions/setup-gradle@v4
 
       - name: Stamp release version
-        run: bash .github/scripts/set-version.sh "${{ needs.create-release.outputs.version }}"
+        run: bash .github/scripts/set-version.sh "${{ needs.setup.outputs.version }}"
 
       - name: Install voxeldash-api into local Maven repo
         run: mvn -B -ntp -f modules/api/pom.xml install -DskipTests
@@ -116,7 +107,7 @@ jobs:
         id: stage
         run: |
           set -euo pipefail
-          VERSION="${{ needs.create-release.outputs.version }}"
+          VERSION="${{ needs.setup.outputs.version }}"
           MODULE="${{ matrix.module }}"
           mkdir -p dist
           if [[ "${{ matrix.tool }}" == "maven" ]]; then
@@ -126,22 +117,19 @@ jobs:
             SRC=$(ls modules/$MODULE/build/libs/voxeldash-*.jar \
                   | grep -Ev '\-dev|\-sources' | head -n1)
           fi
-          DEST="dist/voxeldash-$MODULE-$VERSION.jar"
-          cp "$SRC" "$DEST"
-          echo "Staged $SRC -> $DEST"
-          echo "asset=$DEST" >> "$GITHUB_OUTPUT"
+          cp "$SRC" "dist/voxeldash-$MODULE-$VERSION.jar"
 
-      - name: Upload artifact to release
-        uses: softprops/action-gh-release@v2
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v4
         with:
-          tag_name: ${{ github.ref_name }}
-          draft: true
-          prerelease: ${{ needs.create-release.outputs.prerelease }}
-          files: ${{ steps.stage.outputs.asset }}
+          name: dist-${{ matrix.module }}
+          path: dist/*.jar
+          if-no-files-found: error
+          retention-days: 1
 
   deploy-maven:
     name: Publish API to Buildkite
-    needs: [create-release, build]
+    needs: [setup, build]
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -155,7 +143,7 @@ jobs:
           cache: maven
 
       - name: Stamp release version
-        run: bash .github/scripts/set-version.sh "${{ needs.create-release.outputs.version }}"
+        run: bash .github/scripts/set-version.sh "${{ needs.setup.outputs.version }}"
 
       - name: Configure Maven settings for Buildkite
         env:
@@ -188,11 +176,11 @@ jobs:
         run: |
           REPO_URL="https://packages.buildkite.com/${BUILDKITE_ORG}/${BUILDKITE_MAVEN_REGISTRY}/maven2/"
           mvn -B -ntp -f modules/api/pom.xml deploy -DskipTests \
-            -DaltDeploymentRepository="buildkite::default::${REPO_URL}"
+            -DaltDeploymentRepository="buildkite::${REPO_URL}"
 
-  finalize-release:
-    name: Finalize Release
-    needs: [create-release, build, deploy-maven]
+  release:
+    name: Publish Release
+    needs: [setup, build]
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -201,8 +189,15 @@ jobs:
           fetch-depth: 0
           token: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Download build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: dist
+          pattern: dist-*
+          merge-multiple: true
+
       - name: Stamp release version
-        run: bash .github/scripts/set-version.sh "${{ needs.create-release.outputs.version }}"
+        run: bash .github/scripts/set-version.sh "${{ needs.setup.outputs.version }}"
 
       - name: Commit & push version bump
         run: |
@@ -212,24 +207,27 @@ jobs:
           if git diff-index --quiet HEAD; then
             echo "No version changes to commit"
           else
-            git commit -m "chore: bump version to ${{ needs.create-release.outputs.version }} [skip ci]"
+            git commit -m "chore: bump version to ${{ needs.setup.outputs.version }} [skip ci]"
             git push origin "HEAD:${{ github.event.repository.default_branch }}"
           fi
 
-      - name: Publish release
+      - name: Publish GitHub release
         uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ github.ref_name }}
+          name: VoxelDash ${{ needs.setup.outputs.version }}
           draft: false
-          prerelease: ${{ needs.create-release.outputs.prerelease }}
+          prerelease: ${{ needs.setup.outputs.prerelease }}
+          generate_release_notes: true
+          files: dist/*.jar
 
   cleanup-on-failure:
     name: Cleanup on Failure
-    needs: [create-release, build, deploy-maven]
+    needs: [setup, build, release]
     if: failure()
     runs-on: ubuntu-latest
     steps:
-      - name: Delete draft release and tag
+      - name: Delete release and tag
         uses: actions/github-script@v7
         with:
           script: |
