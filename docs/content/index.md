@@ -6,7 +6,7 @@ navigation: false
 ::hero
 ---
 announcement:
-  title: 'Now with Schedules & Multi-Provider Marketplace'
+  title: 'New Fabric & Vanilla Release'
   icon: '🎉'
   to: https://github.com/gnmyt/VoxelDash/releases/latest
   target: _blank
