@@ -30,20 +30,32 @@ export async function resolveVoxelDashJar(artifact, onLog) {
         return newest.path;
     }
 
-    onLog?.(`Fetching ${artifact} from release ${config.releaseTag}...`);
     return downloadFromRelease(artifact, onLog);
 }
 
-async function downloadFromRelease(artifact, onLog) {
-    const url = `https://api.github.com/repos/${config.repo}/releases/tags/${config.releaseTag}`;
-    const response = await fetch(url, {
-        headers: {"User-Agent": config.userAgent, Accept: "application/vnd.github+json"},
-    });
+async function fetchRelease() {
+    const headers = {"User-Agent": config.userAgent, Accept: "application/vnd.github+json"};
+    const pinned = process.env.VOXELDASH_RELEASE;
+
+    if (pinned) {
+        const response = await fetch(`https://api.github.com/repos/${config.repo}/releases/tags/${pinned}`, {headers});
+        if (!response.ok) throw new Error(`GitHub release lookup failed: ${response.status}`);
+        return response.json();
+    }
+
+    const response = await fetch(`https://api.github.com/repos/${config.repo}/releases?per_page=20`, {headers});
     if (!response.ok) throw new Error(`GitHub release lookup failed: ${response.status}`);
-    const release = await response.json();
+    const release = (await response.json()).find((r) => !r.draft);
+    if (!release) throw new Error(`No published release found for ${config.repo}`);
+    return release;
+}
+
+async function downloadFromRelease(artifact, onLog) {
+    const release = await fetchRelease();
+    onLog?.(`Fetching ${artifact} from release ${release.tag_name}...`);
 
     const asset = (release.assets || []).find((a) => a.name.includes(artifact) && a.name.endsWith(".jar"));
-    if (!asset) throw new Error(`No ${artifact} asset found in release ${config.releaseTag}`);
+    if (!asset) throw new Error(`No ${artifact} asset found in release ${release.tag_name}`);
 
     const dest = join(config.paths.cache, asset.name);
     if (existsSync(dest)) {
