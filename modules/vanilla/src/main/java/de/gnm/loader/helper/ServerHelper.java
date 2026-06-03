@@ -20,7 +20,7 @@ import java.util.List;
 public class ServerHelper {
 
     private static final Logger LOG = Logger.getLogger("VoxelDashVanilla");
-    private static final String SERVER_JAR = "server.jar";
+    private static final String SERVER_JAR = "minecraft_server.jar";
     private static final String AIKARS_FLAGS = "-XX:+AlwaysPreTouch -XX:+DisableExplicitGC -XX:+ParallelRefProcEnabled " +
             "-XX:+PerfDisableSharedMem -XX:+UnlockExperimentalVMOptions -XX:+UseG1GC -XX:G1HeapRegionSize=8M " +
             "-XX:G1HeapWastePercent=5 -XX:G1MaxNewSizePercent=40 -XX:G1MixedGCCountTarget=4 " +
@@ -51,17 +51,19 @@ public class ServerHelper {
     }
 
     /**
-     * Installs the latest server version
+     * Installs the configured server version. The version is taken from the
+     * {@code voxeldash.mcVersion} system property or the {@code VOXELDASH_MC_VERSION} environment
+     * variable (set by VoxelDash One); if neither is present the latest release is used.
      */
     public void install() {
         try {
-            JsonNode latestRelease = manifestHelper.getLatestRelease();
-            if (latestRelease == null) {
-                LOG.error("Failed to get latest release information");
+            JsonNode release = resolveRelease();
+            if (release == null) {
+                LOG.error("Failed to determine which server version to install");
                 return;
             }
 
-            ObjectNode versionManifest = manifestHelper.getVersionManifest(latestRelease.get("url").asText());
+            ObjectNode versionManifest = manifestHelper.getVersionManifest(release.get("url").asText());
             if (versionManifest == null) {
                 LOG.error("Failed to get version manifest");
                 return;
@@ -74,6 +76,28 @@ public class ServerHelper {
         } catch (Exception e) {
             LOG.error("Failed to install server", e);
         }
+    }
+
+    /**
+     * Resolves which version to install: an explicitly requested version (system property or
+     * environment variable), falling back to the latest release.
+     * @return the manifest entry of the version to install
+     */
+    private JsonNode resolveRelease() {
+        String requested = System.getProperty("voxeldash.mcVersion");
+        if (requested == null || requested.isEmpty()) {
+            requested = System.getenv("VOXELDASH_MC_VERSION");
+        }
+
+        if (requested != null && !requested.isEmpty()) {
+            JsonNode version = manifestHelper.getVersion(requested);
+            if (version != null) {
+                return version;
+            }
+            LOG.warn("Requested version '" + requested + "' not found in the manifest, using latest");
+        }
+
+        return manifestHelper.getLatestRelease();
     }
 
     /**

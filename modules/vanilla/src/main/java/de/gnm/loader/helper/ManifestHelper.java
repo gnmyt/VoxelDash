@@ -59,6 +59,26 @@ public class ManifestHelper {
     }
 
     /**
+     * Gets a specific version entry from the manifest by its id (e.g. {@code 1.21.8}).
+     * @param id the Minecraft version id
+     * @return the matching version entry, or {@code null} if it is not listed
+     */
+    public JsonNode getVersion(String id) {
+        ArrayNode versions = loadManifest();
+        if (versions == null) {
+            return null;
+        }
+
+        for (JsonNode version : versions) {
+            if (version.get("id").asText().equals(id)) {
+                return version;
+            }
+        }
+
+        return null;
+    }
+
+    /**
      * Loads the manifest from the given url
      * @return the manifest
      */
