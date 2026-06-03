@@ -7,6 +7,7 @@ import {Button} from "@/components/ui/button.tsx";
 import {Input} from "@/components/ui/input.tsx";
 import {Label} from "@/components/ui/label.tsx";
 import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from "@/components/ui/select.tsx";
+import {Slider} from "@/components/ui/slider.tsx";
 import {Dialog, DialogContent, DialogHeader, DialogTitle} from "@/components/ui/dialog.tsx";
 import {toast} from "@/hooks/use-toast.ts";
 import {
@@ -23,7 +24,15 @@ interface SoftwareEntry {
     tagline: string;
 }
 
-const MEMORY_PRESETS = [2048, 4096, 8192];
+const MEMORY_MIN = 1024;
+const MEMORY_MAX = 16384;
+const MEMORY_STEP = 512;
+const MEMORY_MARKS = [
+    {mb: 2048, label: "Low"},
+    {mb: 4096, label: "Medium"},
+    {mb: 8192, label: "High"},
+];
+const formatGb = (mb: number) => `${Number.isInteger(mb / 1024) ? mb / 1024 : (mb / 1024).toFixed(1)} GB`;
 
 const CreateServerDialog = ({open, onOpenChange}: { open: boolean; onOpenChange: (open: boolean) => void }) => {
     const {createServer, selectServer} = useServerSelection();
@@ -160,15 +169,29 @@ const CreateServerDialog = ({open, onOpenChange}: { open: boolean; onOpenChange:
                         </div>
 
                         <div className="space-y-2">
-                            <Label>Memory</Label>
-                            <div className="flex gap-2">
-                                {MEMORY_PRESETS.map((mb) => (
-                                    <button key={mb} onClick={() => setMemoryMb(mb)}
-                                            className={`flex-1 rounded-xl border px-3 py-2.5 text-sm font-medium transition-colors
-                                                ${memoryMb === mb ? "border-primary bg-primary/10 text-primary" : "border-border/70 hover:border-border"}`}>
-                                        {mb / 1024} GB
-                                    </button>
-                                ))}
+                            <div className="flex items-center justify-between">
+                                <Label>Memory</Label>
+                                <span className="rounded-md bg-primary/10 px-2 py-0.5 font-mono text-sm font-semibold text-primary">
+                                    {formatGb(memoryMb)}
+                                </span>
+                            </div>
+                            <Slider value={[memoryMb]} min={MEMORY_MIN} max={MEMORY_MAX} step={MEMORY_STEP}
+                                    onValueChange={([v]) => setMemoryMb(v)} aria-label="Memory"/>
+                            <div className="relative h-7">
+                                {MEMORY_MARKS.map((mark) => {
+                                    const pct = ((mark.mb - MEMORY_MIN) / (MEMORY_MAX - MEMORY_MIN)) * 100;
+                                    const active = Math.abs(memoryMb - mark.mb) < MEMORY_STEP;
+                                    return (
+                                        <div key={mark.mb} style={{left: `${pct}%`}}
+                                             className="absolute flex -translate-x-1/2 flex-col items-center gap-1">
+                                            <span className={`h-1.5 w-px ${active ? "bg-primary" : "bg-border"}`}/>
+                                            <span className={`whitespace-nowrap text-[10px] leading-none transition-colors
+                                                ${active ? "font-medium text-primary" : "text-muted-foreground"}`}>
+                                                {mark.label} · {formatGb(mark.mb)}
+                                            </span>
+                                        </div>
+                                    );
+                                })}
                             </div>
                         </div>
 
