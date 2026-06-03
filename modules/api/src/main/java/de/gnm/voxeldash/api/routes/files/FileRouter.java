@@ -1,8 +1,11 @@
 package de.gnm.voxeldash.api.routes.files;
 
 import com.fasterxml.jackson.databind.node.ArrayNode;
+import de.gnm.voxeldash.api.annotations.ApiDoc;
+import de.gnm.voxeldash.api.annotations.ApiField;
 import de.gnm.voxeldash.api.annotations.AuthenticatedRoute;
 import de.gnm.voxeldash.api.annotations.Method;
+import de.gnm.voxeldash.api.annotations.ParamLocation;
 import de.gnm.voxeldash.api.annotations.Path;
 import de.gnm.voxeldash.api.annotations.RequiresFeatures;
 import de.gnm.voxeldash.api.entities.Feature;
@@ -24,6 +27,8 @@ import static de.gnm.voxeldash.api.http.HTTPMethod.*;
 
 public class FileRouter extends BaseRoute {
 
+    @ApiDoc(summary = "List files in a directory", description = "Lists the files and folders contained in the given directory (relative to the server root) and the total count.", tag = "File Manager")
+    @ApiField(name = "path", description = "Directory path relative to the server root to list")
     @AuthenticatedRoute
     @RequiresFeatures(Feature.FileManager)
     @Path("/files/list")
@@ -51,6 +56,8 @@ public class FileRouter extends BaseRoute {
         }
     }
 
+    @ApiDoc(summary = "Delete a file", description = "Deletes the file at the given path relative to the server root.", tag = "File Manager")
+    @ApiField(name = "path", description = "Path of the file to delete, relative to the server root")
     @AuthenticatedRoute
     @RequiresFeatures(value = Feature.FileManager, level = PermissionLevel.FULL)
     @Path("/files")
@@ -77,6 +84,8 @@ public class FileRouter extends BaseRoute {
         }
     }
 
+    @ApiDoc(summary = "Download a file", description = "Streams the file at the given path as a binary attachment. The internal `voxeldash.db` database file cannot be downloaded.", tag = "File Manager")
+    @ApiField(name = "path", description = "Path of the file to download, relative to the server root")
     @AuthenticatedRoute
     @RequiresFeatures(Feature.FileManager)
     @Path("/files/download")
@@ -109,6 +118,9 @@ public class FileRouter extends BaseRoute {
         }
     }
 
+    @ApiDoc(summary = "Rename a file", description = "Renames the file at the given path to a new name within the same directory.", tag = "File Manager")
+    @ApiField(name = "path", description = "Path of the file to rename, relative to the server root")
+    @ApiField(name = "newName", description = "New name for the file")
     @AuthenticatedRoute
     @RequiresFeatures(value = Feature.FileManager, level = PermissionLevel.FULL)
     @Path("/files/rename")
@@ -138,6 +150,9 @@ public class FileRouter extends BaseRoute {
         }
     }
 
+    @ApiDoc(summary = "Update file content", description = "Overwrites the content of the file at the given path with the provided text content.", tag = "File Manager")
+    @ApiField(name = "path", description = "Path of the file to update, relative to the server root")
+    @ApiField(name = "content", description = "New textual content to write to the file")
     @AuthenticatedRoute
     @RequiresFeatures(value = Feature.FileManager, level = PermissionLevel.FULL)
     @Path("/files/content")
@@ -165,6 +180,7 @@ public class FileRouter extends BaseRoute {
         }
     }
 
+    @ApiDoc(summary = "Initialize a chunked upload", description = "Creates a temporary upload session and returns its `uuid`, which is used to upload chunks and finalize the upload.", tag = "File Manager")
     @AuthenticatedRoute
     @RequiresFeatures(value = Feature.FileManager, level = PermissionLevel.FULL)
     @Path("/files/upload/init")
@@ -184,6 +200,9 @@ public class FileRouter extends BaseRoute {
         }
     }
 
+    @ApiDoc(summary = "Upload a file chunk", description = "Uploads a single chunk of a file for the given upload session. The raw chunk bytes are sent as the binary request body.", tag = "File Manager")
+    @ApiField(name = "uuid", in = ParamLocation.PATH, description = "UUID of the upload session returned by the init endpoint")
+    @ApiField(name = "id", in = ParamLocation.PATH, description = "Zero-based index of the chunk being uploaded")
     @AuthenticatedRoute
     @RequiresFeatures(value = Feature.FileManager, level = PermissionLevel.FULL)
     @Path("/files/upload/chunk/:uuid/:id")
@@ -214,6 +233,9 @@ public class FileRouter extends BaseRoute {
         }
     }
 
+    @ApiDoc(summary = "Finalize a chunked upload", description = "Merges all uploaded chunks of the given session into the destination file and cleans up the temporary upload directory.", tag = "File Manager")
+    @ApiField(name = "uuid", description = "UUID of the upload session to finalize")
+    @ApiField(name = "destinationPath", description = "Destination path for the assembled file, relative to the server root")
     @AuthenticatedRoute
     @RequiresFeatures(value = Feature.FileManager, level = PermissionLevel.FULL)
     @Path("/files/upload/stop")
@@ -271,6 +293,9 @@ public class FileRouter extends BaseRoute {
         }
     }
 
+    @ApiDoc(summary = "Copy a file", description = "Copies a file from a source path to a destination path. The destination must not already exist and the internal `voxeldash.db` file cannot be copied.", tag = "File Manager")
+    @ApiField(name = "sourcePath", description = "Path of the file to copy, relative to the server root")
+    @ApiField(name = "destinationPath", description = "Destination path for the copied file, relative to the server root")
     @AuthenticatedRoute
     @RequiresFeatures(value = Feature.FileManager, level = PermissionLevel.FULL)
     @Path("/files/copy")
@@ -305,6 +330,9 @@ public class FileRouter extends BaseRoute {
         }
     }
 
+    @ApiDoc(summary = "Move a file", description = "Moves a file from a source path to a destination path. The destination must not already exist and the internal `voxeldash.db` file cannot be moved.", tag = "File Manager")
+    @ApiField(name = "sourcePath", description = "Path of the file to move, relative to the server root")
+    @ApiField(name = "destinationPath", description = "Destination path for the moved file, relative to the server root")
     @AuthenticatedRoute
     @RequiresFeatures(value = Feature.FileManager, level = PermissionLevel.FULL)
     @Path("/files/move")

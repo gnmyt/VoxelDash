@@ -2,8 +2,11 @@ package de.gnm.voxeldash.api.routes;
 
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import de.gnm.voxeldash.api.annotations.ApiDoc;
+import de.gnm.voxeldash.api.annotations.ApiField;
 import de.gnm.voxeldash.api.annotations.AuthenticatedRoute;
 import de.gnm.voxeldash.api.annotations.Method;
+import de.gnm.voxeldash.api.annotations.ParamLocation;
 import de.gnm.voxeldash.api.annotations.Path;
 import de.gnm.voxeldash.api.controller.WidgetRegistry;
 import de.gnm.voxeldash.api.entities.widget.Widget;
@@ -19,6 +22,7 @@ import static de.gnm.voxeldash.api.http.HTTPMethod.GET;
 
 public class WidgetRouter extends BaseRoute {
 
+    @ApiDoc(summary = "List widgets", description = "Returns all registered widgets without their data points.", tag = "Widgets")
     @AuthenticatedRoute
     @Path("/widgets")
     @Method(GET)
@@ -33,6 +37,8 @@ public class WidgetRouter extends BaseRoute {
         return new JSONResponse().add("widgets", widgetsArray);
     }
 
+    @ApiDoc(summary = "Get a widget", description = "Returns a single widget including its data points and metadata.", tag = "Widgets")
+    @ApiField(name = "id", in = ParamLocation.PATH, description = "ID of the widget to retrieve")
     @AuthenticatedRoute
     @Path("/widgets/:id")
     @Method(GET)
@@ -49,6 +55,7 @@ public class WidgetRouter extends BaseRoute {
         return new JSONResponse().add("widget", widgetToJson(widget, true));
     }
 
+    @ApiDoc(summary = "Get all widget data", description = "Returns all registered widgets including their data points and metadata.", tag = "Widgets")
     @AuthenticatedRoute
     @Path("/widgets/data")
     @Method(GET)

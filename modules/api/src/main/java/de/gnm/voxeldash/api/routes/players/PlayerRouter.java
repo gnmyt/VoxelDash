@@ -2,7 +2,10 @@ package de.gnm.voxeldash.api.routes.players;
 
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import de.gnm.voxeldash.api.annotations.ApiDoc;
+import de.gnm.voxeldash.api.annotations.ApiField;
 import de.gnm.voxeldash.api.annotations.AuthenticatedRoute;
+import de.gnm.voxeldash.api.annotations.FieldType;
 import de.gnm.voxeldash.api.annotations.Method;
 import de.gnm.voxeldash.api.annotations.Path;
 import de.gnm.voxeldash.api.annotations.RequiresFeatures;
@@ -23,6 +26,7 @@ import static de.gnm.voxeldash.api.http.HTTPMethod.*;
 
 public class PlayerRouter extends BaseRoute {
 
+    @ApiDoc(summary = "List online players", description = "Returns all currently online players including their name, UUID, world, IP address, health, hunger, operator status, gamemode and playtime.", tag = "Players")
     @AuthenticatedRoute
     @RequiresFeatures(Feature.Players)
     @Path("/players/online")
@@ -48,6 +52,9 @@ public class PlayerRouter extends BaseRoute {
         return new JSONResponse().add("players", players);
     }
 
+    @ApiDoc(summary = "Kick a player", description = "Kicks the given online player from the server, optionally with a custom reason.", tag = "Players")
+    @ApiField(name = "playerName", description = "Name of the player to kick")
+    @ApiField(name = "reason", required = false, description = "Optional kick reason shown to the player (defaults to \"Kicked by administrator\")")
     @AuthenticatedRoute
     @RequiresFeatures(value = Feature.Players, level = PermissionLevel.FULL)
     @Path("/players/kick")
@@ -63,6 +70,9 @@ public class PlayerRouter extends BaseRoute {
         return new JSONResponse().message("Player kicked");
     }
 
+    @ApiDoc(summary = "Set a player's gamemode", description = "Changes the gamemode of the given online player.", tag = "Players")
+    @ApiField(name = "playerName", description = "Name of the player whose gamemode should be changed")
+    @ApiField(name = "gamemode", description = "Target gamemode to apply")
     @AuthenticatedRoute
     @RequiresFeatures(value = Feature.Players, level = PermissionLevel.FULL)
     @Path("/players/gamemode")
@@ -78,6 +88,9 @@ public class PlayerRouter extends BaseRoute {
         return new JSONResponse().message("Gamemode changed");
     }
 
+    @ApiDoc(summary = "Teleport a player to a world", description = "Teleports the given online player to the specified world.", tag = "Players")
+    @ApiField(name = "playerName", description = "Name of the player to teleport")
+    @ApiField(name = "worldName", description = "Name of the target world")
     @AuthenticatedRoute
     @RequiresFeatures(value = Feature.Players, level = PermissionLevel.FULL)
     @Path("/players/teleport")
@@ -94,6 +107,7 @@ public class PlayerRouter extends BaseRoute {
     }
 
 
+    @ApiDoc(summary = "List whitelisted players", description = "Returns all whitelisted players (name and UUID) along with whether the whitelist is currently enabled.", tag = "Players")
     @AuthenticatedRoute
     @RequiresFeatures(Feature.Players)
     @Path("/players/whitelist")
@@ -114,6 +128,8 @@ public class PlayerRouter extends BaseRoute {
                 .add("enabled", pipe.getStatus());
     }
 
+    @ApiDoc(summary = "Enable or disable the whitelist", description = "Turns the server whitelist on or off.", tag = "Players")
+    @ApiField(name = "enabled", type = FieldType.BOOLEAN, description = "Whether the whitelist should be enabled")
     @AuthenticatedRoute
     @RequiresFeatures(value = Feature.Players, level = PermissionLevel.FULL)
     @Path("/players/whitelist/status")
@@ -128,6 +144,8 @@ public class PlayerRouter extends BaseRoute {
         return new JSONResponse().message("Whitelist status updated");
     }
 
+    @ApiDoc(summary = "Add a player to the whitelist", description = "Adds the given player to the server whitelist.", tag = "Players")
+    @ApiField(name = "playerName", description = "Name of the player to add to the whitelist")
     @AuthenticatedRoute
     @RequiresFeatures(value = Feature.Players, level = PermissionLevel.FULL)
     @Path("/players/whitelist/add")
@@ -142,6 +160,8 @@ public class PlayerRouter extends BaseRoute {
         return new JSONResponse().message("Player added to whitelist");
     }
 
+    @ApiDoc(summary = "Remove a player from the whitelist", description = "Removes the given player from the server whitelist.", tag = "Players")
+    @ApiField(name = "playerName", description = "Name of the player to remove from the whitelist")
     @AuthenticatedRoute
     @RequiresFeatures(value = Feature.Players, level = PermissionLevel.FULL)
     @Path("/players/whitelist/remove")
@@ -157,6 +177,7 @@ public class PlayerRouter extends BaseRoute {
     }
 
 
+    @ApiDoc(summary = "List banned players", description = "Returns all banned players including name, UUID, ban reason, ban date, expiry and source.", tag = "Players")
     @AuthenticatedRoute
     @RequiresFeatures(Feature.Players)
     @Path("/players/banned")
@@ -179,6 +200,9 @@ public class PlayerRouter extends BaseRoute {
         return new JSONResponse().add("players", players);
     }
 
+    @ApiDoc(summary = "Ban a player", description = "Bans the given player from the server, optionally with a custom reason.", tag = "Players")
+    @ApiField(name = "playerName", description = "Name of the player to ban")
+    @ApiField(name = "reason", required = false, description = "Optional ban reason (defaults to \"Banned by administrator\")")
     @AuthenticatedRoute
     @RequiresFeatures(value = Feature.Players, level = PermissionLevel.FULL)
     @Path("/players/ban")
@@ -194,6 +218,8 @@ public class PlayerRouter extends BaseRoute {
         return new JSONResponse().message("Player banned");
     }
 
+    @ApiDoc(summary = "Unban a player", description = "Removes the ban for the given player.", tag = "Players")
+    @ApiField(name = "playerName", description = "Name of the player to unban")
     @AuthenticatedRoute
     @RequiresFeatures(value = Feature.Players, level = PermissionLevel.FULL)
     @Path("/players/unban")
@@ -209,6 +235,9 @@ public class PlayerRouter extends BaseRoute {
     }
 
 
+    @ApiDoc(summary = "Set operator status", description = "Grants or revokes operator (op) permissions for the given player.", tag = "Players")
+    @ApiField(name = "playerName", description = "Name of the player whose operator status should be changed")
+    @ApiField(name = "op", type = FieldType.BOOLEAN, description = "True to grant operator status, false to revoke it")
     @AuthenticatedRoute
     @RequiresFeatures(value = Feature.Players, level = PermissionLevel.FULL)
     @Path("/players/op")

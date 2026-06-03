@@ -4,7 +4,10 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import de.gnm.voxeldash.api.annotations.ApiDoc;
+import de.gnm.voxeldash.api.annotations.ApiField;
 import de.gnm.voxeldash.api.annotations.AuthenticatedRoute;
+import de.gnm.voxeldash.api.annotations.FieldType;
 import de.gnm.voxeldash.api.annotations.Method;
 import de.gnm.voxeldash.api.annotations.Path;
 import de.gnm.voxeldash.api.annotations.RequiresFeatures;
@@ -37,6 +40,8 @@ public class ResourceRouter extends BaseRoute {
 
     private static final ObjectMapper JSON_MAPPER = new ObjectMapper();
 
+    @ApiDoc(summary = "List resources", description = "Returns all installed resources of the given resource type, including their metadata and enabled state.", tag = "Resources")
+    @ApiField(name = "type", description = "Resource type identifier to list resources for")
     @AuthenticatedRoute
     @RequiresFeatures(Feature.Resources)
     @Path("/resources/list")
@@ -52,6 +57,9 @@ public class ResourceRouter extends BaseRoute {
         return new JSONResponse().add("resources", array);
     }
 
+    @ApiDoc(summary = "Get a resource", description = "Returns the metadata for a single resource identified by its type and file name.", tag = "Resources")
+    @ApiField(name = "type", description = "Resource type identifier of the resource")
+    @ApiField(name = "fileName", description = "File name of the resource to fetch")
     @AuthenticatedRoute
     @RequiresFeatures(Feature.Resources)
     @Path("/resources/get")
@@ -67,6 +75,9 @@ public class ResourceRouter extends BaseRoute {
         return new JSONResponse().add("resource", resourceToJson(resource));
     }
 
+    @ApiDoc(summary = "Enable a resource", description = "Enables the given resource so it is loaded by the server.", tag = "Resources")
+    @ApiField(name = "type", description = "Resource type identifier of the resource")
+    @ApiField(name = "fileName", description = "File name of the resource to enable")
     @AuthenticatedRoute
     @RequiresFeatures(value = Feature.Resources, level = PermissionLevel.FULL)
     @Path("/resources/enable")
@@ -75,6 +86,9 @@ public class ResourceRouter extends BaseRoute {
         return toggleResource(request, true);
     }
 
+    @ApiDoc(summary = "Disable a resource", description = "Disables the given resource so it is no longer loaded by the server.", tag = "Resources")
+    @ApiField(name = "type", description = "Resource type identifier of the resource")
+    @ApiField(name = "fileName", description = "File name of the resource to disable")
     @AuthenticatedRoute
     @RequiresFeatures(value = Feature.Resources, level = PermissionLevel.FULL)
     @Path("/resources/disable")
@@ -83,6 +97,9 @@ public class ResourceRouter extends BaseRoute {
         return toggleResource(request, false);
     }
 
+    @ApiDoc(summary = "Delete a resource", description = "Permanently deletes the given resource file from the server.", tag = "Resources")
+    @ApiField(name = "type", description = "Resource type identifier of the resource")
+    @ApiField(name = "fileName", description = "File name of the resource to delete")
     @AuthenticatedRoute
     @RequiresFeatures(value = Feature.Resources, level = PermissionLevel.FULL)
     @Path("/resources/delete")
@@ -97,6 +114,9 @@ public class ResourceRouter extends BaseRoute {
                        : new JSONResponse().error("Failed to delete resource");
     }
 
+    @ApiDoc(summary = "List config files", description = "Returns the configuration files belonging to the given resource, including their name, path and size.", tag = "Resources")
+    @ApiField(name = "type", description = "Resource type identifier of the resource")
+    @ApiField(name = "fileName", description = "File name of the resource whose config files are listed")
     @AuthenticatedRoute
     @RequiresFeatures(Feature.Resources)
     @Path("/resources/config/list")
@@ -119,6 +139,10 @@ public class ResourceRouter extends BaseRoute {
         return new JSONResponse().add("files", array);
     }
 
+    @ApiDoc(summary = "Get config file content", description = "Reads and returns the parsed content of a resource's configuration file. Supports JSON, properties and YAML files.", tag = "Resources")
+    @ApiField(name = "type", description = "Resource type identifier of the resource")
+    @ApiField(name = "fileName", description = "File name of the resource that owns the config file")
+    @ApiField(name = "configPath", description = "Relative path of the config file to read")
     @AuthenticatedRoute
     @RequiresFeatures(Feature.Resources)
     @Path("/resources/config/get")
@@ -133,6 +157,11 @@ public class ResourceRouter extends BaseRoute {
         return new JSONResponse().add("content", getMapper().valueToTree(content));
     }
 
+    @ApiDoc(summary = "Save config file content", description = "Writes the given content back to a resource's configuration file, serialized to its native format (JSON, properties or YAML).", tag = "Resources")
+    @ApiField(name = "type", description = "Resource type identifier of the resource")
+    @ApiField(name = "fileName", description = "File name of the resource that owns the config file")
+    @ApiField(name = "configPath", description = "Relative path of the config file to write")
+    @ApiField(name = "content", type = FieldType.OBJECT, description = "Configuration content to persist as a key/value object")
     @AuthenticatedRoute
     @RequiresFeatures(value = Feature.Resources, level = PermissionLevel.FULL)
     @Path("/resources/config/save")

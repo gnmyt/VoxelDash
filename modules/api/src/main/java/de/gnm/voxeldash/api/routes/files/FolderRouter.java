@@ -1,5 +1,7 @@
 package de.gnm.voxeldash.api.routes.files;
 
+import de.gnm.voxeldash.api.annotations.ApiDoc;
+import de.gnm.voxeldash.api.annotations.ApiField;
 import de.gnm.voxeldash.api.annotations.AuthenticatedRoute;
 import de.gnm.voxeldash.api.annotations.Method;
 import de.gnm.voxeldash.api.annotations.Path;
@@ -20,6 +22,8 @@ import static de.gnm.voxeldash.api.http.HTTPMethod.*;
 
 public class FolderRouter extends BaseRoute {
 
+    @ApiDoc(summary = "Create a folder", description = "Creates a new directory (including any missing parent directories) at the given path relative to the server root.", tag = "File Manager")
+    @ApiField(name = "path", description = "Path of the directory to create, relative to the server root")
     @AuthenticatedRoute
     @RequiresFeatures(value = Feature.FileManager, level = PermissionLevel.FULL)
     @Path("/folder")
@@ -46,6 +50,8 @@ public class FolderRouter extends BaseRoute {
         }
     }
 
+    @ApiDoc(summary = "Delete a folder", description = "Recursively deletes the directory at the given path. The server root directory cannot be deleted.", tag = "File Manager")
+    @ApiField(name = "path", description = "Path of the directory to delete, relative to the server root")
     @AuthenticatedRoute
     @RequiresFeatures(value = Feature.FileManager, level = PermissionLevel.FULL)
     @Path("/folder")
@@ -74,6 +80,9 @@ public class FolderRouter extends BaseRoute {
         }
     }
 
+    @ApiDoc(summary = "Rename or move a folder", description = "Renames the directory at the given path to a new path. The new path must not already exist.", tag = "File Manager")
+    @ApiField(name = "path", description = "Current path of the directory, relative to the server root")
+    @ApiField(name = "newPath", description = "New path for the directory, relative to the server root")
     @AuthenticatedRoute
     @RequiresFeatures(value = Feature.FileManager, level = PermissionLevel.FULL)
     @Path("/folder/rename")
@@ -106,6 +115,8 @@ public class FolderRouter extends BaseRoute {
         }
     }
 
+    @ApiDoc(summary = "Download a folder as ZIP", description = "Streams the directory at the given path as a ZIP archive attachment. The server root directory cannot be downloaded.", tag = "File Manager")
+    @ApiField(name = "path", description = "Path of the directory to download, relative to the server root")
     @AuthenticatedRoute
     @RequiresFeatures(Feature.FileManager)
     @Path("/folder/download")
@@ -137,6 +148,9 @@ public class FolderRouter extends BaseRoute {
         }
     }
 
+    @ApiDoc(summary = "Copy a folder", description = "Recursively copies a directory from a source path to a destination path. The destination must not already exist and the server root cannot be copied.", tag = "File Manager")
+    @ApiField(name = "sourcePath", description = "Path of the directory to copy, relative to the server root")
+    @ApiField(name = "destinationPath", description = "Destination path for the copied directory, relative to the server root")
     @AuthenticatedRoute
     @RequiresFeatures(value = Feature.FileManager, level = PermissionLevel.FULL)
     @Path("/folder/copy")
@@ -171,6 +185,9 @@ public class FolderRouter extends BaseRoute {
         }
     }
 
+    @ApiDoc(summary = "Move a folder", description = "Moves a directory from a source path to a destination path. The destination must not already exist and the server root cannot be moved.", tag = "File Manager")
+    @ApiField(name = "sourcePath", description = "Path of the directory to move, relative to the server root")
+    @ApiField(name = "destinationPath", description = "Destination path for the moved directory, relative to the server root")
     @AuthenticatedRoute
     @RequiresFeatures(value = Feature.FileManager, level = PermissionLevel.FULL)
     @Path("/folder/move")

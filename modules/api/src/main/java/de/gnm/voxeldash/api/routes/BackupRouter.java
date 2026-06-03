@@ -2,8 +2,12 @@ package de.gnm.voxeldash.api.routes;
 
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import de.gnm.voxeldash.api.annotations.ApiDoc;
+import de.gnm.voxeldash.api.annotations.ApiField;
 import de.gnm.voxeldash.api.annotations.AuthenticatedRoute;
+import de.gnm.voxeldash.api.annotations.FieldType;
 import de.gnm.voxeldash.api.annotations.Method;
+import de.gnm.voxeldash.api.annotations.ParamLocation;
 import de.gnm.voxeldash.api.annotations.Path;
 import de.gnm.voxeldash.api.annotations.RequiresFeatures;
 import de.gnm.voxeldash.api.entities.BackupPart;
@@ -32,6 +36,7 @@ public class BackupRouter extends BaseRoute {
         backupHelper = new BackupHelper(new File(serverRoot, "backups"));
     }
 
+    @ApiDoc(summary = "List backups", description = "Returns all available backups including their ID, size and included backup modes.", tag = "Backups")
     @AuthenticatedRoute
     @RequiresFeatures(Feature.Backups)
     @Path("/backups/list")
@@ -60,6 +65,8 @@ public class BackupRouter extends BaseRoute {
         return new JSONResponse().add("backups", backups);
     }
 
+    @ApiDoc(summary = "Download a backup", description = "Streams the requested backup archive as a downloadable file.", tag = "Backups")
+    @ApiField(name = "backupName", in = ParamLocation.PATH, description = "Name/ID of the backup to download")
     @AuthenticatedRoute
     @RequiresFeatures(Feature.Backups)
     @Path("/backups/download/:backupName")
@@ -84,6 +91,9 @@ public class BackupRouter extends BaseRoute {
         }
     }
 
+    @ApiDoc(summary = "Restore a backup", description = "Restores the given backup, optionally halting the server afterwards.", tag = "Backups")
+    @ApiField(name = "backupName", description = "Name/ID of the backup to restore")
+    @ApiField(name = "haltAfterRestore", type = FieldType.BOOLEAN, description = "Stop the server after the restore completes")
     @AuthenticatedRoute
     @RequiresFeatures(value = Feature.Backups, level = PermissionLevel.FULL)
     @Path("/backups/restore")
@@ -99,6 +109,8 @@ public class BackupRouter extends BaseRoute {
         return new JSONResponse().message("Backup restored");
     }
 
+    @ApiDoc(summary = "Delete a backup", description = "Permanently deletes the specified backup archive.", tag = "Backups")
+    @ApiField(name = "backupName", in = ParamLocation.PATH, description = "Name/ID of the backup to delete")
     @AuthenticatedRoute
     @RequiresFeatures(value = Feature.Backups, level = PermissionLevel.FULL)
     @Path("/backups/:backupName")
@@ -117,6 +129,8 @@ public class BackupRouter extends BaseRoute {
         return new JSONResponse().message("Backup deleted");
     }
 
+    @ApiDoc(summary = "Create a backup", description = "Creates a new backup using the given backup mode bitmask, which selects the directories to include.", tag = "Backups")
+    @ApiField(name = "backupMode", description = "Backup mode bitmask (as a string) selecting which parts to include")
     @AuthenticatedRoute
     @RequiresFeatures(value = Feature.Backups, level = PermissionLevel.FULL)
     @Path("/backups/create")

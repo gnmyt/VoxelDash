@@ -1,5 +1,7 @@
 package de.gnm.voxeldash.api.routes;
 
+import de.gnm.voxeldash.api.annotations.ApiDoc;
+import de.gnm.voxeldash.api.annotations.ApiField;
 import de.gnm.voxeldash.api.annotations.AuthenticatedRoute;
 import de.gnm.voxeldash.api.annotations.Method;
 import de.gnm.voxeldash.api.annotations.Path;
@@ -14,6 +16,8 @@ import static de.gnm.voxeldash.api.http.HTTPMethod.POST;
 
 public class QuickActionRouter extends BaseRoute {
 
+    @ApiDoc(summary = "Execute a console command", description = "Sends the given command to the server console for execution.", tag = "Quick Actions")
+    @ApiField(name = "command", description = "The console command to execute")
     @AuthenticatedRoute
     @RequiresFeatures(value = Feature.Console, level = PermissionLevel.FULL)
     @Path("/action/command")
@@ -26,6 +30,7 @@ public class QuickActionRouter extends BaseRoute {
         return new JSONResponse().message("Command sent successfully");
     }
 
+    @ApiDoc(summary = "Reload the server", description = "Triggers a server reload.", tag = "Quick Actions")
     @AuthenticatedRoute
     @Path("/action/reload")
     @Method(POST)
@@ -35,6 +40,7 @@ public class QuickActionRouter extends BaseRoute {
         return new JSONResponse().message("Server reloaded successfully");
     }
 
+    @ApiDoc(summary = "Shut down the server", description = "Stops the server.", tag = "Quick Actions")
     @AuthenticatedRoute
     @Path("/action/shutdown")
     @Method(POST)

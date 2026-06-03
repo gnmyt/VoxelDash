@@ -2,8 +2,11 @@ package de.gnm.voxeldash.api.routes.service;
 
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import de.gnm.voxeldash.api.annotations.ApiDoc;
+import de.gnm.voxeldash.api.annotations.ApiField;
 import de.gnm.voxeldash.api.annotations.AuthenticatedRoute;
 import de.gnm.voxeldash.api.annotations.Method;
+import de.gnm.voxeldash.api.annotations.ParamLocation;
 import de.gnm.voxeldash.api.annotations.Path;
 import de.gnm.voxeldash.api.annotations.RequiresFeatures;
 import de.gnm.voxeldash.api.controller.SSHController;
@@ -20,6 +23,7 @@ import static de.gnm.voxeldash.api.http.HTTPMethod.POST;
 
 public class SSHRouter extends BaseRoute {
 
+    @ApiDoc(summary = "Get SSH configuration", description = "Returns the current SSH/SFTP configuration including whether it is enabled, the port, SFTP and console flags, and the list of active client sessions.", tag = "SSH & SFTP")
     @AuthenticatedRoute
     @RequiresFeatures(Feature.SSH)
     @Path("/service/ssh")
@@ -49,6 +53,8 @@ public class SSHRouter extends BaseRoute {
                 .add("activeClients", activeClients);
     }
 
+    @ApiDoc(summary = "Disconnect an SSH client", description = "Closes the active SSH/SFTP session identified by the given session id.", tag = "SSH & SFTP")
+    @ApiField(name = "sessionId", description = "Id of the session to disconnect")
     @AuthenticatedRoute
     @RequiresFeatures(value = Feature.SSH, level = PermissionLevel.FULL)
     @Method(POST)
@@ -69,6 +75,9 @@ public class SSHRouter extends BaseRoute {
         return new JSONResponse().add("success", "Session closed");
     }
 
+    @ApiDoc(summary = "Update SSH configuration", description = "Updates a single SSH configuration value. The `configKey` path parameter selects the setting (enabled, sftpEnabled, consoleEnabled or port) and `value` carries the new value.", tag = "SSH & SFTP")
+    @ApiField(name = "configKey", in = ParamLocation.PATH, description = "Configuration key to update (enabled, sftpEnabled, consoleEnabled or port)")
+    @ApiField(name = "value", description = "New value for the configuration key")
     @AuthenticatedRoute
     @RequiresFeatures(value = Feature.SSH, level = PermissionLevel.FULL)
     @Method(PATCH)

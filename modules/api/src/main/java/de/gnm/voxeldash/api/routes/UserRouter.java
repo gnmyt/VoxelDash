@@ -2,8 +2,12 @@ package de.gnm.voxeldash.api.routes;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
+import de.gnm.voxeldash.api.annotations.ApiDoc;
+import de.gnm.voxeldash.api.annotations.ApiField;
 import de.gnm.voxeldash.api.annotations.AuthenticatedRoute;
+import de.gnm.voxeldash.api.annotations.FieldType;
 import de.gnm.voxeldash.api.annotations.Method;
+import de.gnm.voxeldash.api.annotations.ParamLocation;
 import de.gnm.voxeldash.api.annotations.Path;
 import de.gnm.voxeldash.api.controller.AccountController;
 import de.gnm.voxeldash.api.controller.PermissionController;
@@ -50,6 +54,7 @@ public class UserRouter extends BaseRoute {
     /**
      * Gets all users with their permissions
      */
+    @ApiDoc(summary = "List all users", description = "Returns all users together with their permissions and admin status. Requires admin privileges.", tag = "Users")
     @AuthenticatedRoute
     @Path("/users")
     @Method(GET)
@@ -86,6 +91,9 @@ public class UserRouter extends BaseRoute {
     /**
      * Creates a new user
      */
+    @ApiDoc(summary = "Create a user", description = "Creates a new user account with the given username and password and initializes default permissions. Requires admin privileges.", tag = "Users")
+    @ApiField(name = "username", description = "Username for the new account (3-32 characters)")
+    @ApiField(name = "password", description = "Password for the new account (at least 6 characters)")
     @AuthenticatedRoute
     @Path("/users")
     @Method(POST)
@@ -129,6 +137,9 @@ public class UserRouter extends BaseRoute {
     /**
      * Updates a user's password
      */
+    @ApiDoc(summary = "Update a user's password", description = "Changes the password of the specified user. Requires admin privileges.", tag = "Users")
+    @ApiField(name = "userId", type = FieldType.INTEGER, in = ParamLocation.PATH, description = "ID of the user to update")
+    @ApiField(name = "password", description = "New password (at least 6 characters)")
     @AuthenticatedRoute
     @Path("/users/:userId/password")
     @Method(PUT)
@@ -165,6 +176,9 @@ public class UserRouter extends BaseRoute {
     /**
      * Updates a user's username
      */
+    @ApiDoc(summary = "Update a user's username", description = "Changes the username of the specified user. Requires admin privileges.", tag = "Users")
+    @ApiField(name = "userId", type = FieldType.INTEGER, in = ParamLocation.PATH, description = "ID of the user to update")
+    @ApiField(name = "username", description = "New username (3-32 characters)")
     @AuthenticatedRoute
     @Path("/users/:userId/username")
     @Method(PUT)
@@ -205,6 +219,8 @@ public class UserRouter extends BaseRoute {
     /**
      * Deletes a user
      */
+    @ApiDoc(summary = "Delete a user", description = "Deletes the specified user, destroying all of their sessions and permissions. You cannot delete your own account. Requires admin privileges.", tag = "Users")
+    @ApiField(name = "userId", type = FieldType.INTEGER, in = ParamLocation.PATH, description = "ID of the user to delete")
     @AuthenticatedRoute
     @Path("/users/:userId")
     @Method(DELETE)
@@ -250,6 +266,8 @@ public class UserRouter extends BaseRoute {
     /**
      * Gets the permissions for a user
      */
+    @ApiDoc(summary = "Get a user's permissions", description = "Returns the permissions and admin status of the specified user. Requires admin privileges.", tag = "Users")
+    @ApiField(name = "userId", type = FieldType.INTEGER, in = ParamLocation.PATH, description = "ID of the user")
     @AuthenticatedRoute
     @Path("/users/:userId/permissions")
     @Method(GET)
@@ -281,6 +299,9 @@ public class UserRouter extends BaseRoute {
     /**
      * Updates the permissions for a user
      */
+    @ApiDoc(summary = "Update a user's permissions", description = "Updates the per-feature permission levels of the specified user. Requires admin privileges.", tag = "Users")
+    @ApiField(name = "userId", type = FieldType.INTEGER, in = ParamLocation.PATH, description = "ID of the user")
+    @ApiField(name = "permissions", type = FieldType.OBJECT, required = false, description = "Map of feature name to permission level")
     @AuthenticatedRoute
     @Path("/users/:userId/permissions")
     @Method(PUT)
@@ -320,6 +341,7 @@ public class UserRouter extends BaseRoute {
     /**
      * Gets available features from the server
      */
+    @ApiDoc(summary = "List available features", description = "Returns the names of all features available on the server. Requires admin privileges.", tag = "Users")
     @AuthenticatedRoute
     @Path("/users/features")
     @Method(GET)
@@ -339,6 +361,7 @@ public class UserRouter extends BaseRoute {
     /**
      * Gets the current user's info including permissions
      */
+    @ApiDoc(summary = "Get the current user", description = "Returns the authenticated user's info including username, admin status and permissions.", tag = "Users")
     @AuthenticatedRoute
     @Path("/users/me")
     @Method(GET)

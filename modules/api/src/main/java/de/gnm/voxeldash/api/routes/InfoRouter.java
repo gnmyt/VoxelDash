@@ -2,6 +2,7 @@ package de.gnm.voxeldash.api.routes;
 
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import de.gnm.voxeldash.api.annotations.ApiDoc;
 import de.gnm.voxeldash.api.annotations.AuthenticatedRoute;
 import de.gnm.voxeldash.api.annotations.Method;
 import de.gnm.voxeldash.api.annotations.Path;
@@ -20,6 +21,7 @@ import static de.gnm.voxeldash.api.http.HTTPMethod.GET;
 
 public class InfoRouter extends BaseRoute {
 
+    @ApiDoc(summary = "Get server info", description = "Returns general server information for the authenticated user, including account name, server software and version, port, the features accessible to the user, supported resource types and whether the user is an admin.", tag = "Info")
     @AuthenticatedRoute
     @Path("/info")
     @Method(GET)

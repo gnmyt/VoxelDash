@@ -2,8 +2,12 @@ package de.gnm.voxeldash.api.routes;
 
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import de.gnm.voxeldash.api.annotations.ApiDoc;
+import de.gnm.voxeldash.api.annotations.ApiField;
 import de.gnm.voxeldash.api.annotations.AuthenticatedRoute;
+import de.gnm.voxeldash.api.annotations.FieldType;
 import de.gnm.voxeldash.api.annotations.Method;
+import de.gnm.voxeldash.api.annotations.ParamLocation;
 import de.gnm.voxeldash.api.annotations.Path;
 import de.gnm.voxeldash.api.annotations.RequiresFeatures;
 import de.gnm.voxeldash.api.controller.ActionRegistry;
@@ -25,6 +29,7 @@ import static de.gnm.voxeldash.api.http.HTTPMethod.*;
 
 public class ScheduleRouter extends BaseRoute {
 
+    @ApiDoc(summary = "List schedule actions", description = "Returns all available schedule actions registered in the action registry.", tag = "Schedules")
     @AuthenticatedRoute
     @RequiresFeatures(Feature.Schedules)
     @Path("/schedules/actions")
@@ -40,6 +45,7 @@ public class ScheduleRouter extends BaseRoute {
         return new JSONResponse().add("actions", actionsArray);
     }
 
+    @ApiDoc(summary = "List schedules", description = "Returns all configured schedules including their tasks.", tag = "Schedules")
     @AuthenticatedRoute
     @RequiresFeatures(Feature.Schedules)
     @Path("/schedules")
@@ -56,6 +62,8 @@ public class ScheduleRouter extends BaseRoute {
         return new JSONResponse().add("schedules", schedulesArray);
     }
 
+    @ApiDoc(summary = "Get a schedule", description = "Returns a single schedule by its ID, including its tasks.", tag = "Schedules")
+    @ApiField(name = "id", type = FieldType.INTEGER, in = ParamLocation.PATH, description = "ID of the schedule to retrieve")
     @AuthenticatedRoute
     @RequiresFeatures(Feature.Schedules)
     @Path("/schedules/:id")
@@ -78,6 +86,11 @@ public class ScheduleRouter extends BaseRoute {
         return new JSONResponse().add("schedule", scheduleToJson(schedule));
     }
 
+    @ApiDoc(summary = "Create a schedule", description = "Creates a new schedule with the given name and interval. Supports HOURLY, DAILY and WEEKLY intervals.", tag = "Schedules")
+    @ApiField(name = "name", description = "Display name of the schedule")
+    @ApiField(name = "interval", description = "Interval type: HOURLY, DAILY or WEEKLY")
+    @ApiField(name = "intervalValue", type = FieldType.INTEGER, description = "Interval value; meaning depends on the interval type (e.g. minute, hour or day of week)")
+    @ApiField(name = "timeValue", type = FieldType.INTEGER, required = false, description = "Additional time value used by DAILY and WEEKLY intervals")
     @AuthenticatedRoute
     @RequiresFeatures(value = Feature.Schedules, level = PermissionLevel.FULL)
     @Path("/schedules")
@@ -111,6 +124,12 @@ public class ScheduleRouter extends BaseRoute {
         return new JSONResponse().add("schedule", scheduleToJson(schedule));
     }
 
+    @ApiDoc(summary = "Update a schedule", description = "Updates the name and interval configuration of an existing schedule.", tag = "Schedules")
+    @ApiField(name = "id", type = FieldType.INTEGER, in = ParamLocation.PATH, description = "ID of the schedule to update")
+    @ApiField(name = "name", description = "Display name of the schedule")
+    @ApiField(name = "interval", description = "Interval type: HOURLY, DAILY or WEEKLY")
+    @ApiField(name = "intervalValue", type = FieldType.INTEGER, description = "Interval value; meaning depends on the interval type (e.g. minute, hour or day of week)")
+    @ApiField(name = "timeValue", type = FieldType.INTEGER, required = false, description = "Additional time value used by DAILY and WEEKLY intervals")
     @AuthenticatedRoute
     @RequiresFeatures(value = Feature.Schedules, level = PermissionLevel.FULL)
     @Path("/schedules/:id")
@@ -154,6 +173,8 @@ public class ScheduleRouter extends BaseRoute {
         return new JSONResponse().add("schedule", scheduleToJson(schedule));
     }
 
+    @ApiDoc(summary = "Delete a schedule", description = "Deletes the schedule with the given ID.", tag = "Schedules")
+    @ApiField(name = "id", type = FieldType.INTEGER, in = ParamLocation.PATH, description = "ID of the schedule to delete")
     @AuthenticatedRoute
     @RequiresFeatures(value = Feature.Schedules, level = PermissionLevel.FULL)
     @Path("/schedules/:id")
@@ -179,6 +200,9 @@ public class ScheduleRouter extends BaseRoute {
         return new JSONResponse().message("Schedule deleted successfully");
     }
 
+    @ApiDoc(summary = "Toggle a schedule", description = "Enables or disables the schedule with the given ID.", tag = "Schedules")
+    @ApiField(name = "id", type = FieldType.INTEGER, in = ParamLocation.PATH, description = "ID of the schedule to toggle")
+    @ApiField(name = "enabled", type = FieldType.BOOLEAN, description = "Whether the schedule should be enabled")
     @AuthenticatedRoute
     @RequiresFeatures(value = Feature.Schedules, level = PermissionLevel.FULL)
     @Path("/schedules/:id/toggle")
@@ -208,6 +232,8 @@ public class ScheduleRouter extends BaseRoute {
     }
 
 
+    @ApiDoc(summary = "List schedule tasks", description = "Returns all tasks belonging to the given schedule.", tag = "Schedules")
+    @ApiField(name = "scheduleId", type = FieldType.INTEGER, in = ParamLocation.PATH, description = "ID of the schedule whose tasks to list")
     @AuthenticatedRoute
     @RequiresFeatures(Feature.Schedules)
     @Path("/schedules/:scheduleId/tasks")
@@ -235,6 +261,10 @@ public class ScheduleRouter extends BaseRoute {
         return new JSONResponse().add("tasks", tasksArray);
     }
 
+    @ApiDoc(summary = "Create a schedule task", description = "Adds a new task to the given schedule using the specified action.", tag = "Schedules")
+    @ApiField(name = "scheduleId", type = FieldType.INTEGER, in = ParamLocation.PATH, description = "ID of the schedule to add the task to")
+    @ApiField(name = "actionId", description = "ID of a registered action to run for this task")
+    @ApiField(name = "metadata", required = false, description = "Optional metadata passed to the action")
     @AuthenticatedRoute
     @RequiresFeatures(value = Feature.Schedules, level = PermissionLevel.FULL)
     @Path("/schedules/:scheduleId/tasks")
@@ -274,6 +304,12 @@ public class ScheduleRouter extends BaseRoute {
         return new JSONResponse().add("task", taskToJson(task));
     }
 
+    @ApiDoc(summary = "Update a schedule task", description = "Updates the action, metadata and execution order of an existing task.", tag = "Schedules")
+    @ApiField(name = "scheduleId", type = FieldType.INTEGER, in = ParamLocation.PATH, description = "ID of the schedule the task belongs to")
+    @ApiField(name = "taskId", type = FieldType.INTEGER, in = ParamLocation.PATH, description = "ID of the task to update")
+    @ApiField(name = "actionId", description = "ID of a registered action to run for this task")
+    @ApiField(name = "metadata", required = false, description = "Optional metadata passed to the action")
+    @ApiField(name = "executionOrder", type = FieldType.INTEGER, required = false, description = "Order in which this task is executed within the schedule")
     @AuthenticatedRoute
     @RequiresFeatures(value = Feature.Schedules, level = PermissionLevel.FULL)
     @Path("/schedules/:scheduleId/tasks/:taskId")
@@ -312,6 +348,9 @@ public class ScheduleRouter extends BaseRoute {
         return new JSONResponse().add("task", taskToJson(task));
     }
 
+    @ApiDoc(summary = "Delete a schedule task", description = "Deletes the task with the given ID from the schedule.", tag = "Schedules")
+    @ApiField(name = "scheduleId", type = FieldType.INTEGER, in = ParamLocation.PATH, description = "ID of the schedule the task belongs to")
+    @ApiField(name = "taskId", type = FieldType.INTEGER, in = ParamLocation.PATH, description = "ID of the task to delete")
     @AuthenticatedRoute
     @RequiresFeatures(value = Feature.Schedules, level = PermissionLevel.FULL)
     @Path("/schedules/:scheduleId/tasks/:taskId")

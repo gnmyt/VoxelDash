@@ -2,6 +2,8 @@ package de.gnm.voxeldash.api.routes.worlds;
 
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import de.gnm.voxeldash.api.annotations.ApiDoc;
+import de.gnm.voxeldash.api.annotations.ApiField;
 import de.gnm.voxeldash.api.annotations.AuthenticatedRoute;
 import de.gnm.voxeldash.api.annotations.Method;
 import de.gnm.voxeldash.api.annotations.Path;
@@ -18,6 +20,7 @@ import static de.gnm.voxeldash.api.http.HTTPMethod.*;
 
 public class WorldRouter extends BaseRoute {
 
+    @ApiDoc(summary = "List worlds", description = "Returns all loaded worlds with their name, environment, player count, time, weather, difficulty, seed, hardcore flag and world type.", tag = "Worlds")
     @AuthenticatedRoute
     @RequiresFeatures(Feature.Worlds)
     @Path("/worlds")
@@ -43,6 +46,9 @@ public class WorldRouter extends BaseRoute {
         return new JSONResponse().add("worlds", worlds);
     }
 
+    @ApiDoc(summary = "Set world time", description = "Sets the in-game time of the given world.", tag = "Worlds")
+    @ApiField(name = "worldName", description = "Name of the world to update")
+    @ApiField(name = "time", description = "Time value to apply (e.g. day, night or a tick value)")
     @AuthenticatedRoute
     @RequiresFeatures(value = Feature.Worlds, level = PermissionLevel.FULL)
     @Path("/worlds/time")
@@ -58,6 +64,9 @@ public class WorldRouter extends BaseRoute {
         return new JSONResponse().message("Time updated");
     }
 
+    @ApiDoc(summary = "Set world weather", description = "Sets the weather of the given world.", tag = "Worlds")
+    @ApiField(name = "worldName", description = "Name of the world to update")
+    @ApiField(name = "weather", description = "Weather to apply (e.g. clear, rain or thunder)")
     @AuthenticatedRoute
     @RequiresFeatures(value = Feature.Worlds, level = PermissionLevel.FULL)
     @Path("/worlds/weather")
@@ -73,6 +82,9 @@ public class WorldRouter extends BaseRoute {
         return new JSONResponse().message("Weather updated");
     }
 
+    @ApiDoc(summary = "Set world difficulty", description = "Sets the difficulty of the given world.", tag = "Worlds")
+    @ApiField(name = "worldName", description = "Name of the world to update")
+    @ApiField(name = "difficulty", description = "Difficulty to apply (e.g. peaceful, easy, normal or hard)")
     @AuthenticatedRoute
     @RequiresFeatures(value = Feature.Worlds, level = PermissionLevel.FULL)
     @Path("/worlds/difficulty")
@@ -88,6 +100,11 @@ public class WorldRouter extends BaseRoute {
         return new JSONResponse().message("Difficulty updated");
     }
 
+    @ApiDoc(summary = "Create a world", description = "Creates a new world with the given name and environment. Optionally a world type and seed can be supplied.", tag = "Worlds")
+    @ApiField(name = "worldName", description = "Name of the world to create")
+    @ApiField(name = "environment", description = "World environment (e.g. NORMAL, NETHER or THE_END)")
+    @ApiField(name = "worldType", required = false, description = "World type, defaults to NORMAL")
+    @ApiField(name = "seed", required = false, description = "Seed used to generate the world")
     @AuthenticatedRoute
     @RequiresFeatures(value = Feature.Worlds, level = PermissionLevel.FULL)
     @Path("/worlds/create")
@@ -109,6 +126,8 @@ public class WorldRouter extends BaseRoute {
         }
     }
 
+    @ApiDoc(summary = "Delete a world", description = "Deletes the given world from the server.", tag = "Worlds")
+    @ApiField(name = "worldName", description = "Name of the world to delete")
     @AuthenticatedRoute
     @RequiresFeatures(value = Feature.Worlds, level = PermissionLevel.FULL)
     @Path("/worlds/delete")
@@ -127,6 +146,8 @@ public class WorldRouter extends BaseRoute {
         }
     }
 
+    @ApiDoc(summary = "Save a world", description = "Saves the current state of the given world to disk.", tag = "Worlds")
+    @ApiField(name = "worldName", description = "Name of the world to save")
     @AuthenticatedRoute
     @RequiresFeatures(value = Feature.Worlds, level = PermissionLevel.FULL)
     @Path("/worlds/save")
@@ -141,6 +162,9 @@ public class WorldRouter extends BaseRoute {
         return new JSONResponse().message("World saved");
     }
 
+    @ApiDoc(summary = "Teleport players between worlds", description = "Teleports all players from one world to another.", tag = "Worlds")
+    @ApiField(name = "fromWorld", description = "Name of the world to teleport players from")
+    @ApiField(name = "toWorld", description = "Name of the world to teleport players to")
     @AuthenticatedRoute
     @RequiresFeatures(value = Feature.Worlds, level = PermissionLevel.FULL)
     @Path("/worlds/teleport")

@@ -2,6 +2,8 @@ package de.gnm.voxeldash.api.routes.resources;
 
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import de.gnm.voxeldash.api.annotations.ApiDoc;
+import de.gnm.voxeldash.api.annotations.ApiField;
 import de.gnm.voxeldash.api.annotations.AuthenticatedRoute;
 import de.gnm.voxeldash.api.annotations.Method;
 import de.gnm.voxeldash.api.annotations.Path;
@@ -26,6 +28,8 @@ import static de.gnm.voxeldash.api.http.HTTPMethod.*;
 
 public class StoreRouter extends BaseRoute {
 
+    @ApiDoc(summary = "List store providers", description = "Returns all registered store providers, optionally filtered to those supporting a given resource type. Each provider includes its id, display name, logo, API key requirements and supported resource types.", tag = "Resource Store")
+    @ApiField(name = "type", required = false, description = "Optional resource type identifier to filter providers by supported type")
     @AuthenticatedRoute
     @RequiresFeatures(Feature.Resources)
     @Path("/store/providers")
@@ -63,6 +67,8 @@ public class StoreRouter extends BaseRoute {
         return new JSONResponse().add("providers", array);
     }
 
+    @ApiDoc(summary = "Get API key status for a provider", description = "Returns whether the given store provider requires an API key and whether one is currently configured.", tag = "Resource Store")
+    @ApiField(name = "provider", description = "Provider id to check the API key status for")
     @AuthenticatedRoute
     @RequiresFeatures(Feature.Resources)
     @Path("/store/apikey")
@@ -83,6 +89,9 @@ public class StoreRouter extends BaseRoute {
             .add("isConfigured", provider.isConfigured());
     }
 
+    @ApiDoc(summary = "Set API key for a provider", description = "Stores the given API key for a store provider that requires authentication.", tag = "Resource Store")
+    @ApiField(name = "provider", description = "Provider id to set the API key for")
+    @ApiField(name = "apiKey", description = "The API key to store for the provider")
     @AuthenticatedRoute
     @RequiresFeatures(Feature.Resources)
     @Path("/store/apikey")
@@ -112,6 +121,14 @@ public class StoreRouter extends BaseRoute {
             .add("isConfigured", provider.isConfigured());
     }
 
+    @ApiDoc(summary = "Search the store", description = "Searches a store provider for projects of a given resource type, returning paginated results. Game version and loader default to the connected server's values but can be overridden.", tag = "Resource Store")
+    @ApiField(name = "provider", required = false, description = "Provider id to search (defaults to 'modrinth')")
+    @ApiField(name = "type", description = "Resource type identifier to search for")
+    @ApiField(name = "query", required = false, description = "Search query string")
+    @ApiField(name = "page", required = false, description = "Zero-based page index (defaults to 0)")
+    @ApiField(name = "pageSize", required = false, description = "Results per page, capped at 100 (defaults to 20)")
+    @ApiField(name = "gameVersion", required = false, description = "Override the Minecraft game version filter")
+    @ApiField(name = "loader", required = false, description = "Override the mod/plugin loader filter")
     @AuthenticatedRoute
     @RequiresFeatures(Feature.Resources)
     @Path("/store/search")
@@ -169,6 +186,9 @@ public class StoreRouter extends BaseRoute {
         return new JSONResponse().add("result", response);
     }
 
+    @ApiDoc(summary = "Get a store project", description = "Returns the details of a single project from a store provider.", tag = "Resource Store")
+    @ApiField(name = "provider", required = false, description = "Provider id to query (defaults to 'modrinth')")
+    @ApiField(name = "projectId", description = "Identifier of the project to fetch")
     @AuthenticatedRoute
     @RequiresFeatures(Feature.Resources)
     @Path("/store/project")
@@ -193,6 +213,12 @@ public class StoreRouter extends BaseRoute {
         return new JSONResponse().add("project", projectToJson(project));
     }
 
+    @ApiDoc(summary = "List project versions", description = "Returns the available versions of a store project, filtered by game version and loader. Datapacks use the 'datapack' loader by default.", tag = "Resource Store")
+    @ApiField(name = "provider", required = false, description = "Provider id to query (defaults to 'modrinth')")
+    @ApiField(name = "projectId", description = "Identifier of the project to list versions for")
+    @ApiField(name = "type", required = false, description = "Resource type identifier (affects the default loader)")
+    @ApiField(name = "gameVersion", required = false, description = "Override the Minecraft game version filter")
+    @ApiField(name = "loader", required = false, description = "Override the mod/plugin loader filter")
     @AuthenticatedRoute
     @RequiresFeatures(Feature.Resources)
     @Path("/store/versions")
@@ -243,6 +269,11 @@ public class StoreRouter extends BaseRoute {
                 .add("loader", loader);
     }
 
+    @ApiDoc(summary = "Install a resource from the store", description = "Downloads the given project version from a store provider and installs it into the matching resource folder, enabling it when possible.", tag = "Resource Store")
+    @ApiField(name = "type", description = "Resource type identifier of the resource to install")
+    @ApiField(name = "projectId", description = "Identifier of the project to install")
+    @ApiField(name = "versionId", description = "Identifier of the project version to install")
+    @ApiField(name = "provider", required = false, description = "Provider id to download from (defaults to 'modrinth')")
     @AuthenticatedRoute
     @RequiresFeatures(value = Feature.Resources, level = PermissionLevel.FULL)
     @Path("/store/install")
@@ -303,6 +334,8 @@ public class StoreRouter extends BaseRoute {
         }
     }
 
+    @ApiDoc(summary = "List store-installed resources", description = "Returns resources of a given type that were installed from the store, including their originating provider and project id parsed from the file name.", tag = "Resource Store")
+    @ApiField(name = "type", description = "Resource type identifier to list installed resources for")
     @AuthenticatedRoute
     @RequiresFeatures(Feature.Resources)
     @Path("/store/installed")
@@ -340,6 +373,8 @@ public class StoreRouter extends BaseRoute {
         return new JSONResponse().add("installed", installedArray);
     }
 
+    @ApiDoc(summary = "Get store context", description = "Returns the server context used to scope store queries, including the game version, the resolved loader for the given provider and the server software.", tag = "Resource Store")
+    @ApiField(name = "provider", required = false, description = "Provider id used to resolve the loader (defaults to 'modrinth')")
     @AuthenticatedRoute
     @RequiresFeatures(Feature.Resources)
     @Path("/store/context")

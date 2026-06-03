@@ -1,5 +1,7 @@
 package de.gnm.voxeldash.api.routes;
 
+import de.gnm.voxeldash.api.annotations.ApiDoc;
+import de.gnm.voxeldash.api.annotations.ApiField;
 import de.gnm.voxeldash.api.annotations.Method;
 import de.gnm.voxeldash.api.annotations.Path;
 import de.gnm.voxeldash.api.controller.AccountController;
@@ -12,6 +14,9 @@ import static de.gnm.voxeldash.api.http.HTTPMethod.POST;
 
 public class SessionRouter extends BaseRoute {
 
+    @ApiDoc(summary = "Create a session", description = "Authenticates with username and password and returns a session token.", tag = "Session")
+    @ApiField(name = "username", description = "The account username")
+    @ApiField(name = "password", description = "The account password")
     @Path("/session/create")
     @Method(POST)
     public Response createSession(JSONRequest request) {
@@ -31,6 +36,8 @@ public class SessionRouter extends BaseRoute {
         return new JSONResponse().add("session", sessionToken);
     }
 
+    @ApiDoc(summary = "Destroy a session", description = "Invalidates the given session token, logging the user out.", tag = "Session")
+    @ApiField(name = "session", description = "The session token to destroy")
     @Path("/session/destroy")
     @Method(POST)
     public Response destroySession(JSONRequest request) {
