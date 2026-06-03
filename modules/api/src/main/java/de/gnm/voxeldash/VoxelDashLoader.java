@@ -12,6 +12,7 @@ import de.gnm.voxeldash.api.controller.SSHController;
 import de.gnm.voxeldash.api.controller.SessionController;
 import de.gnm.voxeldash.api.controller.WidgetRegistry;
 import de.gnm.voxeldash.api.entities.Feature;
+import de.gnm.voxeldash.api.entities.PermissionLevel;
 import de.gnm.voxeldash.api.event.EventDispatcher;
 import de.gnm.voxeldash.api.handlers.BaseHandler;
 import de.gnm.voxeldash.api.handlers.StaticHandler;
@@ -21,6 +22,8 @@ import de.gnm.voxeldash.api.http.HTTPMethod;
 import de.gnm.voxeldash.api.http.RouteMeta;
 import de.gnm.voxeldash.api.pipes.BasePipe;
 import de.gnm.voxeldash.api.routes.BaseRoute;
+import de.gnm.voxeldash.api.tunnel.ConnectionConfig;
+import de.gnm.voxeldash.api.tunnel.MasterTunnelClient;
 import io.undertow.Undertow;
 import io.undertow.server.handlers.PathHandler;
 import io.undertow.websockets.WebSocketProtocolHandshakeHandler;
@@ -44,6 +47,10 @@ public class VoxelDashLoader {
     private File logFile = new File("logs/latest.log");
     private Undertow httpServer;
     private ScheduleExecutor scheduleExecutor;
+    private ConnectionConfig connection;
+    private MasterTunnelClient tunnel;
+    private String internalToken;
+    private static final String INTERNAL_ACCOUNT = "__voxeldash_internal__";
 
     /**
      * Registers a pipe with the given type
@@ -59,6 +66,8 @@ public class VoxelDashLoader {
      * Initializes the server
      */
     private void initialize() {
+        connection = ConnectionConfig.detect();
+
         registerRoutes();
 
         controllerManager.setConnection(String.format("jdbc:sqlite:%s", databaseFile));
@@ -68,7 +77,11 @@ public class VoxelDashLoader {
                 .addPrefixPath("/api/ws", new WebSocketProtocolHandshakeHandler(webSocketHandler))
                 .addPrefixPath("/", new StaticHandler());
 
-        httpServer = Undertow.builder().addHttpListener(7867, "0.0.0.0").setHandler(handler).build();
+        if (connection != null) {
+            httpServer = Undertow.builder().addHttpListener(connection.getApiPort(), "127.0.0.1").setHandler(handler).build();
+        } else {
+            httpServer = Undertow.builder().addHttpListener(7867, "0.0.0.0").setHandler(handler).build();
+        }
 
         controllerManager.registerController(AccountController.class);
 
@@ -85,8 +98,31 @@ public class VoxelDashLoader {
 
         registerFeatures(Feature.UserManagement);
 
+        if (connection != null) {
+            prepareConnectedMode();
+        }
+
         scheduleExecutor = new ScheduleExecutor(this);
         scheduleExecutor.start();
+    }
+
+    private void prepareConnectedMode() {
+        AccountController accounts = getController(AccountController.class);
+        SessionController sessions = getController(SessionController.class);
+        PermissionController permissions = getController(PermissionController.class);
+
+        if (!accounts.accountExists(INTERNAL_ACCOUNT)) {
+            accounts.createAccount(INTERNAL_ACCOUNT, java.util.UUID.randomUUID().toString());
+        }
+
+        int userId = accounts.getUserId(INTERNAL_ACCOUNT);
+
+        for (Feature feature : Feature.values()) {
+            permissions.setPermission(userId, feature, PermissionLevel.FULL);
+        }
+
+        sessions.destroyAllSessionsForUser(userId);
+        internalToken = sessions.generateSessionToken(userId, "voxeldash-internal");
     }
 
     /**
@@ -135,12 +171,22 @@ public class VoxelDashLoader {
         if (httpServer != null) {
             httpServer.start();
         }
+
+        if (connection != null && internalToken != null) {
+            tunnel = new MasterTunnelClient(this, connection, internalToken);
+            tunnel.connect();
+        }
     }
 
     /**
      * Shuts down the server
      */
     public void shutdown() {
+        if (tunnel != null) {
+            tunnel.shutdown();
+            tunnel = null;
+        }
+
         if (scheduleExecutor != null) {
             scheduleExecutor.stop();
         }
