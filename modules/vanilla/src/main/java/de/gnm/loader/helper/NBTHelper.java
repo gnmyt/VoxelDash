@@ -84,13 +84,12 @@ public class NBTHelper {
         try {
             if (playerData.containsKey("playerGameType")) {
                 int gameType = playerData.getInt("playerGameType");
-                return switch (gameType) {
-                    case 0 -> "SURVIVAL";
-                    case 1 -> "CREATIVE";
-                    case 2 -> "ADVENTURE";
-                    case 3 -> "SPECTATOR";
-                    default -> "SURVIVAL";
-                };
+                switch (gameType) {
+                    case 1: return "CREATIVE";
+                    case 2: return "ADVENTURE";
+                    case 3: return "SPECTATOR";
+                    default: return "SURVIVAL";
+                }
             }
         } catch (Exception e) {
             LOG.debug("Failed to read game mode from player data", e);
@@ -130,8 +129,8 @@ public class NBTHelper {
 
         try {
             NamedTag namedTag = NBTUtil.read(levelFile);
-            if (namedTag.getTag() instanceof CompoundTag root) {
-                return root.getCompoundTag("Data");
+            if (namedTag.getTag() instanceof CompoundTag) {
+                return ((CompoundTag) namedTag.getTag()).getCompoundTag("Data");
             }
         } catch (IOException e) {
             LOG.error("Failed to read level.dat for " + worldFolder.getName(), e);
@@ -204,13 +203,12 @@ public class NBTHelper {
         try {
             if (levelData.containsKey("Difficulty")) {
                 int difficulty = levelData.getByte("Difficulty");
-                return switch (difficulty) {
-                    case 0 -> "PEACEFUL";
-                    case 1 -> "EASY";
-                    case 2 -> "NORMAL";
-                    case 3 -> "HARD";
-                    default -> "NORMAL";
-                };
+                switch (difficulty) {
+                    case 0: return "PEACEFUL";
+                    case 1: return "EASY";
+                    case 3: return "HARD";
+                    default: return "NORMAL";
+                }
             }
         } catch (Exception e) {
             LOG.debug("Failed to read difficulty", e);

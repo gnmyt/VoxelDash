@@ -9,8 +9,8 @@
     <packaging>jar</packaging>
 
     <properties>
-        <maven.compiler.source>21</maven.compiler.source>
-        <maven.compiler.target>21</maven.compiler.target>
+        <maven.compiler.source>8</maven.compiler.source>
+        <maven.compiler.target>8</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <dev.server.dir>${project.basedir}/run</dev.server.dir>
         <skip.webui>false</skip.webui>
@@ -113,8 +113,7 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.13.0</version>
                 <configuration>
-                    <source>21</source>
-                    <target>21</target>
+                    <release>8</release>
                 </configuration>
             </plugin>
             <plugin>
@@ -133,6 +132,42 @@
                                 <relocation>
                                     <pattern>io.undertow</pattern>
                                     <shadedPattern>de.gnm.voxeldash.libs.undertow</shadedPattern>
+                                </relocation>
+                                <relocation>
+                                    <pattern>org.apache.commons</pattern>
+                                    <shadedPattern>de.gnm.voxeldash.libs.commons</shadedPattern>
+                                </relocation>
+                                <relocation>
+                                    <pattern>com.fasterxml.jackson</pattern>
+                                    <shadedPattern>de.gnm.voxeldash.libs.jackson</shadedPattern>
+                                </relocation>
+                                <relocation>
+                                    <pattern>org.apache.sshd</pattern>
+                                    <shadedPattern>de.gnm.voxeldash.libs.sshd</shadedPattern>
+                                </relocation>
+                                <relocation>
+                                    <pattern>org.jboss</pattern>
+                                    <shadedPattern>de.gnm.voxeldash.libs.jboss</shadedPattern>
+                                </relocation>
+                                <relocation>
+                                    <pattern>org.xnio</pattern>
+                                    <shadedPattern>de.gnm.voxeldash.libs.xnio</shadedPattern>
+                                </relocation>
+                                <relocation>
+                                    <pattern>org.wildfly</pattern>
+                                    <shadedPattern>de.gnm.voxeldash.libs.wildfly</shadedPattern>
+                                </relocation>
+                                <relocation>
+                                    <pattern>org.reflections</pattern>
+                                    <shadedPattern>de.gnm.voxeldash.libs.reflections</shadedPattern>
+                                </relocation>
+                                <relocation>
+                                    <pattern>org.mindrot</pattern>
+                                    <shadedPattern>de.gnm.voxeldash.libs.mindrot</shadedPattern>
+                                </relocation>
+                                <relocation>
+                                    <pattern>org.yaml.snakeyaml</pattern>
+                                    <shadedPattern>de.gnm.voxeldash.libs.snakeyaml</shadedPattern>
                                 </relocation>
                             </relocations>
                             <filters>

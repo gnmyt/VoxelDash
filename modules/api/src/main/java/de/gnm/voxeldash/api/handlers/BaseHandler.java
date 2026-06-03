@@ -13,6 +13,7 @@ import de.gnm.voxeldash.api.http.*;
 import io.undertow.server.HttpHandler;
 import io.undertow.server.HttpServerExchange;
 import io.undertow.util.HttpString;
+import org.apache.commons.io.IOUtils;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -360,7 +361,7 @@ public class BaseHandler implements HttpHandler {
         response.getHeaders().forEach((key, value) -> exchange.getResponseHeaders().add(HttpString.tryFromString(key), value));
         exchange.getResponseHeaders().add(HttpString.tryFromString("Server"), "VoxelDash");
         exchange.getResponseHeaders().add(HttpString.tryFromString("Content-Type"), response.getContentType().getType());
-        response.getInputStream().transferTo(exchange.getOutputStream());
+        IOUtils.copy(response.getInputStream(), exchange.getOutputStream());
     }
 
     /**

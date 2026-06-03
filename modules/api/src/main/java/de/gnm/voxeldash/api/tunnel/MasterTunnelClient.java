@@ -155,13 +155,27 @@ public class MasterTunnelClient {
     private void dispatch(JsonNode node) {
         String type = node.path("type").asText("");
         switch (type) {
-            case "http" -> workers.submit(() -> handleHttp(node));
-            case "ws-open" -> workers.submit(() -> openConsoleStream(node.path("streamId").asText()));
-            case "ws-msg" -> forwardConsoleMessage(node.path("streamId").asText(), node.path("data").asText());
-            case "ws-close" -> closeConsoleStream(node.path("streamId").asText());
-            case "ping" -> send(frame("pong").put("ts", node.path("ts").asLong()));
-            case "pong", "hello-ack" -> { /* no-op */ }
-            default -> LOG.warning("[VoxelDash One] Unknown frame type: " + type);
+            case "http":
+                workers.submit(() -> handleHttp(node));
+                break;
+            case "ws-open":
+                workers.submit(() -> openConsoleStream(node.path("streamId").asText()));
+                break;
+            case "ws-msg":
+                forwardConsoleMessage(node.path("streamId").asText(), node.path("data").asText());
+                break;
+            case "ws-close":
+                closeConsoleStream(node.path("streamId").asText());
+                break;
+            case "ping":
+                send(frame("pong").put("ts", node.path("ts").asLong()));
+                break;
+            case "pong":
+            case "hello-ack":
+                break;
+            default:
+                LOG.warning("[VoxelDash One] Unknown frame type: " + type);
+                break;
         }
     }
 

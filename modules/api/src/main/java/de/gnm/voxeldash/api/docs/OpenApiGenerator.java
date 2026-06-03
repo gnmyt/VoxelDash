@@ -48,8 +48,8 @@ public class OpenApiGenerator {
      * @throws Exception if the spec cannot be written
      */
     public static void main(String[] args) throws Exception {
-        String output = args.length > 0 && !args[0].isBlank() ? args[0] : "docs/public/openapi.json";
-        String version = args.length > 1 && !args[1].isBlank() ? args[1] : "dev";
+        String output = args.length > 0 && !args[0].trim().isEmpty() ? args[0] : "docs/public/openapi.json";
+        String version = args.length > 1 && !args[1].trim().isEmpty() ? args[1] : "dev";
 
         ObjectNode spec = new OpenApiGenerator(version).generate();
 
@@ -183,7 +183,7 @@ public class OpenApiGenerator {
      */
     private String buildDescription(ApiDoc doc, RequiresFeatures requiresFeatures) {
         StringBuilder sb = new StringBuilder();
-        if (doc != null && !doc.description().isBlank()) {
+        if (doc != null && !doc.description().trim().isEmpty()) {
             sb.append(doc.description().trim());
         }
         if (requiresFeatures != null) {
@@ -213,7 +213,7 @@ public class OpenApiGenerator {
             parameter.put("name", name);
             parameter.put("in", "path");
             parameter.put("required", true);
-            if (field != null && !field.description().isBlank()) parameter.put("description", field.description());
+            if (field != null && !field.description().trim().isEmpty()) parameter.put("description", field.description());
             ObjectNode schema = parameter.putObject("schema");
             schema.put("type", field != null ? field.type().getSchemaType() : "string");
         }
@@ -233,7 +233,7 @@ public class OpenApiGenerator {
             parameter.put("name", field.name());
             parameter.put("in", "query");
             parameter.put("required", field.required());
-            if (!field.description().isBlank()) parameter.put("description", field.description());
+            if (!field.description().trim().isEmpty()) parameter.put("description", field.description());
             parameter.putObject("schema").put("type", field.type().getSchemaType());
         }
     }
@@ -251,7 +251,7 @@ public class OpenApiGenerator {
             if (field.in() != ParamLocation.BODY) continue;
             ObjectNode property = properties.putObject(field.name());
             property.put("type", field.type().getSchemaType());
-            if (!field.description().isBlank()) property.put("description", field.description());
+            if (!field.description().trim().isEmpty()) property.put("description", field.description());
             if (field.required()) required.add(field.name());
         }
 
@@ -313,7 +313,7 @@ public class OpenApiGenerator {
      */
     private String resolveTag(Class<?> routeClass, java.lang.reflect.Method method) {
         ApiDoc doc = method.getAnnotation(ApiDoc.class);
-        if (doc != null && !doc.tag().isBlank()) return doc.tag();
+        if (doc != null && !doc.tag().trim().isEmpty()) return doc.tag();
 
         String name = routeClass.getSimpleName();
         if (name.endsWith("Router")) name = name.substring(0, name.length() - "Router".length());

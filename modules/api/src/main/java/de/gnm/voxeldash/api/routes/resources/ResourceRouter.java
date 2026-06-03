@@ -23,11 +23,7 @@ import de.gnm.voxeldash.api.routes.BaseRoute;
 import org.yaml.snakeyaml.DumperOptions;
 import org.yaml.snakeyaml.Yaml;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.FileReader;
-import java.io.FileWriter;
+import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.List;
@@ -248,7 +244,7 @@ public class ResourceRouter extends BaseRoute {
         String name = file.getName().toLowerCase();
         try {
             if (name.endsWith(".json")) {
-                try (FileReader reader = new FileReader(file, StandardCharsets.UTF_8)) {
+                try (Reader reader = new InputStreamReader(new FileInputStream(file), StandardCharsets.UTF_8)) {
                     return JSON_MAPPER.readValue(reader, Map.class);
                 }
             } else if (name.endsWith(".properties")) {
@@ -262,7 +258,7 @@ public class ResourceRouter extends BaseRoute {
                 }
                 return result;
             } else {
-                try (FileReader reader = new FileReader(file, StandardCharsets.UTF_8)) {
+                try (Reader reader = new InputStreamReader(new FileInputStream(file), StandardCharsets.UTF_8)) {
                     return new Yaml().load(reader);
                 }
             }
@@ -275,7 +271,7 @@ public class ResourceRouter extends BaseRoute {
         String name = file.getName().toLowerCase();
         try {
             if (name.endsWith(".json")) {
-                try (FileWriter writer = new FileWriter(file, StandardCharsets.UTF_8)) {
+                try (Writer writer = new OutputStreamWriter(new FileOutputStream(file), StandardCharsets.UTF_8)) {
                     JSON_MAPPER.writerWithDefaultPrettyPrinter().writeValue(writer, content);
                 }
             } else if (name.endsWith(".properties")) {
@@ -293,7 +289,7 @@ public class ResourceRouter extends BaseRoute {
                 options.setDefaultFlowStyle(DumperOptions.FlowStyle.BLOCK);
                 options.setPrettyFlow(true);
                 options.setIndent(2);
-                try (FileWriter writer = new FileWriter(file, StandardCharsets.UTF_8)) {
+                try (Writer writer = new OutputStreamWriter(new FileOutputStream(file), StandardCharsets.UTF_8)) {
                     new Yaml(options).dump(content, writer);
                 }
             }

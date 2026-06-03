@@ -76,11 +76,11 @@ public class CurseForgeProvider extends AbstractStoreProvider {
             }
 
             if (query != null && !query.isEmpty()) {
-                url.append("&searchFilter=").append(URLEncoder.encode(query, StandardCharsets.UTF_8));
+                url.append("&searchFilter=").append(URLEncoder.encode(query, "UTF-8"));
             }
 
             if (gameVersion != null && !gameVersion.isEmpty()) {
-                url.append("&gameVersion=").append(URLEncoder.encode(gameVersion, StandardCharsets.UTF_8));
+                url.append("&gameVersion=").append(URLEncoder.encode(gameVersion, "UTF-8"));
             }
 
             if (loader != null && !loader.isEmpty() && resourceType != ResourceType.DATAPACK) {
@@ -156,7 +156,7 @@ public class CurseForgeProvider extends AbstractStoreProvider {
             url.append("pageSize=20");
 
             if (gameVersion != null && !gameVersion.isEmpty()) {
-                url.append("&gameVersion=").append(URLEncoder.encode(gameVersion, StandardCharsets.UTF_8));
+                url.append("&gameVersion=").append(URLEncoder.encode(gameVersion, "UTF-8"));
             }
 
             if (loader != null && !loader.isEmpty()) {
@@ -237,44 +237,46 @@ public class CurseForgeProvider extends AbstractStoreProvider {
     @Override
     public String mapServerSoftwareToLoader(String serverSoftware) {
         if (serverSoftware == null) return null;
-        return switch (serverSoftware.toLowerCase()) {
-            case "fabric" -> "fabric";
-            case "forge" -> "forge";
-            case "neoforge" -> "neoforge";
-            case "quilt" -> "quilt";
-            case "paper", "spigot", "bukkit", "purpur", "pufferfish" -> "bukkit";
-            default -> null;
-        };
+        switch (serverSoftware.toLowerCase()) {
+            case "fabric": return "fabric";
+            case "forge": return "forge";
+            case "neoforge": return "neoforge";
+            case "quilt": return "quilt";
+            case "paper": case "spigot": case "bukkit": case "purpur": case "pufferfish": return "bukkit";
+            default: return null;
+        }
     }
 
     @Override
     public String mapResourceTypeToProjectType(ResourceType resourceType) {
-        return switch (resourceType) {
-            case MOD -> "mod";
-            case PLUGIN -> "bukkit-plugin";
-            case DATAPACK -> "datapack";
-            case EXTENSION -> "bukkit-plugin";
-        };
+        switch (resourceType) {
+            case MOD: return "mod";
+            case PLUGIN: return "bukkit-plugin";
+            case DATAPACK: return "datapack";
+            case EXTENSION: return "bukkit-plugin";
+            default: return null;
+        }
     }
 
     private int mapResourceTypeToClassId(ResourceType resourceType) {
         if (resourceType == null) return CLASS_MODS;
-        return switch (resourceType) {
-            case MOD -> CLASS_MODS;
-            case PLUGIN, EXTENSION -> CLASS_PLUGINS;
-            case DATAPACK -> CLASS_DATAPACKS;
-        };
+        switch (resourceType) {
+            case MOD: return CLASS_MODS;
+            case PLUGIN: case EXTENSION: return CLASS_PLUGINS;
+            case DATAPACK: return CLASS_DATAPACKS;
+            default: return CLASS_MODS;
+        }
     }
 
     private int mapLoaderToModLoaderType(String loader) {
         if (loader == null) return LOADER_ANY;
-        return switch (loader.toLowerCase()) {
-            case "forge" -> LOADER_FORGE;
-            case "fabric" -> LOADER_FABRIC;
-            case "quilt" -> LOADER_QUILT;
-            case "neoforge" -> LOADER_NEOFORGE;
-            default -> LOADER_ANY;
-        };
+        switch (loader.toLowerCase()) {
+            case "forge": return LOADER_FORGE;
+            case "fabric": return LOADER_FABRIC;
+            case "quilt": return LOADER_QUILT;
+            case "neoforge": return LOADER_NEOFORGE;
+            default: return LOADER_ANY;
+        }
     }
 
     private StoreProject parseProject(JsonNode node) {
@@ -314,11 +316,9 @@ public class CurseForgeProvider extends AbstractStoreProvider {
             String projectType = "mod";
             if (node.has("classId")) {
                 int classId = node.get("classId").asInt();
-                projectType = switch (classId) {
-                    case CLASS_PLUGINS -> "bukkit-plugin";
-                    case CLASS_DATAPACKS -> "datapack";
-                    default -> "mod";
-                };
+                if (classId == CLASS_PLUGINS) projectType = "bukkit-plugin";
+                else if (classId == CLASS_DATAPACKS) projectType = "datapack";
+                else projectType = "mod";
             }
 
             String dateCreated = getTextOrNull(node, "dateCreated");
@@ -370,12 +370,11 @@ public class CurseForgeProvider extends AbstractStoreProvider {
             String versionType = "release";
             if (node.has("releaseType")) {
                 int releaseType = node.get("releaseType").asInt();
-                versionType = switch (releaseType) {
-                    case 1 -> "release";
-                    case 2 -> "beta";
-                    case 3 -> "alpha";
-                    default -> "release";
-                };
+                switch (releaseType) {
+                    case 2: versionType = "beta"; break;
+                    case 3: versionType = "alpha"; break;
+                    default: versionType = "release"; break;
+                }
             }
 
             String downloadUrl = getTextOrNull(node, "downloadUrl");

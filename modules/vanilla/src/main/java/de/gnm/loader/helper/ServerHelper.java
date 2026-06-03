@@ -231,10 +231,17 @@ public class ServerHelper {
      */
     private void setupProcessExitHandler() {
         if (process != null) {
-            process.onExit().thenAccept(p -> {
-                LOG.info("Server stopped with exit code: " + p.exitValue());
-                System.exit(p.exitValue());
-            });
+            Thread waiter = new Thread(() -> {
+                try {
+                    int code = process.waitFor();
+                    LOG.info("Server stopped with exit code: " + code);
+                    System.exit(code);
+                } catch (InterruptedException ignored) {
+                    Thread.currentThread().interrupt();
+                }
+            }, "VoxelDash-Process-Waiter");
+            waiter.setDaemon(true);
+            waiter.start();
             Runtime.getRuntime().addShutdownHook(new Thread(this::shutdown));
         }
     }

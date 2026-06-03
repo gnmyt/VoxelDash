@@ -30,7 +30,7 @@ public class ConnectionConfig {
      */
     public static ConnectionConfig detect() {
         String env = System.getenv("VOXELDASH_MASTER");
-        if (env == null || env.isBlank()) return null;
+        if (env == null || env.trim().isEmpty()) return null;
 
         try {
             return parse(MAPPER.readTree(env));
@@ -48,7 +48,7 @@ public class ConnectionConfig {
         int apiPort = node.has("apiPort") ? node.get("apiPort").asInt() : 0;
         String token = node.get("token").asText();
 
-        if (masterPort <= 0 || apiPort <= 0 || token.isBlank()) return null;
+        if (masterPort <= 0 || apiPort <= 0 || token.trim().isEmpty()) return null;
 
         return new ConnectionConfig(host, masterPort, token, apiPort);
     }

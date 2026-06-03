@@ -198,12 +198,13 @@ public class WorldPipeImpl implements WorldPipe {
     @Override
     public void setWeather(String worldName, String weather) {
         try {
-            String command = switch (weather.toLowerCase()) {
-                case "clear" -> "weather clear";
-                case "rain" -> "weather rain";
-                case "thunder" -> "weather thunder";
-                default -> null;
-            };
+            String command;
+            switch (weather.toLowerCase()) {
+                case "clear": command = "weather clear"; break;
+                case "rain": command = "weather rain"; break;
+                case "thunder": command = "weather thunder"; break;
+                default: command = null; break;
+            }
 
             if (command != null) {
                 consoleWriter.write(command + System.lineSeparator());

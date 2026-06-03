@@ -142,9 +142,15 @@ public class WebSocketReceiver extends AbstractReceiveListener {
                 .orElseThrow(() -> new IOException("Missing event name"));
 
         switch (eventType) {
-            case EVENT_TYPE_ATTACH -> handleAttach(channel, eventName);
-            case EVENT_TYPE_DETACH -> handleDetach(eventName);
-            default -> sendErrorMessage(channel, "Invalid event type");
+            case EVENT_TYPE_ATTACH:
+                handleAttach(channel, eventName);
+                break;
+            case EVENT_TYPE_DETACH:
+                handleDetach(eventName);
+                break;
+            default:
+                sendErrorMessage(channel, "Invalid event type");
+                break;
         }
     }
 

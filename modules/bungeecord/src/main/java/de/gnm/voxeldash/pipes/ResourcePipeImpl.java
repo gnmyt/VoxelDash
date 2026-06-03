@@ -12,6 +12,7 @@ import org.yaml.snakeyaml.Yaml;
 
 import java.io.*;
 import java.util.*;
+import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.logging.Level;
 
@@ -251,7 +252,7 @@ public class ResourcePipeImpl implements ResourcePipe {
             return null;
         }
         try (JarFile jar = new JarFile(file)) {
-            var entry = jar.getJarEntry("bungee.yml");
+            JarEntry entry = jar.getJarEntry("bungee.yml");
             if (entry == null) {
                 entry = jar.getJarEntry("plugin.yml");
             }

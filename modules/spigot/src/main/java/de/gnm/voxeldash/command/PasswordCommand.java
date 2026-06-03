@@ -20,10 +20,11 @@ public class PasswordCommand implements CommandExecutor {
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-        if (!(sender instanceof Player player)) {
+        if (!(sender instanceof Player)) {
             sender.sendMessage("This command can only be used by a player.");
             return true;
         }
+        Player player = (Player) sender;
 
         if (!player.isOp() && !player.hasPermission("voxeldash.password")) {
             player.sendMessage("§cYou don't have permission to manage your VoxelDash account.");

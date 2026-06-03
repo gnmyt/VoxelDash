@@ -40,16 +40,22 @@ public class BackupHelper {
 
         for (BackupPart backupPart : BackupPart.fromBackupBit(backupBit)) {
             switch (backupPart) {
-                case ROOT -> {
+                case ROOT: {
                     File[] serverFolder = new File(".").listFiles();
                     if (serverFolder != null) {
                         directories.addAll(Arrays.asList(serverFolder));
                     }
+                    break;
                 }
-                case PLUGINS -> directories.add(new File("plugins"));
-                case CONFIGS ->
-                        directories.addAll(FileUtils.listFiles(new File("."), new String[]{"yml", "properties", "json"}, false));
-                case LOGS -> directories.addAll(Arrays.asList(new File("logs"), new File("crash-reports")));
+                case PLUGINS:
+                    directories.add(new File("plugins"));
+                    break;
+                case CONFIGS:
+                    directories.addAll(FileUtils.listFiles(new File("."), new String[]{"yml", "properties", "json"}, false));
+                    break;
+                case LOGS:
+                    directories.addAll(Arrays.asList(new File("logs"), new File("crash-reports")));
+                    break;
             }
         }
 

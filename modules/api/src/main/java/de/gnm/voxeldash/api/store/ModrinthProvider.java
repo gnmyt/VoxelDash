@@ -45,7 +45,7 @@ public class ModrinthProvider extends AbstractStoreProvider {
             StringBuilder url = new StringBuilder(API_BASE + "/search?");
 
             if (query != null && !query.isEmpty()) {
-                url.append("query=").append(URLEncoder.encode(query, StandardCharsets.UTF_8)).append("&");
+                url.append("query=").append(URLEncoder.encode(query, "UTF-8")).append("&");
             }
             
             List<String> facetGroups = new ArrayList<>();
@@ -69,7 +69,7 @@ public class ModrinthProvider extends AbstractStoreProvider {
 
             if (!facetGroups.isEmpty()) {
                 String facetsJson = "[" + String.join(",", facetGroups) + "]";
-                url.append("facets=").append(URLEncoder.encode(facetsJson, StandardCharsets.UTF_8)).append("&");
+                url.append("facets=").append(URLEncoder.encode(facetsJson, "UTF-8")).append("&");
             }
 
             url.append("offset=").append(page * pageSize).append("&");
@@ -121,12 +121,12 @@ public class ModrinthProvider extends AbstractStoreProvider {
             
             if (gameVersion != null && !gameVersion.isEmpty()) {
                 String gameVersionsParam = "[\"" + gameVersion + "\"]";
-                url.append("game_versions=").append(URLEncoder.encode(gameVersionsParam, StandardCharsets.UTF_8)).append("&");
+                url.append("game_versions=").append(URLEncoder.encode(gameVersionsParam, "UTF-8")).append("&");
             }
             
             if (loader != null && !loader.isEmpty()) {
                 String loadersParam = "[\"" + loader + "\"]";
-                url.append("loaders=").append(URLEncoder.encode(loadersParam, StandardCharsets.UTF_8));
+                url.append("loaders=").append(URLEncoder.encode(loadersParam, "UTF-8"));
             }
             
             JsonNode response = makeRequest(url.toString());

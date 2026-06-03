@@ -3,6 +3,7 @@ package de.gnm.voxeldash.api.controller;
 import org.apache.sshd.common.config.keys.loader.openssh.kdf.BCrypt;
 
 import java.sql.Connection;
+import java.util.Map;
 
 public class AccountController extends BaseController {
 
@@ -102,7 +103,7 @@ public class AccountController extends BaseController {
      * @return the username of the account
      */
     public String getUsernameById(int id) {
-        var result = getSingleResult("SELECT username FROM accounts WHERE id = ?", id);
+        Map<String, Object> result = getSingleResult("SELECT username FROM accounts WHERE id = ?", id);
         if (result == null) return null;
         return (String) result.get("username");
     }
@@ -122,7 +123,7 @@ public class AccountController extends BaseController {
      * @return true if at least one account exists
      */
     public boolean hasAnyAccounts() {
-        var result = getSingleResult("SELECT COUNT(*) as count FROM accounts");
+        Map<String, Object> result = getSingleResult("SELECT COUNT(*) as count FROM accounts");
         if (result == null) return false;
         return ((Number) result.get("count")).intValue() > 0;
     }

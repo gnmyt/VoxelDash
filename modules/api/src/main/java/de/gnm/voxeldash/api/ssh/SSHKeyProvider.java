@@ -6,7 +6,7 @@ import org.apache.sshd.common.session.SessionContext;
 import java.security.*;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.X509EncodedKeySpec;
-import java.util.List;
+import java.util.Collections;
 
 public class SSHKeyProvider extends AbstractKeyPairProvider {
 
@@ -32,7 +32,7 @@ public class SSHKeyProvider extends AbstractKeyPairProvider {
             PublicKey publicKey = keyFactory.generatePublic(pubKeySpec);
             PrivateKey privateKey = keyFactory.generatePrivate(privKeySpec);
 
-            return List.of(new KeyPair(publicKey, privateKey));
+            return Collections.singletonList(new KeyPair(publicKey, privateKey));
         } catch (Exception e) {
             throw new RuntimeException("Failed to load keys from strings", e);
         }

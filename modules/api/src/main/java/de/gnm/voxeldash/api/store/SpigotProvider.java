@@ -52,7 +52,7 @@ public class SpigotProvider extends AbstractStoreProvider {
 
             if (query != null && !query.isEmpty()) {
                 url.append(API_BASE).append("/search/resources/")
-                        .append(URLEncoder.encode(query, StandardCharsets.UTF_8)).append("?");
+                        .append(URLEncoder.encode(query, "UTF-8")).append("?");
             } else {
                 url.append(API_BASE).append("/resources/free?");
             }

@@ -80,7 +80,7 @@ public class VanillaDataCollector {
 
             if (cpuLoad < 0) {
                 if (osBean instanceof com.sun.management.OperatingSystemMXBean) {
-                    cpuLoad = ((com.sun.management.OperatingSystemMXBean) osBean).getCpuLoad() * 100;
+                    cpuLoad = ((com.sun.management.OperatingSystemMXBean) osBean).getSystemCpuLoad() * 100;
                 } else {
                     cpuLoad = 0;
                 }

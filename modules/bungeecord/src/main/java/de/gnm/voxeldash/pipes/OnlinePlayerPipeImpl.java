@@ -4,6 +4,7 @@ import de.gnm.voxeldash.api.entities.OnlinePlayer;
 import de.gnm.voxeldash.api.pipes.players.OnlinePlayerPipe;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.chat.TextComponent;
+import net.md_5.bungee.api.config.ServerInfo;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 
 import java.util.ArrayList;
@@ -66,7 +67,7 @@ public class OnlinePlayerPipeImpl implements OnlinePlayerPipe {
     public void teleportToWorld(String playerName, String worldName) {
         ProxiedPlayer player = ProxyServer.getInstance().getPlayer(playerName);
         if (player != null) {
-            var serverInfo = ProxyServer.getInstance().getServerInfo(worldName);
+            ServerInfo serverInfo = ProxyServer.getInstance().getServerInfo(worldName);
             if (serverInfo != null) {
                 player.connect(serverInfo);
             }

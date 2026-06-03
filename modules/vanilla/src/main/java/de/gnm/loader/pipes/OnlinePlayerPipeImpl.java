@@ -118,17 +118,16 @@ public class OnlinePlayerPipeImpl implements OnlinePlayerPipe {
      */
     private String dimensionToWorldName(String dimension) {
         if (dimension == null) return "Overworld";
-        return switch (dimension) {
-            case "minecraft:overworld" -> "Overworld";
-            case "minecraft:the_nether" -> "Nether";
-            case "minecraft:the_end" -> "The End";
-            default -> {
+        switch (dimension) {
+            case "minecraft:overworld": return "Overworld";
+            case "minecraft:the_nether": return "Nether";
+            case "minecraft:the_end": return "The End";
+            default:
                 if (dimension.contains(":")) {
-                    yield dimension.substring(dimension.indexOf(":") + 1);
+                    return dimension.substring(dimension.indexOf(":") + 1);
                 }
-                yield dimension;
-            }
-        };
+                return dimension;
+        }
     }
 
     /**
@@ -136,12 +135,12 @@ public class OnlinePlayerPipeImpl implements OnlinePlayerPipe {
      */
     private String worldNameToDimension(String worldName) {
         if (worldName == null) return "minecraft:overworld";
-        return switch (worldName.toLowerCase()) {
-            case "overworld", "world" -> "minecraft:overworld";
-            case "nether", "the_nether", "world_nether" -> "minecraft:the_nether";
-            case "end", "the_end", "world_the_end" -> "minecraft:the_end";
-            default -> worldName.contains(":") ? worldName : "minecraft:" + worldName;
-        };
+        switch (worldName.toLowerCase()) {
+            case "overworld": case "world": return "minecraft:overworld";
+            case "nether": case "the_nether": case "world_nether": return "minecraft:the_nether";
+            case "end": case "the_end": case "world_the_end": return "minecraft:the_end";
+            default: return worldName.contains(":") ? worldName : "minecraft:" + worldName;
+        }
     }
 
     /**

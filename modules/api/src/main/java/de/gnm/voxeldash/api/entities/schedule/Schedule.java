@@ -192,13 +192,17 @@ public class Schedule {
      * @return the timing description
      */
     public String getTimingDescription() {
-        return switch (interval) {
-            case HOURLY -> String.format("Every hour at %02d minutes", intervalValue);
-            case DAILY -> String.format("Every day at %02d:%02d", intervalValue, timeValue);
-            case WEEKLY -> {
+        switch (interval) {
+            case HOURLY:
+                return String.format("Every hour at %02d minutes", intervalValue);
+            case DAILY:
+                return String.format("Every day at %02d:%02d", intervalValue, timeValue);
+            case WEEKLY: {
                 String[] days = {"Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"};
-                yield String.format("Every week on %s at %02d:%02d", days[intervalValue % 7], timeValue / 60, timeValue % 60);
+                return String.format("Every week on %s at %02d:%02d", days[intervalValue % 7], timeValue / 60, timeValue % 60);
             }
-        };
+            default:
+                return "";
+        }
     }
 }

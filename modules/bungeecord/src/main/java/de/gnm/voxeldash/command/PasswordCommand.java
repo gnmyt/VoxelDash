@@ -22,10 +22,11 @@ public class PasswordCommand extends Command {
 
     @Override
     public void execute(CommandSender sender, String[] args) {
-        if (!(sender instanceof ProxiedPlayer player)) {
+        if (!(sender instanceof ProxiedPlayer)) {
             sender.sendMessage(new TextComponent("This command can only be used by a player."));
             return;
         }
+        ProxiedPlayer player = (ProxiedPlayer) sender;
 
         if (!player.hasPermission("voxeldash.password")) {
             player.sendMessage(new TextComponent(ChatColor.RED + "You don't have permission to manage your VoxelDash account."));

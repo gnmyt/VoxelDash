@@ -17,8 +17,10 @@ import org.yaml.snakeyaml.Yaml;
 import java.io.*;
 import java.lang.reflect.Method;
 import java.util.*;
+import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.logging.Level;
+import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
 public class ResourcePipeImpl implements ResourcePipe {
@@ -119,7 +121,7 @@ public class ResourcePipeImpl implements ResourcePipe {
     }
 
     private Resource parseUnloadedPlugin(File file) {
-        var desc = getPluginDescription(file);
+        PluginDescriptionFile desc = getPluginDescription(file);
         if (desc == null) {
             return new Resource.Builder()
                     .name(file.getName().replace(".jar", ""))
@@ -404,9 +406,9 @@ public class ResourcePipeImpl implements ResourcePipe {
 
     private Map<String, Object> readJsonFromZip(File zipFile, String entry) {
         try (ZipFile zip = new ZipFile(zipFile)) {
-            var e = zip.getEntry(entry);
+            ZipEntry e = zip.getEntry(entry);
             if (e == null) return null;
-            try (var r = new InputStreamReader(zip.getInputStream(e))) {
+            try (InputStreamReader r = new InputStreamReader(zip.getInputStream(e))) {
                 return new Yaml().load(r);
             }
         } catch (Exception e) {
@@ -493,7 +495,7 @@ public class ResourcePipeImpl implements ResourcePipe {
     }
 
     private String getPluginName(String fileName) {
-        var desc = getPluginDescription(findPluginFile(fileName));
+        PluginDescriptionFile desc = getPluginDescription(findPluginFile(fileName));
         if (desc != null) return desc.getName();
         return fileName.replace(".jar", "");
     }
@@ -501,7 +503,7 @@ public class ResourcePipeImpl implements ResourcePipe {
     private PluginDescriptionFile getPluginDescription(File file) {
         if (file == null || !file.exists()) return null;
         try (JarFile jar = new JarFile(file)) {
-            var entry = jar.getJarEntry("plugin.yml");
+            JarEntry entry = jar.getJarEntry("plugin.yml");
             if (entry == null) entry = jar.getJarEntry("paper-plugin.yml");
             if (entry != null) {
                 return new PluginDescriptionFile(jar.getInputStream(entry));
