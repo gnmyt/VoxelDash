@@ -1,11 +1,11 @@
 package de.gnm.loader;
 
+import de.gnm.loader.command.SetupHandler;
 import de.gnm.loader.helper.PlayerTracker;
 import de.gnm.loader.helper.ServerHelper;
 import de.gnm.loader.pipes.*;
 import de.gnm.loader.widgets.VanillaWidgetProvider;
 import de.gnm.voxeldash.VoxelDashLoader;
-import de.gnm.voxeldash.api.controller.AccountController;
 import de.gnm.voxeldash.api.controller.ActionRegistry;
 import de.gnm.voxeldash.api.entities.Feature;
 import de.gnm.voxeldash.api.entities.schedule.ActionInputType;
@@ -21,13 +21,11 @@ import de.gnm.voxeldash.api.pipes.QuickActionPipe;
 import de.gnm.voxeldash.api.pipes.players.WhitelistPipe;
 import de.gnm.voxeldash.api.pipes.resources.ResourcePipe;
 import de.gnm.voxeldash.api.pipes.worlds.WorldPipe;
-import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.log4j.Logger;
 
 import java.io.File;
 import java.io.OutputStream;
 import java.io.PrintWriter;
-import java.security.SecureRandom;
 
 public class VoxelDashVanilla {
 
@@ -76,10 +74,17 @@ public class VoxelDashVanilla {
         registerFeatures();
         registerActions();
         registerWidgets();
+        registerCommands();
 
         LOG.info("Web interface available at http://localhost:7867");
+    }
 
-        firstRun();
+    /**
+     * Registers the in-game command handlers driven by console output
+     */
+    protected static void registerCommands() {
+        SetupHandler setupHandler = new SetupHandler(loader, SERVER_ROOT, serverHelper.getOutputStream());
+        setupHandler.register(loader.getEventDispatcher());
     }
 
     /**
@@ -220,26 +225,6 @@ public class VoxelDashVanilla {
                 writer.println("kick @a " + reason);
             }
         ));
-    }
-
-    /**
-     * Creates the admin account if it does not exist (first run)
-     */
-    public static void firstRun() {
-        AccountController accountController = loader.getController(AccountController.class);
-
-        if (!accountController.hasAnyAccounts()) {
-            String password = RandomStringUtils.random(24, 0, 0, true, true, null, new SecureRandom());
-            accountController.createAccount("Notch", password);
-
-            LOG.info("===========================================");
-            LOG.info("WEB INTERFACE LOGIN CREDENTIALS");
-            LOG.info("THIS WILL BE THE ONLY TIME YOU SEE THIS!");
-            LOG.info("===========================================");
-            LOG.info("Username: Notch");
-            LOG.info("Password: " + password);
-            LOG.info("===========================================");
-        }
     }
 
 }

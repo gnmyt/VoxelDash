@@ -1,6 +1,5 @@
 package de.gnm.voxeldash;
 
-import de.gnm.voxeldash.api.controller.AccountController;
 import de.gnm.voxeldash.api.controller.ActionRegistry;
 import de.gnm.voxeldash.api.entities.Feature;
 import de.gnm.voxeldash.api.entities.schedule.ActionInputType;
@@ -14,6 +13,7 @@ import de.gnm.voxeldash.api.pipes.players.OperatorPipe;
 import de.gnm.voxeldash.api.pipes.players.WhitelistPipe;
 import de.gnm.voxeldash.api.pipes.resources.ResourcePipe;
 import de.gnm.voxeldash.api.pipes.worlds.WorldPipe;
+import de.gnm.voxeldash.command.PasswordCommand;
 import de.gnm.voxeldash.listener.ConsoleListener;
 import de.gnm.voxeldash.pipes.*;
 import de.gnm.voxeldash.util.FabricUtil;
@@ -23,10 +23,8 @@ import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
-import org.apache.commons.lang3.RandomStringUtils;
 
 import java.io.File;
-import java.security.SecureRandom;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -44,6 +42,8 @@ public class VoxelDashMod implements DedicatedServerModInitializer {
         instance = this;
 
         logger.info("Starting VoxelDash Fabric...");
+
+        PasswordCommand.register();
 
         ServerLifecycleEvents.SERVER_STARTED.register(this::onServerStarted);
         ServerLifecycleEvents.SERVER_STOPPING.register(this::onServerStopping);
@@ -63,8 +63,6 @@ public class VoxelDashMod implements DedicatedServerModInitializer {
             loader.startup();
 
             ConsoleListener.register(this);
-
-            firstRun();
 
             logger.info("VoxelDash is now running!");
             logger.info("Web interface available at http://localhost:7867");
@@ -206,23 +204,6 @@ public class VoxelDashMod implements DedicatedServerModInitializer {
     private void registerWidgets() {
         widgetProvider = new FabricWidgetProvider(this);
         widgetProvider.register();
-    }
-
-    private void firstRun() {
-        AccountController accountController = loader.getController(AccountController.class);
-
-        if (!accountController.hasAnyAccounts()) {
-            String password = RandomStringUtils.random(24, 0, 0, true, true, null, new SecureRandom());
-            accountController.createAccount("Notch", password);
-
-            logger.info("===========================================");
-            logger.info("WEB INTERFACE LOGIN CREDENTIALS");
-            logger.info("THIS WILL BE THE ONLY TIME YOU SEE THIS!");
-            logger.info("===========================================");
-            logger.info("Username: Notch");
-            logger.info("Password: " + password);
-            logger.info("===========================================");
-        }
     }
 
     /**

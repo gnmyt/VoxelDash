@@ -1,6 +1,5 @@
 package de.gnm.voxeldash;
 
-import de.gnm.voxeldash.api.controller.AccountController;
 import de.gnm.voxeldash.api.controller.ActionRegistry;
 import de.gnm.voxeldash.api.entities.Feature;
 import de.gnm.voxeldash.api.entities.schedule.ActionInputType;
@@ -14,6 +13,7 @@ import de.gnm.voxeldash.api.pipes.players.OperatorPipe;
 import de.gnm.voxeldash.api.pipes.players.WhitelistPipe;
 import de.gnm.voxeldash.api.pipes.resources.ResourcePipe;
 import de.gnm.voxeldash.api.pipes.worlds.WorldPipe;
+import de.gnm.voxeldash.command.PasswordCommand;
 import de.gnm.voxeldash.listener.ConsoleListener;
 import de.gnm.voxeldash.pipes.BanPipeImpl;
 import de.gnm.voxeldash.pipes.OnlinePlayerPipeImpl;
@@ -24,14 +24,12 @@ import de.gnm.voxeldash.pipes.ServerInfoPipeImpl;
 import de.gnm.voxeldash.pipes.WhitelistPipeImpl;
 import de.gnm.voxeldash.pipes.WorldPipeImpl;
 import de.gnm.voxeldash.util.BukkitUtil;
-import org.apache.commons.lang3.RandomStringUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import de.gnm.voxeldash.widgets.SpigotWidgetProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
-import java.security.SecureRandom;
 import java.util.logging.Level;
 
 public class VoxelDashSpigot extends JavaPlugin {
@@ -57,8 +55,8 @@ public class VoxelDashSpigot extends JavaPlugin {
             loader.startup();
 
             ConsoleListener.register(this);
-            
-            firstRun();
+
+            getCommand("voxeldash").setExecutor(new PasswordCommand(this));
 
             getLogger().info("VoxelDash is now running!");
             getLogger().info("Web interface available at http://localhost:7867");
@@ -215,26 +213,6 @@ public class VoxelDashSpigot extends JavaPlugin {
     private void registerWidgets() {
         widgetProvider = new SpigotWidgetProvider(this);
         widgetProvider.register();
-    }
-
-    /**
-     * Creates the admin account if it does not exist (first run)
-     */
-    private void firstRun() {
-        AccountController accountController = loader.getController(AccountController.class);
-
-        if (!accountController.hasAnyAccounts()) {
-            String password = RandomStringUtils.random(24, 0, 0, true, true, null, new SecureRandom());
-            accountController.createAccount("Notch", password);
-
-            getLogger().info("===========================================");
-            getLogger().info("WEB INTERFACE LOGIN CREDENTIALS");
-            getLogger().info("THIS WILL BE THE ONLY TIME YOU SEE THIS!");
-            getLogger().info("===========================================");
-            getLogger().info("Username: Notch");
-            getLogger().info("Password: " + password);
-            getLogger().info("===========================================");
-        }
     }
 
     /**

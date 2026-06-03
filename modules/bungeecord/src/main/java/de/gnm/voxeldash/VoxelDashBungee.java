@@ -1,6 +1,5 @@
 package de.gnm.voxeldash;
 
-import de.gnm.voxeldash.api.controller.AccountController;
 import de.gnm.voxeldash.api.controller.ActionRegistry;
 import de.gnm.voxeldash.api.entities.Feature;
 import de.gnm.voxeldash.api.entities.schedule.ActionInputType;
@@ -12,10 +11,9 @@ import de.gnm.voxeldash.api.pipes.players.BanPipe;
 import de.gnm.voxeldash.api.pipes.players.OnlinePlayerPipe;
 import de.gnm.voxeldash.api.pipes.players.WhitelistPipe;
 import de.gnm.voxeldash.api.pipes.resources.ResourcePipe;
+import de.gnm.voxeldash.command.PasswordCommand;
 import de.gnm.voxeldash.listener.ConsoleListener;
 import de.gnm.voxeldash.listener.LoginListener;
-import de.gnm.voxeldash.manager.BanManager;
-import de.gnm.voxeldash.manager.WhitelistManager;
 import de.gnm.voxeldash.pipes.*;
 import de.gnm.voxeldash.util.BungeeUtil;
 import de.gnm.voxeldash.widgets.BungeeWidgetProvider;
@@ -23,10 +21,8 @@ import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.plugin.Plugin;
-import org.apache.commons.lang3.RandomStringUtils;
 
 import java.io.File;
-import java.security.SecureRandom;
 import java.util.logging.Level;
 
 public class VoxelDashBungee extends Plugin {
@@ -61,7 +57,7 @@ public class VoxelDashBungee extends Plugin {
 
             ConsoleListener.register(this);
 
-            firstRun();
+            getProxy().getPluginManager().registerCommand(this, new PasswordCommand(this));
 
             getLogger().info("VoxelDash is now running!");
             getLogger().info("Web interface available at http://localhost:7867");
@@ -220,26 +216,6 @@ public class VoxelDashBungee extends Plugin {
     private void registerWidgets() {
         widgetProvider = new BungeeWidgetProvider(this);
         widgetProvider.register();
-    }
-
-    /**
-     * Creates the admin account if it does not exist (first run)
-     */
-    private void firstRun() {
-        AccountController accountController = loader.getController(AccountController.class);
-
-        if (!accountController.hasAnyAccounts()) {
-            String password = RandomStringUtils.random(24, 0, 0, true, true, null, new SecureRandom());
-            accountController.createAccount("Notch", password);
-
-            getLogger().info("===========================================");
-            getLogger().info("WEB INTERFACE LOGIN CREDENTIALS");
-            getLogger().info("THIS WILL BE THE ONLY TIME YOU SEE THIS!");
-            getLogger().info("===========================================");
-            getLogger().info("Username: Notch");
-            getLogger().info("Password: " + password);
-            getLogger().info("===========================================");
-        }
     }
 
     /**

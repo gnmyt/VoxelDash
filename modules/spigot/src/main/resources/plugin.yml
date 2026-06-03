@@ -7,6 +7,12 @@ author: GNM
 website: https://voxeldash.dev/
 load: STARTUP
 
-commands: {}
+commands:
+  voxeldash:
+    description: Manage your VoxelDash web account
+    usage: /voxeldash password <new-password>
 
-permissions: {}
+permissions:
+  voxeldash.password:
+    description: Allows creating and updating your own VoxelDash web account
+    default: op

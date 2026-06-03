@@ -130,10 +130,30 @@ public class ServerHelper {
                 }
             }).start();
 
+            forwardConsoleInput();
+
             setupProcessExitHandler();
         } catch (Exception e) {
             LOG.error("Failed to create server process", e);
         }
+    }
+
+    private void forwardConsoleInput() {
+        Thread inputThread = new Thread(() -> {
+            BufferedReader consoleReader = new BufferedReader(new InputStreamReader(System.in));
+            try {
+                String line;
+                while (process != null && process.isAlive() && (line = consoleReader.readLine()) != null) {
+                    OutputStream processInput = process.getOutputStream();
+                    processInput.write((line + System.lineSeparator()).getBytes());
+                    processInput.flush();
+                }
+            } catch (IOException e) {
+                LOG.error("Failed to forward console input to the server", e);
+            }
+        }, "VoxelDash-Console-Input");
+        inputThread.setDaemon(true);
+        inputThread.start();
     }
 
     /**
