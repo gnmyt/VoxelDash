@@ -1,7 +1,19 @@
 import {
     CaretRightIcon,
+    CaretUpDownIcon,
+    SquaresFourIcon,
     StorefrontIcon
 } from "@phosphor-icons/react";
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuSeparator,
+    DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu.tsx";
+import {useServerSelection} from "@/contexts/ServerSelectionContext.tsx";
+import {isMasterMode} from "@/lib/RequestUtil.ts";
+import {softwareMeta, statusMeta} from "@/lib/servers.ts";
 
 import {
     Sidebar as ShadSidebar,
@@ -19,12 +31,92 @@ import {
 import {Collapsible, CollapsibleContent, CollapsibleTrigger} from "@/components/ui/collapsible.tsx";
 import {sidebar, getResourceIcon} from "@/states/Root/routes.tsx";
 import {useContext, useState, useMemo} from "react";
-import {Link, useLocation, useNavigate} from "react-router-dom";
+import {useLocation, useNavigate} from "react-router-dom";
 import {ServerInfoContext} from "@/contexts/ServerInfoContext.tsx";
 import {ResourcesContext} from "@/contexts/ResourcesContext.tsx";
 import {UserProfile} from "@/components/UserProfile.tsx";
 import {t} from "i18next";
-import ServerImage from "@/assets/images/logo.png";
+
+function ServerSwitcher() {
+    return isMasterMode() ? <MasterServerSwitcher/> : <StandaloneServerHeader/>;
+}
+
+function StandaloneServerHeader() {
+    const {serverInfo} = useContext(ServerInfoContext)!;
+    const meta = softwareMeta((serverInfo.serverSoftware || "").toLowerCase());
+
+    return (
+        <SidebarMenu>
+            <SidebarMenuItem>
+                <SidebarMenuButton size="lg" className="pointer-events-none">
+                    <div className="flex size-9 shrink-0 items-center justify-center rounded-lg text-xs font-bold text-white"
+                         style={{backgroundColor: meta.accent}}>
+                        {meta.short}
+                    </div>
+                    <div className="grid flex-1 text-left leading-tight">
+                        <span className="truncate font-display font-semibold">{serverInfo.serverSoftware || "VoxelDash"}</span>
+                        {serverInfo.serverVersion && (
+                            <span className="truncate text-xs text-muted-foreground">{serverInfo.serverVersion}</span>
+                        )}
+                    </div>
+                </SidebarMenuButton>
+            </SidebarMenuItem>
+        </SidebarMenu>
+    );
+}
+
+function MasterServerSwitcher() {
+    const {servers, activeServer, selectServer} = useServerSelection();
+    const navigate = useNavigate();
+    const meta = softwareMeta(activeServer?.software || "");
+
+    return (
+        <SidebarMenu>
+            <SidebarMenuItem>
+                <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                        <SidebarMenuButton size="lg"
+                            className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground">
+                            <div className="flex size-9 shrink-0 items-center justify-center rounded-lg text-xs font-bold text-white"
+                                 style={{backgroundColor: meta.accent}}>
+                                {meta.short}
+                            </div>
+                            <div className="grid flex-1 text-left leading-tight">
+                                <span className="truncate font-display font-semibold">{activeServer?.name || "Select a server"}</span>
+                                <span className="truncate text-xs text-muted-foreground">
+                                    {meta.name}{activeServer?.mcVersion ? ` · ${activeServer.mcVersion}` : ""}
+                                </span>
+                            </div>
+                            <CaretUpDownIcon className="ml-auto size-4"/>
+                        </SidebarMenuButton>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent className="w-[--radix-dropdown-menu-trigger-width] min-w-60 rounded-lg"
+                        align="start" side="bottom" sideOffset={4}>
+                        {servers.map((server) => {
+                            const sm = softwareMeta(server.software);
+                            const st = statusMeta(server.status);
+                            return (
+                                <DropdownMenuItem key={server.id} className="gap-2"
+                                    onClick={() => { selectServer(server.id); navigate("/"); }}>
+                                    <div className="flex size-6 items-center justify-center rounded text-[10px] font-bold text-white"
+                                         style={{backgroundColor: sm.accent}}>
+                                        {sm.short}
+                                    </div>
+                                    <span className="flex-1 truncate">{server.name}</span>
+                                    <span className={`size-2 rounded-full ${st.dot}`}/>
+                                </DropdownMenuItem>
+                            );
+                        })}
+                        <DropdownMenuSeparator/>
+                        <DropdownMenuItem onClick={() => navigate("/servers")}>
+                            <SquaresFourIcon className="mr-2 size-4"/> Manage servers
+                        </DropdownMenuItem>
+                    </DropdownMenuContent>
+                </DropdownMenu>
+            </SidebarMenuItem>
+        </SidebarMenu>
+    );
+}
 
 export function Sidebar() {
     const [openItems, setOpenItems] = useState<Record<string, boolean>>({});
@@ -99,13 +191,7 @@ export function Sidebar() {
     return (
         <ShadSidebar variant="inset" className="select-none">
             <SidebarHeader>
-                <Link to="/" className="flex items-center gap-3 px-2 py-1 cursor-pointer">
-                    <img src={ServerImage} alt="VoxelDash Logo" className="h-10 w-10"/>
-                    <div className="grid flex-1 text-left leading-tight">
-                        <span className="truncate font-bold text-lg">VoxelDash</span>
-                        <span className="truncate text-xs text-muted-foreground">v1.2.0</span>
-                    </div>
-                </Link>
+                <ServerSwitcher/>
             </SidebarHeader>
             <SidebarContent>
                 <SidebarGroup>

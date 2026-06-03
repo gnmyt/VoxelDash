@@ -11,6 +11,10 @@ export default defineConfig({
                 changeOrigin: true,
                 ws: true,
             },
+            "/master": {
+                target: "http://localhost:7867",
+                changeOrigin: true,
+            },
         },
     },
     resolve: {

@@ -2,6 +2,7 @@ import {createContext, ReactNode, useContext} from "react";
 import {useState, useEffect} from 'react';
 import useWebSocket, {ReadyState} from 'react-use-websocket';
 import {ServerInfoContext} from "@/contexts/ServerInfoContext.tsx";
+import {isMasterMode} from "@/lib/RequestUtil.ts";
 
 interface SocketContextType {
     attachEventListener: (eventName: string) => void;
@@ -31,14 +32,20 @@ export const SocketProvider = (props: SocketProps) => {
     }
 
     useEffect(() => {
-        const sessionToken = localStorage.getItem('sessionToken');
+        if (!serverInfo) return;
 
-        if (serverInfo) {
-            const hostname = window.location.hostname;
-            const port = window.location.port;
-            const isSSL = window.location.protocol === 'https:';
+        const hostname = window.location.hostname;
+        const port = window.location.port;
+        const proto = window.location.protocol === 'https:' ? 'wss' : 'ws';
+        const base = `${proto}://${hostname}:${port}`;
 
-            setSocketUrl(`${isSSL ? 'wss' : 'ws'}://${hostname}:${port}/api/ws?sessionToken=${sessionToken}`);
+        if (isMasterMode()) {
+            const masterToken = localStorage.getItem('masterToken');
+            const serverId = localStorage.getItem('activeServerId');
+            if (serverId) setSocketUrl(`${base}/api/proxy/${serverId}/ws?token=${masterToken}`);
+        } else {
+            const sessionToken = localStorage.getItem('sessionToken');
+            setSocketUrl(`${base}/api/ws?sessionToken=${sessionToken}`);
         }
     }, [serverInfo]);
 

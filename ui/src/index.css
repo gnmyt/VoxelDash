@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -78,14 +80,6 @@
   * {
     @apply border-border;
   }
-}
-
-
-
-@layer base {
-  * {
-    @apply border-border;
-  }
   body {
     @apply bg-background text-foreground;
   }
@@ -119,6 +113,25 @@
     background: transparent;
   }
 }
+
+.font-display {
+  font-family: 'Bricolage Grotesque', system-ui, -apple-system, sans-serif;
+  font-optical-sizing: auto;
+  letter-spacing: -0.02em;
+}
+
+@keyframes vd-rise {
+  from { opacity: 0; transform: translateY(14px) scale(0.985); }
+  to { opacity: 1; transform: none; }
+}
+.vd-rise { animation: vd-rise 0.55s cubic-bezier(0.22, 1, 0.36, 1) both; }
+
+@keyframes vd-pulse-ring {
+  0% { box-shadow: 0 0 0 0 var(--vd-pulse-color, hsl(142 70% 45% / 0.55)); }
+  70% { box-shadow: 0 0 0 7px hsl(142 70% 45% / 0); }
+  100% { box-shadow: 0 0 0 0 hsl(142 70% 45% / 0); }
+}
+.vd-pulse { animation: vd-pulse-ring 2.2s ease-out infinite; }
 
 .react-grid-item {
   transition: all 200ms ease;

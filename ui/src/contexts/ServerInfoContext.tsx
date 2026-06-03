@@ -1,6 +1,7 @@
-import { useState, createContext, useEffect, ReactNode } from "react";
-import { request } from "@/lib/RequestUtil.ts";
+import { useState, createContext, useContext, useEffect, ReactNode } from "react";
+import { isMasterMode, request } from "@/lib/RequestUtil.ts";
 import { ResourceType } from "@/types/resource";
+import { ServerSelectionContext } from "@/contexts/ServerSelectionContext.tsx";
 
 interface ServerInfo {
     accountName?: string;
@@ -25,24 +26,28 @@ interface ServerInfoProviderProps {
 }
 
 export const ServerInfoProvider = (props: ServerInfoProviderProps) => {
+    const selection = useContext(ServerSelectionContext);
+    const activeServerId = selection?.activeServerId ?? null;
     const [tokenValid, setTokenValid] = useState<boolean | null>(null);
     const [serverInfo, setServerInfo] = useState<ServerInfo>({});
 
     const checkToken = async (): Promise<boolean | undefined> => {
         try {
             const r = await request("info");
-            if (!r.ok && !(r.status === 400 || r.status === 401)) throw new Error("Server unavailable");
             setTokenValid(r.status === 200);
-            setServerInfo(await r.json());
+            setServerInfo(r.status === 200 ? await r.json() : {});
             return r.status === 200;
         } catch {
+            setTokenValid(false);
             setServerInfo({});
         }
     };
 
     useEffect(() => {
-        checkToken();
-    }, []);
+        setTokenValid(null);
+        setServerInfo({});
+        if (!isMasterMode() || activeServerId) checkToken();
+    }, [activeServerId]);
 
     return (
         <ServerInfoContext.Provider value={{ tokenValid, checkToken, serverInfo }}>
