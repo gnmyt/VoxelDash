@@ -17,7 +17,10 @@ export default defineAppConfig({
         light: '/img/favicon.png',
         dark: '/img/favicon.png',
       },
-      nav: [],
+      nav: [{
+        title: 'API Reference',
+        to: '/api-reference/explorer',
+      }],
       links: [{
         icon: 'lucide:github',
         to: 'https://github.com/gnmyt/VoxelDash',

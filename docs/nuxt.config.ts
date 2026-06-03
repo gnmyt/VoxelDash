@@ -15,6 +15,7 @@ export default defineNuxtConfig({
   nitro: {
     prerender: {
       crawlLinks: true,
+      ignore: ['/openapi.json'],
       routes: [
         '/',
         '/getting-started/introduction',
@@ -28,6 +29,7 @@ export default defineNuxtConfig({
         '/features/backups',
         '/features/schedules',
         '/features/configuration',
+        '/api-reference/explorer',
       ],
       failOnError: false,
     },
