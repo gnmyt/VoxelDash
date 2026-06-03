@@ -18,8 +18,9 @@ public class ControllerManager {
      */
     public void setConnection(String jdbcUrl) {
         try {
+            Class.forName("org.sqlite.JDBC");
             this.connection = DriverManager.getConnection(jdbcUrl);
-        } catch (SQLException e) {
+        } catch (ClassNotFoundException | SQLException e) {
             throw new RuntimeException(e);
         }
     }
