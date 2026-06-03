@@ -20,12 +20,13 @@ for rel in ['modules/api/pom.xml',
     pom.write_text(updated)
     print(f"{rel}: rewrote {n} voxeldash version(s) -> {version}")
 
-pkg = root / 'ui/package.json'
-text = pkg.read_text()
-text, n = re.subn(r'("version"\s*:\s*")[^"]*(")',
-                  lambda m: m.group(1) + version + m.group(2), text, count=1)
-pkg.write_text(text)
-print(f"ui/package.json: set version -> {version} ({n})")
+for rel in ['ui/package.json', 'one/package.json']:
+    pkg = root / rel
+    text = pkg.read_text()
+    text, n = re.subn(r'("version"\s*:\s*")[^"]*(")',
+                      lambda m: m.group(1) + version + m.group(2), text, count=1)
+    pkg.write_text(text)
+    print(f"{rel}: set version -> {version} ({n})")
 PY
 
 GP="$ROOT/modules/fabric/gradle.properties"
