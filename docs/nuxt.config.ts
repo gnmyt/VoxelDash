@@ -12,6 +12,14 @@ export default defineNuxtConfig({
     enabled: false,
   },
 
+  vite: {
+    resolve: {
+      alias: {
+        '@unhead/vue/client': '@unhead/vue',
+      },
+    },
+  },
+
   nitro: {
     prerender: {
       crawlLinks: true,
