@@ -1,0 +1,15 @@
+{
+  "name": "voxeldash-one",
+  "version": "0.1.0",
+  "type": "module",
+  "private": true,
+  "description": "VoxelDash One - unified master backend for managing Minecraft servers",
+  "scripts": {
+    "start": "bun run src/index.js",
+    "dev": "bun --watch run src/index.js"
+  },
+  "dependencies": {
+    "express": "^4.21.2",
+    "ws": "^8.18.0"
+  }
+}
