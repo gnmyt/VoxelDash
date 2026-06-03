@@ -19,7 +19,6 @@ interface SoftwareEntry {
     key: string;
     name: string;
     kind: string;
-    available: boolean;
     accent: string;
     tagline: string;
 }
@@ -116,11 +115,9 @@ const CreateServerDialog = ({open, onOpenChange}: { open: boolean; onOpenChange:
                 {step === "software" && (
                     <div className="grid gap-3 sm:grid-cols-2">
                         {catalog.map((entry) => (
-                            <button key={entry.key} disabled={!entry.available} onClick={() => chooseSoftware(entry.key)}
+                            <button key={entry.key} onClick={() => chooseSoftware(entry.key)}
                                     className={`group relative flex items-start gap-4 overflow-hidden rounded-2xl border p-4 text-left transition-all
-                                        ${entry.available
-                                            ? "border-border/70 bg-card/40 hover:border-border hover:bg-card/80 cursor-pointer"
-                                            : "border-border/40 bg-card/20 opacity-60 cursor-not-allowed"}`}>
+                                        "border-border/70 bg-card/40 hover:border-border hover:bg-card/80 cursor-pointer"}`}>
                                 {softwareMeta(entry.key).logo ? (
                                     <div className="flex size-11 shrink-0 items-center justify-center rounded-xl border border-border/60 bg-background">
                                         <img src={softwareMeta(entry.key).logo} alt={entry.name} className="size-7 object-contain"
@@ -135,11 +132,6 @@ const CreateServerDialog = ({open, onOpenChange}: { open: boolean; onOpenChange:
                                 <div className="min-w-0 flex-1">
                                     <div className="flex items-center gap-2">
                                         <h3 className="font-display text-base font-semibold">{entry.name}</h3>
-                                        {!entry.available && (
-                                            <span className="flex items-center gap-1 rounded-full bg-muted px-2 py-0.5 text-[10px] font-medium text-muted-foreground">
-                                                <LockSimpleIcon className="size-3"/> Soon
-                                            </span>
-                                        )}
                                     </div>
                                     <p className="text-xs text-muted-foreground">{entry.tagline}</p>
                                 </div>
