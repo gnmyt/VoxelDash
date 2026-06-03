@@ -9,11 +9,11 @@ const AIKAR_FLAGS =
     "-XX:SurvivorRatio=32 -XX:+PerfDisableSharedMem -XX:MaxTenuringThreshold=1 -Dusing.aikars.flags=https://mcflags.emc.gs " +
     "-Daikars.new.flags=true";
 
-function jvmFlags(memoryMb) {
+const jvmFlags = (memoryMb) => {
     return [`-Xms${Math.floor(memoryMb / 2)}M`, `-Xmx${memoryMb}M`, ...AIKAR_FLAGS.split(" ")];
-}
+};
 
-export function launchServer(server, javaPath, serverDir) {
+export const launchServer = (server, javaPath, serverDir) => {
     const software = getSoftware(server.software);
     const launchArgs = software.launchArgs("server.jar");
     const args = [...jvmFlags(server.memory_mb || 2048), ...launchArgs];
@@ -47,9 +47,9 @@ export function launchServer(server, javaPath, serverDir) {
     pipeLogs(server.id, proc.stdout);
     pipeLogs(server.id, proc.stderr);
     return proc;
-}
+};
 
-export function stopServer(server) {
+export const stopServer = (server) => {
     const proc = processes.get(server.id);
     if (!proc) return false;
     try {
@@ -66,9 +66,9 @@ export function stopServer(server) {
         }
     }, 15_000);
     return true;
-}
+};
 
-async function pipeLogs(serverId, stream) {
+const pipeLogs = async (serverId, stream) => {
     if (!stream) return;
     const reader = stream.getReader();
     const decoder = new TextDecoder();
@@ -86,4 +86,4 @@ async function pipeLogs(serverId, stream) {
         }
     } catch {
     }
-}
+};

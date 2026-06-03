@@ -36,10 +36,10 @@ const CATALOG = [
     },
 ];
 
-export function getSoftware(key) {
+export const getSoftware = (key) => {
     return ADAPTERS[key] || null;
-}
+};
 
-export function listSoftware() {
+export const listSoftware = () => {
     return CATALOG;
-}
+};

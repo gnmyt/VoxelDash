@@ -4,19 +4,19 @@ const MANIFEST = "https://launchermeta.mojang.com/mc/game/version_manifest_v2.js
 
 let manifestCache = null;
 
-export async function mojangManifest() {
+export const mojangManifest = async () => {
     if (manifestCache) return manifestCache;
     const response = await fetch(MANIFEST, {headers: {"User-Agent": config.userAgent}});
     if (!response.ok) throw new Error(`Mojang manifest -> ${response.status}`);
     return (manifestCache = await response.json());
-}
+};
 
-export async function mojangReleases() {
+export const mojangReleases = async () => {
     const data = await mojangManifest();
     return (data.versions || []).filter((v) => v.type === "release").map((v) => v.id);
-}
+};
 
-export async function mojangJavaMajor(mcVersion) {
+export const mojangJavaMajor = async (mcVersion) => {
     try {
         const data = await mojangManifest();
         const entry = (data.versions || []).find((v) => v.id === mcVersion);
@@ -28,4 +28,4 @@ export async function mojangJavaMajor(mcVersion) {
     } catch {
         return null;
     }
-}
+};

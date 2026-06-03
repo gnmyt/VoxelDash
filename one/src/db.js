@@ -31,7 +31,7 @@ const MIGRATIONS = [
   );`,
 ];
 
-function migrate(database) {
+const migrate = (database) => {
     const {user_version: version} = database.query("PRAGMA user_version").get();
     for (let v = version; v < MIGRATIONS.length; v++) {
         database.transaction(() => {
@@ -39,7 +39,7 @@ function migrate(database) {
             database.exec(`PRAGMA user_version = ${v + 1}`);
         })();
     }
-}
+};
 
 export const db = new Database(config.paths.db, {create: true});
 db.exec("PRAGMA journal_mode = WAL");

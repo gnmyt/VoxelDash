@@ -5,7 +5,7 @@ import {randomId} from "./util.js";
 const PROXY_TIMEOUT_MS = 60_000;
 const SKIP_REQUEST_HEADERS = new Set(["host", "connection", "content-length", "authorization", "upgrade"]);
 
-export function mountProxy(app, requireMasterAuth) {
+export const mountProxy = (app, requireMasterAuth) => {
     app.all(
         "/api/proxy/:serverId/*",
         requireMasterAuth,
@@ -42,9 +42,9 @@ export function mountProxy(app, requireMasterAuth) {
             entry.socket.send(JSON.stringify({type: "http", id, method: req.method, path, query, headers, bodyB64}));
         }
     );
-}
+};
 
-export function handleConsoleConnection(browserWs, serverId) {
+export const handleConsoleConnection = (browserWs, serverId) => {
     const entry = registry.get(serverId);
     if (!entry || entry.socket.readyState !== 1) {
         browserWs.close(4004, "Server offline");
@@ -66,4 +66,4 @@ export function handleConsoleConnection(browserWs, serverId) {
         entry.consoleStreams.delete(streamId);
         if (entry.socket.readyState === 1) entry.socket.send(JSON.stringify({type: "ws-close", streamId}));
     });
-}
+};

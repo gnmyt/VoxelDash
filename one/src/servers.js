@@ -10,11 +10,11 @@ import {launchServer, stopServer} from "./provision/launcher.js";
 import {clearLog, effectiveStatus, getLog, logProgress, processes} from "./runtime.js";
 import {registry} from "./tunnel/registry.js";
 
-function serverDirFor(id) {
+const serverDirFor = (id) => {
     return join(config.paths.servers, id);
-}
+};
 
-function serialize(row) {
+const serialize = (row) => {
     return {
         id: row.id,
         name: row.name,
@@ -27,24 +27,24 @@ function serialize(row) {
         status: effectiveStatus(row),
         createdAt: row.created_at,
     };
-}
+};
 
-function getServer(id) {
+const getServer = (id) => {
     return db.query("SELECT * FROM servers WHERE id = ?").get(id);
-}
+};
 
-function setStatus(id, status) {
+const setStatus = (id, status) => {
     db.query("UPDATE servers SET status = ? WHERE id = ?").run(status, id);
-}
+};
 
-async function downloadTo(url, dest, onLog) {
+const downloadTo = async (url, dest, onLog) => {
     onLog?.(`Downloading ${url.split("/").pop()}...`);
     const response = await fetch(url, {headers: {"User-Agent": config.userAgent}, redirect: "follow"});
     if (!response.ok) throw new Error(`Download failed (${response.status}): ${url}`);
     await Bun.write(dest, await response.arrayBuffer());
-}
+};
 
-async function provision(server) {
+const provision = async (server) => {
     const log = (line) => logProgress(server.id, line);
     const dir = serverDirFor(server.id);
     mkdirSync(dir, {recursive: true});
@@ -96,9 +96,9 @@ async function provision(server) {
         logProgress(server.id, `ERROR: ${err.message}`);
         setStatus(server.id, "install_failed");
     }
-}
+};
 
-export function mountServerRoutes(app, requireMasterAuth) {
+export const mountServerRoutes = (app, requireMasterAuth) => {
     app.get("/master/software", requireMasterAuth, (req, res) => {
         res.json({software: listSoftware()});
     });
@@ -120,10 +120,8 @@ export function mountServerRoutes(app, requireMasterAuth) {
     app.post("/master/servers", requireMasterAuth, async (req, res) => {
         const {name, software: softwareKey, mcVersion, memoryMb} = req.body || {};
         const software = getSoftware(softwareKey);
-        const catalog = listSoftware().find((s) => s.key === softwareKey);
 
         if (!name || !softwareKey) return res.status(400).json({error: "name and software are required"});
-        if (!software || !catalog?.available) return res.status(400).json({error: "That software is not available yet"});
         if (!mcVersion) return res.status(400).json({error: "mcVersion is required"});
 
         const requiredJava = (software.javaMajor ? await software.javaMajor(mcVersion) : 0) || requiredMajorForMc(mcVersion);
@@ -194,4 +192,4 @@ export function mountServerRoutes(app, requireMasterAuth) {
         clearLog(row.id);
         res.json({ok: true});
     });
-}
+};

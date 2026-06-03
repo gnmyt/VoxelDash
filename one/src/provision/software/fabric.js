@@ -5,18 +5,18 @@ import {writeMinecraftProperties} from "./common.js";
 const META = "https://meta.fabricmc.net/v2";
 const MODRINTH = "https://api.modrinth.com/v2";
 
-async function meta(path) {
+const meta = async (path) => {
     const response = await fetch(META + path, {
         headers: {"User-Agent": config.userAgent, Accept: "application/json"},
     });
     if (!response.ok) throw new Error(`FabricMC ${path} -> ${response.status}`);
     return response.json();
-}
+};
 
-async function latestStable(component) {
+const latestStable = async (component) => {
     const list = await meta(`/versions/${component}`);
     return list.find((entry) => entry.stable) || list[0];
-}
+};
 
 export const fabric = {
     key: "fabric",

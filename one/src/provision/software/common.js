@@ -1,6 +1,6 @@
 import {join} from "node:path";
 
-export async function writeMinecraftProperties(serverDir, {gamePort, name}) {
+export const writeMinecraftProperties = async (serverDir, {gamePort, name}) => {
     await Bun.write(join(serverDir, "eula.txt"), "eula=true\n");
     await Bun.write(
         join(serverDir, "server.properties"),
@@ -11,4 +11,4 @@ export async function writeMinecraftProperties(serverDir, {gamePort, name}) {
             `motd=${name} - powered by VoxelDash One`,
         ].join("\n") + "\n"
     );
-}
+};

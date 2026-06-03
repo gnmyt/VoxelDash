@@ -3,7 +3,7 @@ import {db} from "../db.js";
 
 const HOP_BY_HOP = new Set(["content-length", "transfer-encoding", "connection", "keep-alive", "upgrade"]);
 
-export function handleTunnelConnection(socket) {
+export const handleTunnelConnection = (socket) => {
     let serverId = null;
 
     socket.on("message", (raw) => {
@@ -40,9 +40,9 @@ export function handleTunnelConnection(socket) {
     socket.on("error", () => {
         if (serverId) registry.detach(serverId, socket);
     });
-}
+};
 
-function routeFrame(serverId, msg) {
+const routeFrame = (serverId, msg) => {
     const entry = registry.get(serverId);
     if (!entry) return;
 
@@ -118,4 +118,4 @@ function routeFrame(serverId, msg) {
             entry.socket.send(JSON.stringify({type: "pong", ts: msg.ts}));
             break;
     }
-}
+};

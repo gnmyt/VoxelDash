@@ -3,15 +3,15 @@ import {writeMinecraftProperties} from "./common.js";
 
 const BASE = "https://fill.papermc.io/v3";
 
-async function api(path) {
+const api = async (path) => {
     const response = await fetch(BASE + path, {
         headers: {"User-Agent": config.userAgent, Accept: "application/json"},
     });
     if (!response.ok) throw new Error(`PaperMC ${path} -> ${response.status}`);
     return response.json();
-}
+};
 
-function compareVersion(a, b) {
+const compareVersion = (a, b) => {
     const pa = a.split(".").map(Number);
     const pb = b.split(".").map(Number);
     for (let i = 0; i < Math.max(pa.length, pb.length); i++) {
@@ -19,7 +19,7 @@ function compareVersion(a, b) {
         if (diff) return diff;
     }
     return 0;
-}
+};
 
 export const paper = {
     key: "paper",

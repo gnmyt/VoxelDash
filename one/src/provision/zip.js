@@ -5,15 +5,15 @@ const EOCD_SIG = 0x06054b50;
 const CD_SIG = 0x02014b50;
 const LFH_SIG = 0x04034b50;
 
-function findEocd(buf) {
+const findEocd = (buf) => {
     const min = Math.max(0, buf.length - 0x10000 - 22);
     for (let i = buf.length - 22; i >= min; i--) {
         if (buf.readUInt32LE(i) === EOCD_SIG) return i;
     }
     return -1;
-}
+};
 
-function readLocalEntry(buf, offset, method, compSize) {
+const readLocalEntry = (buf, offset, method, compSize) => {
     if (buf.readUInt32LE(offset) !== LFH_SIG) return null;
     const nameLen = buf.readUInt16LE(offset + 26);
     const extraLen = buf.readUInt16LE(offset + 28);
@@ -22,9 +22,9 @@ function readLocalEntry(buf, offset, method, compSize) {
     if (method === 0) return Buffer.from(data);
     if (method === 8) return inflateRawSync(data);
     return null;
-}
+};
 
-export function readZipEntry(zipPath, entryName) {
+export const readZipEntry = (zipPath, entryName) => {
     const buf = readFileSync(zipPath);
     const eocd = findEocd(buf);
     if (eocd < 0) return null;
@@ -47,4 +47,4 @@ export function readZipEntry(zipPath, entryName) {
         p += 46 + nameLen + extraLen + commentLen;
     }
     return null;
-}
+};

@@ -9,7 +9,7 @@ const ARTIFACT_MODULE = {
     vanilla: "vanilla",
 };
 
-export async function resolveVoxelDashJar(artifact, onLog) {
+export const resolveVoxelDashJar = async (artifact, onLog) => {
     const moduleName = ARTIFACT_MODULE[artifact];
     if (!moduleName) throw new Error(`Unknown VoxelDash artifact: ${artifact}`);
 
@@ -31,9 +31,9 @@ export async function resolveVoxelDashJar(artifact, onLog) {
     }
 
     return downloadFromRelease(artifact, onLog);
-}
+};
 
-async function fetchRelease() {
+const fetchRelease = async () => {
     const headers = {"User-Agent": config.userAgent, Accept: "application/vnd.github+json"};
     const pinned = process.env.VOXELDASH_RELEASE;
 
@@ -48,9 +48,9 @@ async function fetchRelease() {
     const release = (await response.json()).find((r) => !r.draft);
     if (!release) throw new Error(`No published release found for ${config.repo}`);
     return release;
-}
+};
 
-async function downloadFromRelease(artifact, onLog) {
+const downloadFromRelease = async (artifact, onLog) => {
     const release = await fetchRelease();
     onLog?.(`Fetching ${artifact} from release ${release.tag_name}...`);
 
@@ -68,4 +68,4 @@ async function downloadFromRelease(artifact, onLog) {
     if (!dl.ok) throw new Error(`Failed to download ${asset.name}: ${dl.status}`);
     await Bun.write(dest, await dl.arrayBuffer());
     return dest;
-}
+};

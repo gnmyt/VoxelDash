@@ -3,7 +3,7 @@ import {existsSync, mkdirSync, readdirSync, rmSync} from "node:fs";
 import {config} from "../config.js";
 import {readZipEntry} from "./zip.js";
 
-export function detectJarJavaMajor(jarPath) {
+export const detectJarJavaMajor = (jarPath) => {
     try {
         const manifest = readZipEntry(jarPath, "META-INF/MANIFEST.MF");
         const match = manifest?.toString("utf8").match(/Main-Class:\s*([^\r\n]+)/);
@@ -15,9 +15,9 @@ export function detectJarJavaMajor(jarPath) {
     } catch {
         return null;
     }
-}
+};
 
-export function requiredMajorForMc(mcVersion) {
+export const requiredMajorForMc = (mcVersion) => {
     const m = String(mcVersion || "").match(/^1\.(\d+)(?:\.(\d+))?/);
     if (!m) return 25;
     const minor = parseInt(m[1], 10);
@@ -27,9 +27,9 @@ export function requiredMajorForMc(mcVersion) {
     if (minor >= 18) return 17;
     if (minor === 17) return 16;
     return 8;
-}
+};
 
-function findJavaBinary(dir) {
+const findJavaBinary = (dir) => {
     if (!existsSync(dir)) return null;
     const stack = [dir];
     let depth = 0;
@@ -48,9 +48,9 @@ function findJavaBinary(dir) {
         }
     }
     return null;
-}
+};
 
-export async function ensureJre(major, onLog) {
+export const ensureJre = async (major, onLog) => {
     const dir = join(config.paths.jdks, String(major));
     const existing = findJavaBinary(dir);
     if (existing) {
@@ -91,4 +91,4 @@ export async function ensureJre(major, onLog) {
     Bun.spawnSync(["chmod", "+x", java]);
     onLog?.(`JRE ${major} ready`);
     return java;
-}
+};
