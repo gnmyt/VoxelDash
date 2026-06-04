@@ -1,7 +1,7 @@
 import {useEffect, useState} from "react";
 import {Navigate} from "react-router-dom";
 import {
-    KeyIcon, LockKeyIcon, PencilIcon, PlusIcon, ShieldCheckIcon, TrashIcon, UsersThreeIcon,
+    KeyIcon, LockKeyIcon, PencilIcon, PlusIcon, ShieldCheckIcon, TrashIcon
 } from "@phosphor-icons/react";
 import {useMasterAuth} from "@/contexts/MasterAuthContext.tsx";
 import {masterDelete, masterJson, masterRequest} from "@/lib/RequestUtil.ts";
