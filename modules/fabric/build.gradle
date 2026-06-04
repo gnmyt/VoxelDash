@@ -102,6 +102,8 @@ tasks.named("shadowJar") {
     configurations = [project.configurations.shadow]
     archiveClassifier.set("dev-all")
 
+    mergeServiceFiles()
+
     relocate 'io.undertow', 'de.gnm.voxeldash.libs.undertow'
     relocate 'org.apache.commons', 'de.gnm.voxeldash.libs.commons'
     relocate 'com.fasterxml.jackson', 'de.gnm.voxeldash.libs.jackson'
