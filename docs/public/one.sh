@@ -82,13 +82,15 @@ resolve_tag() {
         return
     fi
 
+    local url body
     if [ "$CHANNEL" = "beta" ]; then
-        api_get "https://api.github.com/repos/$REPO/releases?per_page=1" \
-            | grep -m1 '"tag_name":' | sed -E 's/.*"tag_name":[[:space:]]*"([^"]+)".*/\1/'
+        url="https://api.github.com/repos/$REPO/releases?per_page=1"
     else
-        api_get "https://api.github.com/repos/$REPO/releases/latest" \
-            | grep -m1 '"tag_name":' | sed -E 's/.*"tag_name":[[:space:]]*"([^"]+)".*/\1/'
+        url="https://api.github.com/repos/$REPO/releases/latest"
     fi
+
+    body="$(api_get "$url")" || return 1
+    grep -m1 '"tag_name":' <<<"$body" | sed -E 's/.*"tag_name":[[:space:]]*"([^"]+)".*/\1/'
 }
 
 info "Resolving ${BOLD}$CHANNEL${RESET} release for $REPO..."
