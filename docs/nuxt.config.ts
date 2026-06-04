@@ -42,7 +42,7 @@ export default defineNuxtConfig({
   nitro: {
     prerender: {
       crawlLinks: true,
-      ignore: ['/openapi.json', '/one.sh'],
+      ignore: ['/openapi.json', '/one.sh', '/uninstall-one.sh'],
       routes: [
         '/',
         '/getting-started/introduction',
