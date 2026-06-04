@@ -11,7 +11,7 @@ import {Slider} from "@/components/ui/slider.tsx";
 import {Dialog, DialogContent, DialogHeader, DialogTitle} from "@/components/ui/dialog.tsx";
 import {toast} from "@/hooks/use-toast.ts";
 import {
-    ArrowLeftIcon, ArrowRightIcon, CheckIcon, CheckCircleIcon, SpinnerGapIcon, LockSimpleIcon,
+    ArrowLeftIcon, ArrowRightIcon, CheckIcon, CheckCircleIcon, SpinnerGapIcon,
     WarningCircleIcon, ArrowSquareOutIcon,
 } from "@phosphor-icons/react";
 
