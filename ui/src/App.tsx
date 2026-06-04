@@ -14,6 +14,8 @@ import {ServerInfoProvider} from "@/contexts/ServerInfoContext.tsx";
 import {SocketProvider} from "@/contexts/SocketContext.tsx";
 import {detectInstanceMode} from "@/lib/RequestUtil.ts";
 import Servers from "@/states/Servers/Servers.tsx";
+import Forwardings from "@/states/Servers/Forwardings/Forwardings.tsx";
+import MasterUsers from "@/states/Servers/Users/Users.tsx";
 import { ResourceList, ResourceStore, ResourceDetail } from "@/states/Root/pages/Resources";
 import NotFound from "@/states/Root/pages/NotFound/NotFound.tsx";
 
@@ -63,6 +65,8 @@ const App = () => {
     const router = createBrowserRouter([
         {path: "/login", element: <Login />},
         {path: "/servers", element: <Servers />},
+        {path: "/forwardings", element: <Forwardings />},
+        {path: "/users", element: <MasterUsers />},
         dashboardRoute,
     ]);
     return (

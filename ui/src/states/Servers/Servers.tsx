@@ -1,12 +1,13 @@
-import {useEffect, useState} from "react";
+import {useCallback, useEffect, useState} from "react";
 import {Navigate, useNavigate} from "react-router-dom";
 import {useMasterAuth} from "@/contexts/MasterAuthContext.tsx";
 import {ManagedServer, useServerSelection} from "@/contexts/ServerSelectionContext.tsx";
-import {masterJson} from "@/lib/RequestUtil.ts";
+import {masterDelete, masterJson, masterRequest} from "@/lib/RequestUtil.ts";
 import {softwareMeta, statusMeta} from "@/lib/servers.ts";
+import {MasterLayout} from "@/states/Servers/MasterLayout.tsx";
+import {PlayitTunnel} from "@/states/Servers/Forwardings/Forwardings.tsx";
 import {Button} from "@/components/ui/button.tsx";
 import {Skeleton} from "@/components/ui/skeleton.tsx";
-import {Separator} from "@/components/ui/separator.tsx";
 import {
     Dialog, DialogContent, DialogHeader, DialogTitle,
 } from "@/components/ui/dialog.tsx";
@@ -17,18 +18,12 @@ import {
     AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription,
     AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
 } from "@/components/ui/alert-dialog.tsx";
-import {
-    Sidebar as ShadSidebar, SidebarContent, SidebarFooter, SidebarGroup, SidebarHeader,
-    SidebarInset, SidebarMenu, SidebarMenuButton, SidebarMenuItem, SidebarProvider, SidebarTrigger,
-} from "@/components/ui/sidebar.tsx";
 import {toast} from "@/hooks/use-toast.ts";
 import CreateServerDialog from "@/states/Servers/CreateServer.tsx";
-import {UserProfile} from "@/components/UserProfile.tsx";
 import {
     PlusIcon, PlayIcon, StopIcon, DotsThreeIcon, TrashIcon, TerminalWindowIcon,
-    HardDrivesIcon, SpinnerGapIcon,
+    HardDrivesIcon, SpinnerGapIcon, GlobeSimpleIcon, CopyIcon, LinkBreakIcon,
 } from "@phosphor-icons/react";
-import logo from "@/assets/images/logo.png";
 
 const SoftwareMark = ({software}: { software: string }) => {
     const meta = softwareMeta(software);
@@ -65,7 +60,21 @@ const Stat = ({label, value}: { label: string; value: string }) => (
     </div>
 );
 
-const ServerRow = ({server, index, onLog}: { server: ManagedServer; index: number; onLog: (s: ManagedServer) => void }) => {
+const copy = (text: string) => navigator.clipboard.writeText(text).then(
+    () => toast({description: "Copied to clipboard"}),
+    () => toast({description: "Couldn't copy", variant: "destructive"})
+);
+
+const ServerRow = ({server, index, onLog, tunnel, playitLinked, canForward, onForward, onRemoveForward}: {
+    server: ManagedServer;
+    index: number;
+    onLog: (s: ManagedServer) => void;
+    tunnel?: PlayitTunnel;
+    playitLinked: boolean;
+    canForward: boolean;
+    onForward: (id: string) => Promise<void>;
+    onRemoveForward: (tunnelId: string) => Promise<void>;
+}) => {
     const meta = softwareMeta(server.software);
     const {selectServer, startServer, stopServer, deleteServer} = useServerSelection();
     const navigate = useNavigate();
@@ -109,14 +118,22 @@ const ServerRow = ({server, index, onLog}: { server: ManagedServer; index: numbe
                 <p className="truncate text-sm text-muted-foreground">
                     {meta.name}{server.mcVersion ? ` · ${server.mcVersion}` : ""}
                 </p>
+                {tunnel?.assignedDomain && (
+                    <button onClick={(e) => { e.stopPropagation(); copy(tunnel.assignedDomain!); }}
+                            className="group/addr mt-1 flex items-center gap-1.5 text-xs text-primary hover:underline">
+                        <GlobeSimpleIcon className="size-3.5"/>
+                        <span className="truncate font-mono">{tunnel.assignedDomain}</span>
+                        <CopyIcon className="size-3 opacity-0 transition-opacity group-hover/addr:opacity-100"/>
+                    </button>
+                )}
             </div>
 
             <div className="hidden items-center gap-3 rounded-xl border border-border/50 bg-muted/30 px-4 py-2 text-xs lg:flex">
-                <Stat label="Port" value={server.gamePort ? String(server.gamePort) : "—"}/>
+                <Stat label="Port" value={server.gamePort ? String(server.gamePort) : "-"}/>
                 <span className="h-3.5 w-px bg-border"/>
-                <Stat label="RAM" value={server.memoryMb ? `${server.memoryMb / 1024} GB` : "—"}/>
+                <Stat label="RAM" value={server.memoryMb ? `${server.memoryMb / 1024} GB` : "-"}/>
                 <span className="h-3.5 w-px bg-border"/>
-                <Stat label="Build" value={server.build || "—"}/>
+                <Stat label="Build" value={server.build || "-"}/>
             </div>
 
             <div className="flex shrink-0 items-center gap-1.5" onClick={(e) => e.stopPropagation()}>
@@ -146,6 +163,20 @@ const ServerRow = ({server, index, onLog}: { server: ManagedServer; index: numbe
                         <DropdownMenuItem onClick={() => onLog(server)}>
                             <TerminalWindowIcon className="mr-2 size-4"/> View log
                         </DropdownMenuItem>
+                        {canForward && (tunnel ? (
+                            <DropdownMenuItem disabled={busy} onClick={() => run(() => onRemoveForward(tunnel.tunnelId))}>
+                                <LinkBreakIcon className="mr-2 size-4"/> Remove forwarding
+                            </DropdownMenuItem>
+                        ) : playitLinked ? (
+                            <DropdownMenuItem disabled={busy || !server.gamePort}
+                                              onClick={() => run(() => onForward(server.id))}>
+                                <GlobeSimpleIcon className="mr-2 size-4"/> Forward with playit
+                            </DropdownMenuItem>
+                        ) : (
+                            <DropdownMenuItem onClick={() => navigate("/forwardings")}>
+                                <GlobeSimpleIcon className="mr-2 size-4"/> Set up forwarding
+                            </DropdownMenuItem>
+                        ))}
                         <DropdownMenuSeparator/>
                         <DropdownMenuItem className="text-destructive focus:text-destructive"
                                           disabled={isBusy}
@@ -162,7 +193,7 @@ const ServerRow = ({server, index, onLog}: { server: ManagedServer; index: numbe
             <AlertDialog open={confirmDelete} onOpenChange={setConfirmDelete}>
                 <AlertDialogContent>
                     <AlertDialogHeader>
-                        <AlertDialogTitle className="font-display">Delete “{server.name}”?</AlertDialogTitle>
+                        <AlertDialogTitle className="font-display">Delete "{server.name}"?</AlertDialogTitle>
                         <AlertDialogDescription>
                             This permanently removes the server and all of its files. This can't be undone.
                         </AlertDialogDescription>
@@ -216,100 +247,104 @@ const LogDialog = ({server, onClose}: { server: ManagedServer | null; onClose: (
     );
 };
 
-const ServersSidebar = () => (
-    <ShadSidebar variant="inset" className="select-none">
-        <SidebarHeader>
-            <SidebarMenu>
-                <SidebarMenuItem>
-                    <SidebarMenuButton size="lg" className="pointer-events-none">
-                        <img src={logo} alt="VoxelDash" className="size-9 shrink-0 rounded-lg"/>
-                        <div className="grid flex-1 text-left leading-tight">
-                            <span className="truncate font-display font-semibold">VoxelDash One</span>
-                            <span className="truncate text-xs text-muted-foreground">Server manager</span>
-                        </div>
-                    </SidebarMenuButton>
-                </SidebarMenuItem>
-            </SidebarMenu>
-        </SidebarHeader>
-        <SidebarContent>
-            <SidebarGroup>
-                <SidebarMenu>
-                    <SidebarMenuItem>
-                        <SidebarMenuButton isActive className="cursor-pointer">
-                            <HardDrivesIcon weight="fill"/>
-                            <span>Servers</span>
-                        </SidebarMenuButton>
-                    </SidebarMenuItem>
-                </SidebarMenu>
-            </SidebarGroup>
-        </SidebarContent>
-        <SidebarFooter>
-            <UserProfile/>
-        </SidebarFooter>
-    </ShadSidebar>
-);
-
 const Servers = () => {
-    const {authenticated, loading: authLoading} = useMasterAuth();
+    const {authenticated, loading: authLoading, can} = useMasterAuth();
     const {servers, loading} = useServerSelection();
     const [logServer, setLogServer] = useState<ManagedServer | null>(null);
     const [createOpen, setCreateOpen] = useState(false);
 
+    const canForward = can("Forwardings", 2);
+    const [playitLinked, setPlayitLinked] = useState(false);
+    const [tunnelsByServer, setTunnelsByServer] = useState<Record<string, PlayitTunnel>>({});
+
+    const loadPlayit = useCallback(async () => {
+        if (!canForward) return;
+        try {
+            const status = await masterJson("playit/status");
+            setPlayitLinked(!!status.linked);
+            if (status.linked) {
+                const data = await masterJson("playit/tunnels");
+                const map: Record<string, PlayitTunnel> = {};
+                for (const t of (data.tunnels || []) as PlayitTunnel[]) if (t.serverId) map[t.serverId] = t;
+                setTunnelsByServer(map);
+            }
+        } catch { /* ignore */ }
+    }, [canForward]);
+
+    useEffect(() => {
+        if (!authenticated || !canForward) return;
+        loadPlayit();
+        const interval = setInterval(loadPlayit, 5000);
+        return () => clearInterval(interval);
+    }, [authenticated, canForward, loadPlayit]);
+
+    const onForward = async (serverId: string) => {
+        const res = await masterRequest("playit/tunnels", "POST", {serverId});
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || "Failed to create forwarding");
+        if (data.tunnel) setTunnelsByServer((prev) => ({...prev, [serverId]: data.tunnel}));
+        toast({description: "Forwarding created"});
+        loadPlayit();
+    };
+
+    const onRemoveForward = async (tunnelId: string) => {
+        await masterDelete(`playit/tunnels/${tunnelId}`);
+        setTunnelsByServer((prev) => {
+            const next = {...prev};
+            for (const k of Object.keys(next)) if (next[k].tunnelId === tunnelId) delete next[k];
+            return next;
+        });
+        toast({description: "Forwarding removed"});
+    };
+
     if (!authLoading && !authenticated) return <Navigate to="/login" replace/>;
 
     return (
-        <SidebarProvider>
-            <ServersSidebar/>
-            <SidebarInset className="flex max-h-screen flex-col overflow-hidden md:max-h-[calc(100vh-1rem)]">
-                <header className="flex h-16 shrink-0 items-center gap-2 px-4">
-                    <SidebarTrigger className="-ml-1"/>
-                    <Separator orientation="vertical" className="mr-1 h-4"/>
-                    <h1 className="font-display text-base font-semibold">Servers</h1>
-                    <span className="text-sm text-muted-foreground">
-                        {servers.length} {servers.length === 1 ? "server" : "servers"}
-                    </span>
-                    <Button className="ml-auto" onClick={() => setCreateOpen(true)}>
-                        <PlusIcon weight="bold" className="mr-1.5 size-4"/> New server
-                    </Button>
-                </header>
-
-                <main className="min-h-0 flex-1 overflow-auto px-4 py-6 sm:px-6">
-                    <div className="mx-auto w-full max-w-4xl">
-                        {loading && servers.length === 0 ? (
-                            <div className="space-y-2.5">
-                                {[0, 1, 2, 3].map((i) => <Skeleton key={i} className="h-[98px] rounded-2xl"/>)}
-                            </div>
-                        ) : servers.length === 0 ? (
-                            <EmptyState onCreate={() => setCreateOpen(true)}/>
-                        ) : (
-                            <div className="space-y-2.5">
-                                {servers.map((server, i) => (
-                                    <ServerRow key={server.id} server={server} index={i} onLog={setLogServer}/>
-                                ))}
-                            </div>
-                        )}
-                    </div>
-                </main>
-            </SidebarInset>
+        <MasterLayout active="servers" title="Servers"
+                      subtitle={`${servers.length} ${servers.length === 1 ? "server" : "servers"}`}
+                      actions={can("Servers", 2) ? (
+                          <Button onClick={() => setCreateOpen(true)}>
+                              <PlusIcon weight="bold" className="mr-1.5 size-4"/> New server
+                          </Button>
+                      ) : undefined}>
+            {loading && servers.length === 0 ? (
+                <div className="space-y-2.5">
+                    {[0, 1, 2, 3].map((i) => <Skeleton key={i} className="h-[98px] rounded-2xl"/>)}
+                </div>
+            ) : servers.length === 0 ? (
+                <EmptyState onCreate={() => setCreateOpen(true)} canCreate={can("Servers", 2)}/>
+            ) : (
+                <div className="space-y-2.5">
+                    {servers.map((server, i) => (
+                        <ServerRow key={server.id} server={server} index={i} onLog={setLogServer}
+                                   tunnel={tunnelsByServer[server.id]} playitLinked={playitLinked}
+                                   canForward={canForward} onForward={onForward} onRemoveForward={onRemoveForward}/>
+                    ))}
+                </div>
+            )}
 
             <LogDialog server={logServer} onClose={() => setLogServer(null)}/>
             <CreateServerDialog open={createOpen} onOpenChange={setCreateOpen}/>
-        </SidebarProvider>
+        </MasterLayout>
     );
 };
 
-const EmptyState = ({onCreate}: { onCreate: () => void }) => (
+const EmptyState = ({onCreate, canCreate}: { onCreate: () => void; canCreate: boolean }) => (
     <div className="vd-rise flex flex-col items-center justify-center rounded-3xl border border-dashed border-border/70 bg-card/30 px-6 py-20 text-center">
         <div className="mb-5 flex size-16 items-center justify-center rounded-2xl bg-muted">
             <HardDrivesIcon className="size-8 text-muted-foreground"/>
         </div>
         <h3 className="font-display text-xl font-bold">No servers yet</h3>
         <p className="mb-6 mt-1 max-w-sm text-sm text-muted-foreground">
-            Create your first server. VoxelDash One downloads the software and a matching Java runtime, then starts it for you.
+            {canCreate
+                ? "Create your first server. VoxelDash One downloads the software and a matching Java runtime, then starts it for you."
+                : "You don't have access to any servers yet. Ask an administrator to grant you access."}
         </p>
-        <Button size="lg" onClick={onCreate}>
-            <PlusIcon weight="bold" className="mr-1.5 size-4"/> Create a server
-        </Button>
+        {canCreate && (
+            <Button size="lg" onClick={onCreate}>
+                <PlusIcon weight="bold" className="mr-1.5 size-4"/> Create a server
+            </Button>
+        )}
     </div>
 );
 

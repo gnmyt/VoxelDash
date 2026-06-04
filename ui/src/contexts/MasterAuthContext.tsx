@@ -1,9 +1,15 @@
 import {createContext, ReactNode, useContext, useEffect, useState} from "react";
 import {getMasterToken, masterJson, masterRequest, setActiveServerId, setMasterToken} from "@/lib/RequestUtil.ts";
 
+export type MasterPermissionLevel = 0 | 1 | 2;
+
 interface MasterUser {
     id: number;
     username: string;
+    isAdmin?: boolean;
+    permissions?: Record<string, MasterPermissionLevel>;
+    allServers?: boolean;
+    serverIds?: string[] | null;
 }
 
 interface MasterAuthContextType {
@@ -11,6 +17,7 @@ interface MasterAuthContextType {
     authenticated: boolean;
     setupRequired: boolean;
     user: MasterUser | null;
+    can: (feature: string, level?: MasterPermissionLevel) => boolean;
     login: (username: string, password: string) => Promise<void>;
     setup: (username: string, password: string) => Promise<void>;
     logout: () => Promise<void>;
@@ -50,6 +57,14 @@ export const MasterAuthProvider = ({children}: { children: ReactNode }) => {
         bootstrap();
     }, []);
 
+    const refreshMe = async () => {
+        const res = await masterRequest("me");
+        if (res.ok) {
+            const data = await res.json();
+            setUser(data.user);
+        }
+    };
+
     const handleAuthResponse = async (res: Response) => {
         const data = await res.json();
         if (!res.ok) throw new Error(data.error || "Request failed");
@@ -57,6 +72,13 @@ export const MasterAuthProvider = ({children}: { children: ReactNode }) => {
         setUser(data.user);
         setAuthenticated(true);
         setSetupRequired(false);
+        await refreshMe();
+    };
+
+    const can = (feature: string, level: MasterPermissionLevel = 1) => {
+        if (!user) return false;
+        if (user.isAdmin) return true;
+        return (user.permissions?.[feature] ?? 0) >= level;
     };
 
     const login = async (username: string, password: string) => {
@@ -78,7 +100,7 @@ export const MasterAuthProvider = ({children}: { children: ReactNode }) => {
     };
 
     return (
-        <MasterAuthContext.Provider value={{loading, authenticated, setupRequired, user, login, setup, logout}}>
+        <MasterAuthContext.Provider value={{loading, authenticated, setupRequired, user, can, login, setup, logout}}>
             {children}
         </MasterAuthContext.Provider>
     );

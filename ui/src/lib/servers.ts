@@ -16,6 +16,7 @@ export const SOFTWARE: Record<string, SoftwareMeta> = {
     paper: {name: "Paper", accent: "#4f8ff7", short: "PA", logo: paperLogo, kind: "Plugins"},
     spigot: {name: "Spigot", accent: "#f0a020", short: "SP", logo: spigotLogo, kind: "Plugins"},
     fabric: {name: "Fabric", accent: "#c9b27f", short: "FA", logo: fabricLogo, kind: "Mods"},
+    forge: {name: "Forge", accent: "#8295ad", short: "FO", kind: "Mods"},
     vanilla: {name: "Vanilla", accent: "#6abf4b", short: "VA", logo: vanillaLogo, kind: "Pure"},
     bungeecord: {name: "BungeeCord", accent: "#d6932f", short: "BC", logo: bungeecordLogo, kind: "Proxy"},
 };

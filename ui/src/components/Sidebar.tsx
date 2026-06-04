@@ -199,7 +199,9 @@ export function Sidebar() {
                         {allSidebarItems.map((item) => {
                             if (!isFeatureAvailable(item.requiredFeatures)) return null;
 
-                            const visibleSubItems = item.items?.filter(subItem => isFeatureAvailable(subItem.requiredFeatures));
+                            const visibleSubItems = item.items?.filter(subItem =>
+                                isFeatureAvailable(subItem.requiredFeatures)
+                                && !(isMasterMode() && subItem.path === "/settings/users"));
 
                             if (item.items && (!visibleSubItems || visibleSubItems.length === 0)) return null;
 
