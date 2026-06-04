@@ -1,14 +1,17 @@
 import express from "express";
 import {registry} from "./tunnel/registry.js";
 import {randomId} from "./util.js";
+import {requireFeature, requireServerAccess} from "./auth.js";
+import {LEVEL} from "./permissions.js";
 
 const PROXY_TIMEOUT_MS = 60_000;
 const SKIP_REQUEST_HEADERS = new Set(["host", "connection", "content-length", "authorization", "upgrade"]);
 
-export const mountProxy = (app, requireMasterAuth) => {
+export const mountProxy = (app) => {
     app.all(
         "/api/proxy/:serverId/*",
-        requireMasterAuth,
+        requireFeature("Servers", LEVEL.READ),
+        requireServerAccess,
         express.raw({type: () => true, limit: "64mb"}),
         (req, res) => {
             const entry = registry.get(req.params.serverId);

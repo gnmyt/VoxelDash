@@ -29,6 +29,35 @@ const MIGRATIONS = [
     auto_start INTEGER NOT NULL DEFAULT 0,
     created_at TEXT NOT NULL DEFAULT (datetime('now'))
   );`,
+    `ALTER TABLE master_users ADD COLUMN all_servers INTEGER NOT NULL DEFAULT 0;
+  CREATE TABLE IF NOT EXISTS master_permissions (
+    user_id INTEGER PRIMARY KEY,
+    permissions TEXT NOT NULL DEFAULT '',
+    FOREIGN KEY (user_id) REFERENCES master_users(id) ON DELETE CASCADE
+  );
+  CREATE TABLE IF NOT EXISTS master_server_access (
+    user_id INTEGER NOT NULL,
+    server_id TEXT NOT NULL,
+    PRIMARY KEY (user_id, server_id),
+    FOREIGN KEY (user_id) REFERENCES master_users(id) ON DELETE CASCADE
+  );
+  CREATE TABLE IF NOT EXISTS playit_config (
+    id INTEGER PRIMARY KEY CHECK (id = 1),
+    secret TEXT,
+    agent_id TEXT,
+    claim_code TEXT,
+    enabled INTEGER NOT NULL DEFAULT 0,
+    updated_at TEXT NOT NULL DEFAULT (datetime('now'))
+  );
+  CREATE TABLE IF NOT EXISTS playit_tunnels (
+    tunnel_id TEXT PRIMARY KEY,
+    server_id TEXT,
+    local_port INTEGER,
+    name TEXT,
+    assigned_domain TEXT,
+    proto TEXT,
+    created_at TEXT NOT NULL DEFAULT (datetime('now'))
+  );`,
 ];
 
 const migrate = (database) => {

@@ -5,18 +5,24 @@ import {existsSync} from "node:fs";
 import {join} from "node:path";
 import {config} from "./config.js";
 import {db} from "./db.js";
-import {getUserByToken, mountAuthRoutes, requireMasterAuth} from "./auth.js";
+import {getUserByToken, mountAuthRoutes, requireFeature} from "./auth.js";
+import {canAccessServer, hasRead} from "./permissions.js";
 import {mountServerRoutes} from "./servers.js";
+import {mountUserRoutes} from "./users.js";
 import {handleConsoleConnection, mountProxy} from "./proxy.js";
 import {handleTunnelConnection} from "./tunnel/server.js";
+import {mountPlayitRoutes} from "./playit/routes.js";
+import {bootstrapPlayit} from "./playit/manager.js";
 
 const app = express();
 app.disable("x-powered-by");
 app.use("/master", express.json({limit: "2mb"}));
 
 mountAuthRoutes(app);
-mountServerRoutes(app, requireMasterAuth);
-mountProxy(app, requireMasterAuth);
+mountServerRoutes(app, requireFeature);
+mountUserRoutes(app, requireFeature);
+mountPlayitRoutes(app, requireFeature);
+mountProxy(app);
 
 const uiDist = config.uiDist;
 if (existsSync(uiDist)) {
@@ -42,9 +48,12 @@ server.on("upgrade", (req, socket, head) => {
     }
 
     const match = url.pathname.match(/^\/api\/proxy\/([^/]+)\/ws$/);
-    if (match && getUserByToken(url.searchParams.get("token"))) {
-        proxyWss.handleUpgrade(req, socket, head, (ws) => handleConsoleConnection(ws, match[1]));
-        return;
+    if (match) {
+        const wsUser = getUserByToken(url.searchParams.get("token"));
+        if (wsUser && hasRead(wsUser.id, "Servers") && canAccessServer(wsUser.id, match[1])) {
+            proxyWss.handleUpgrade(req, socket, head, (ws) => handleConsoleConnection(ws, match[1]));
+            return;
+        }
     }
 
     socket.destroy();
@@ -55,4 +64,5 @@ server.listen(config.port, () => {
     console.log(`Data home: ${config.home}`);
     const {c} = db.query("SELECT COUNT(*) AS c FROM servers").get();
     console.log(`${c} server(s) registered. Orphaned servers will re-attach via the tunnel.`);
+    bootstrapPlayit();
 });

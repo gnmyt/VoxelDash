@@ -1,5 +1,6 @@
 import {db} from "./db.js";
 import {randomToken} from "./util.js";
+import {canAccessServer, describeUser, hasLevel, LEVEL} from "./permissions.js";
 
 const HASH_OPTS = {algorithm: "bcrypt", cost: 10};
 
@@ -49,6 +50,22 @@ export const requireMasterAuth = (req, res, next) => {
     next();
 };
 
+export const requireFeature = (feature, level = LEVEL.READ) => (req, res, next) => {
+    requireMasterAuth(req, res, () => {
+        if (!hasLevel(req.user.id, feature, level)) {
+            return res.status(403).json({error: "Insufficient permissions"});
+        }
+        next();
+    });
+};
+
+export const requireServerAccess = (req, res, next) => {
+    if (!canAccessServer(req.user.id, req.params.serverId || req.params.id)) {
+        return res.status(403).json({error: "No access to this server"});
+    }
+    next();
+};
+
 export const mountAuthRoutes = (app) => {
     app.get("/master/status", (req, res) => {
         res.json({setupRequired: userCount() === 0, name: "VoxelDash One"});
@@ -77,6 +94,6 @@ export const mountAuthRoutes = (app) => {
     });
 
     app.get("/master/me", requireMasterAuth, (req, res) => {
-        res.json({user: req.user});
+        res.json({user: {...req.user, ...describeUser(req.user.id)}});
     });
 };

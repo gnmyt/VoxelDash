@@ -9,6 +9,9 @@ import {resolveVoxelDashJar} from "./provision/voxeldash.js";
 import {launchServer, stopServer} from "./provision/launcher.js";
 import {clearLog, effectiveStatus, getLog, logProgress, processes} from "./runtime.js";
 import {registry} from "./tunnel/registry.js";
+import {requireServerAccess} from "./auth.js";
+import {LEVEL, listAccessibleServerIds} from "./permissions.js";
+import {removeTunnelsForServer} from "./playit/manager.js";
 
 const serverDirFor = (id) => {
     return join(config.paths.servers, id);
@@ -98,12 +101,15 @@ const provision = async (server) => {
     }
 };
 
-export const mountServerRoutes = (app, requireMasterAuth) => {
-    app.get("/master/software", requireMasterAuth, (req, res) => {
+export const mountServerRoutes = (app, requireFeature) => {
+    const canView = requireFeature("Servers", LEVEL.READ);
+    const canManage = requireFeature("Servers", LEVEL.FULL);
+
+    app.get("/master/software", canView, (req, res) => {
         res.json({software: listSoftware()});
     });
 
-    app.get("/master/software/:key/versions", requireMasterAuth, async (req, res) => {
+    app.get("/master/software/:key/versions", canView, async (req, res) => {
         const software = getSoftware(req.params.key);
         if (!software) return res.status(404).json({error: "Unknown software"});
         try {
@@ -113,11 +119,14 @@ export const mountServerRoutes = (app, requireMasterAuth) => {
         }
     });
 
-    app.get("/master/servers", requireMasterAuth, (req, res) => {
-        res.json({servers: db.query("SELECT * FROM servers ORDER BY created_at DESC").all().map(serialize)});
+    app.get("/master/servers", canView, (req, res) => {
+        const allowed = listAccessibleServerIds(req.user.id);
+        const rows = db.query("SELECT * FROM servers ORDER BY created_at DESC").all();
+        const visible = allowed === null ? rows : rows.filter((row) => allowed.includes(row.id));
+        res.json({servers: visible.map(serialize)});
     });
 
-    app.post("/master/servers", requireMasterAuth, async (req, res) => {
+    app.post("/master/servers", canManage, async (req, res) => {
         const {name, software: softwareKey, mcVersion, memoryMb} = req.body || {};
         const software = getSoftware(softwareKey);
 
@@ -146,13 +155,13 @@ export const mountServerRoutes = (app, requireMasterAuth) => {
         res.status(201).json({server: serialize(getServer(id))});
     });
 
-    app.get("/master/servers/:id", requireMasterAuth, (req, res) => {
+    app.get("/master/servers/:id", canView, requireServerAccess, (req, res) => {
         const row = getServer(req.params.id);
         if (!row) return res.status(404).json({error: "Not found"});
         res.json({server: serialize(row), log: getLog(row.id)});
     });
 
-    app.post("/master/servers/:id/start", requireMasterAuth, async (req, res) => {
+    app.post("/master/servers/:id/start", canManage, requireServerAccess, async (req, res) => {
         const row = getServer(req.params.id);
         if (!row) return res.status(404).json({error: "Not found"});
         if (processes.has(row.id) || registry.isOnline(row.id)) {
@@ -170,18 +179,19 @@ export const mountServerRoutes = (app, requireMasterAuth) => {
         }
     });
 
-    app.post("/master/servers/:id/stop", requireMasterAuth, (req, res) => {
+    app.post("/master/servers/:id/stop", canManage, requireServerAccess, (req, res) => {
         const row = getServer(req.params.id);
         if (!row) return res.status(404).json({error: "Not found"});
         if (!stopServer(row)) return res.status(409).json({error: "Server is not running in this session"});
         res.json({ok: true});
     });
 
-    app.delete("/master/servers/:id", requireMasterAuth, (req, res) => {
+    app.delete("/master/servers/:id", canManage, requireServerAccess, (req, res) => {
         const row = getServer(req.params.id);
         if (!row) return res.status(404).json({error: "Not found"});
         stopServer(row);
         registry.detach(row.id);
+        removeTunnelsForServer(row.id).catch(() => {});
         setTimeout(() => {
             try {
                 rmSync(serverDirFor(row.id), {recursive: true, force: true});
