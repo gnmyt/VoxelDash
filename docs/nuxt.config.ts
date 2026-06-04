@@ -42,11 +42,13 @@ export default defineNuxtConfig({
   nitro: {
     prerender: {
       crawlLinks: true,
-      ignore: ['/openapi.json'],
+      ignore: ['/openapi.json', '/one.sh'],
       routes: [
         '/',
         '/getting-started/introduction',
         '/getting-started/reverse-proxy',
+        '/voxeldash-one/introduction',
+        '/voxeldash-one/installation',
         '/features/overview',
         '/features/players',
         '/features/file_manager',
