@@ -22,6 +22,7 @@
     "core:window:allow-show",
     "core:window:allow-set-focus",
     "core:event:default",
-    "opener:allow-open-url"
+    "opener:allow-open-url",
+    "opener:allow-default-urls"
   ]
 }
