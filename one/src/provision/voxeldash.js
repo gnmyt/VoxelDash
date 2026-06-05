@@ -1,7 +1,8 @@
 import {join} from "node:path";
 import {existsSync, readdirSync, statSync} from "node:fs";
 import {config} from "../config.js";
-import {findServerAsset, normalizeVersion} from "../updater/releases.js";
+import {findServerAsset, latestForChannel, normalizeVersion} from "../updater/releases.js";
+import {getChannel} from "../updater/settings.js";
 
 const ARTIFACT_MODULE = {
     spigot: "spigot",
@@ -50,9 +51,7 @@ const fetchRelease = async () => {
         return response.json();
     }
 
-    const response = await fetch(`https://api.github.com/repos/${config.repo}/releases?per_page=20`, {headers});
-    if (!response.ok) throw new Error(`GitHub release lookup failed: ${response.status}`);
-    const release = (await response.json()).find((r) => !r.draft);
+    const release = await latestForChannel(getChannel());
     if (!release) throw new Error(`No published release found for ${config.repo}`);
     return release;
 };
