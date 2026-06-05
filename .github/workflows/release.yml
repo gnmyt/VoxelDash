@@ -71,6 +71,14 @@ jobs:
           distribution: temurin
           cache: maven
 
+      - name: Purge corrupt jars from Maven cache
+        run: |
+          find ~/.m2/repository -name '*.jar' -print0 \
+            | while IFS= read -r -d '' j; do
+                unzip -tqq "$j" >/dev/null 2>&1 \
+                  || { echo "::warning::Removing corrupt jar $j"; rm -f "$j"; }
+              done
+
       - name: Set up pnpm
         if: matrix.webui
         uses: pnpm/action-setup@v4
@@ -293,6 +301,14 @@ jobs:
           java-version: "21"
           distribution: temurin
           cache: maven
+
+      - name: Purge corrupt jars from Maven cache
+        run: |
+          find ~/.m2/repository -name '*.jar' -print0 \
+            | while IFS= read -r -d '' j; do
+                unzip -tqq "$j" >/dev/null 2>&1 \
+                  || { echo "::warning::Removing corrupt jar $j"; rm -f "$j"; }
+              done
 
       - name: Stamp release version
         run: bash .github/scripts/set-version.sh "${{ needs.setup.outputs.version }}"
