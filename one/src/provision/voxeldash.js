@@ -6,6 +6,8 @@ const ARTIFACT_MODULE = {
     spigot: "spigot",
     bungeecord: "bungeecord",
     fabric: "fabric",
+    forge: "forge",
+    forge26: "forge26",
     vanilla: "vanilla",
 };
 
@@ -19,7 +21,7 @@ export const resolveVoxelDashJar = async (artifact, onLog) => {
         const dir = join(moduleDir, sub);
         if (!existsSync(dir)) continue;
         for (const f of readdirSync(dir)) {
-            if (!f.startsWith(`voxeldash-${artifact}`) || !f.endsWith(".jar")) continue;
+            if (!f.startsWith(`voxeldash-${artifact}-`) || !f.endsWith(".jar")) continue;
             if (f.startsWith("original-") || /-(sources|dev|dev-all)\.jar$/.test(f)) continue;
             candidates.push({path: join(dir, f), mtime: statSync(join(dir, f)).mtimeMs});
         }
@@ -54,7 +56,7 @@ const downloadFromRelease = async (artifact, onLog) => {
     const release = await fetchRelease();
     onLog?.(`Fetching ${artifact} from release ${release.tag_name}...`);
 
-    const asset = (release.assets || []).find((a) => a.name.includes(artifact) && a.name.endsWith(".jar"));
+    const asset = (release.assets || []).find((a) => a.name.includes(`voxeldash-${artifact}-`) && a.name.endsWith(".jar"));
     if (!asset) throw new Error(`No ${artifact} asset found in release ${release.tag_name}`);
 
     const dest = join(config.paths.cache, asset.name);

@@ -57,20 +57,21 @@ const provision = async (server) => {
         if (!software) throw new Error(`Unsupported software: ${server.software}`);
 
         const serverJar = join(dir, "server.jar");
+        const artifact = software.resolveArtifact ? software.resolveArtifact(server.mc_version) : software.voxeldashArtifact;
 
         if (software.loaderJar) {
             log(`Installing ${software.name} loader...`);
-            copyFileSync(await resolveVoxelDashJar(software.voxeldashArtifact, log), serverJar);
+            copyFileSync(await resolveVoxelDashJar(artifact, log), serverJar);
             log("Installed VoxelDash loader.");
         } else {
             log(`Resolving ${software.name} ${server.mc_version}...`);
             const jar = await software.resolveServerJar(server.mc_version);
-            await downloadTo(jar.url, serverJar, log);
+            await downloadTo(jar.url, join(dir, software.installer ? "forge-installer.jar" : "server.jar"), log);
             db.query("UPDATE servers SET build = ? WHERE id = ?").run(jar.build || null, server.id);
 
             const installDir = software.installDir ? join(dir, software.installDir) : dir;
             mkdirSync(installDir, {recursive: true});
-            copyFileSync(await resolveVoxelDashJar(software.voxeldashArtifact, log), join(installDir, "voxeldash.jar"));
+            copyFileSync(await resolveVoxelDashJar(artifact, log), join(installDir, "voxeldash.jar"));
             log("Installed VoxelDash.");
 
             if (software.extraMods) {
@@ -81,7 +82,7 @@ const provision = async (server) => {
         }
 
         let major = software.javaMajor ? await software.javaMajor(server.mc_version) : null;
-        if (!major && !software.loaderJar) major = detectJarJavaMajor(serverJar);
+        if (!major && !software.loaderJar && !software.installer) major = detectJarJavaMajor(serverJar);
         if (!major) major = requiredMajorForMc(server.mc_version);
         if (software.minJava && major < software.minJava) {
             throw new Error(`Minecraft ${server.mc_version} runs on Java ${major}, but VoxelDash requires Java ${software.minJava}+. Choose a newer Minecraft version.`);
@@ -89,6 +90,8 @@ const provision = async (server) => {
         log(`Required Java: ${major}`);
         db.query("UPDATE servers SET java_major = ? WHERE id = ?").run(major, server.id);
         const javaPath = await ensureJre(major, log);
+
+        if (software.install) await software.install(dir, {mcVersion: server.mc_version, javaPath, log});
 
         await software.layout(dir, {gamePort: server.game_port, name: server.name});
 
@@ -168,7 +171,8 @@ export const mountServerRoutes = (app, requireFeature) => {
             return res.status(409).json({error: "Server is already running"});
         }
         const dir = serverDirFor(row.id);
-        if (!existsSync(join(dir, "server.jar"))) return res.status(409).json({error: "Server is not provisioned"});
+        const marker = getSoftware(row.software)?.provisionedMarker || "server.jar";
+        if (!existsSync(join(dir, marker))) return res.status(409).json({error: "Server is not provisioned"});
         try {
             const javaPath = await ensureJre(row.java_major || requiredMajorForMc(row.mc_version));
             logProgress(row.id, "Starting server...");

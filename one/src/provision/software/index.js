@@ -1,9 +1,10 @@
 import {paper} from "./paper.js";
 import {fabric} from "./fabric.js";
+import {forge} from "./forge.js";
 import {vanilla} from "./vanilla.js";
 import {bungeecord} from "./bungeecord.js";
 
-const ADAPTERS = {paper, fabric, vanilla, bungeecord};
+const ADAPTERS = {paper, fabric, forge, vanilla, bungeecord};
 
 const CATALOG = [
     {
@@ -19,6 +20,13 @@ const CATALOG = [
         kind: "server",
         accent: "#cbb389",
         tagline: "Lightweight, modular mod loader"
+    },
+    {
+        key: "forge",
+        name: "Forge",
+        kind: "server",
+        accent: "#8295ad",
+        tagline: "The original Minecraft mod loader"
     },
     {
         key: "vanilla",

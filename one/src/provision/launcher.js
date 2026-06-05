@@ -15,7 +15,7 @@ const jvmFlags = (memoryMb) => {
 
 export const launchServer = (server, javaPath, serverDir) => {
     const software = getSoftware(server.software);
-    const launchArgs = software.launchArgs("server.jar");
+    const launchArgs = software.launchArgs("server.jar", serverDir);
     const args = [...jvmFlags(server.memory_mb || 2048), ...launchArgs];
 
     const env = {
