@@ -99,7 +99,7 @@ const CreateServerDialog = ({open, onOpenChange}: { open: boolean; onOpenChange:
     };
 
     const handleOpenChange = (next: boolean) => {
-        if (!next && (creating || step === "provisioning")) return;
+        if (!next && creating) return;
         onOpenChange(next);
     };
 
