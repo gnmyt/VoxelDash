@@ -20,14 +20,26 @@ for rel in ['modules/api/pom.xml',
     pom.write_text(updated)
     print(f"{rel}: rewrote {n} voxeldash version(s) -> {version}")
 
-for rel in ['ui/package.json', 'one/package.json',
-            'desktop/package.json', 'desktop/src-tauri/tauri.conf.json']:
+def msi_safe(v):
+    m = re.match(r'^(\d+\.\d+\.\d+)(?:-(.+))?$', v)
+    if not m or not m.group(2):
+        return v
+    nums = re.findall(r'\d+', m.group(2))
+    return f"{m.group(1)}-{nums[-1]}" if nums else m.group(1)
+
+json_versions = {
+    'ui/package.json': version,
+    'one/package.json': version,
+    'desktop/package.json': version,
+    'desktop/src-tauri/tauri.conf.json': msi_safe(version),
+}
+for rel, ver in json_versions.items():
     pkg = root / rel
     text = pkg.read_text()
     text, n = re.subn(r'("version"\s*:\s*")[^"]*(")',
-                      lambda m: m.group(1) + version + m.group(2), text, count=1)
+                      lambda m, ver=ver: m.group(1) + ver + m.group(2), text, count=1)
     pkg.write_text(text)
-    print(f"{rel}: set version -> {version} ({n})")
+    print(f"{rel}: set version -> {ver} ({n})")
 PY
 
 CARGO="$ROOT/desktop/src-tauri/Cargo.toml"
