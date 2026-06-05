@@ -24,14 +24,17 @@ interface SoftwareEntry {
 }
 
 const MEMORY_MIN = 1024;
-const MEMORY_MAX = 16384;
 const MEMORY_STEP = 512;
-const MEMORY_MARKS = [
-    {mb: 2048, label: "Low"},
-    {mb: 4096, label: "Medium"},
-    {mb: 8192, label: "High"},
-];
+const MEMORY_FALLBACK_MAX = 16384;
 const formatGb = (mb: number) => `${Number.isInteger(mb / 1024) ? mb / 1024 : (mb / 1024).toFixed(1)} GB`;
+
+const snapToStep = (mb: number) => Math.max(MEMORY_MIN, Math.round(mb / MEMORY_STEP) * MEMORY_STEP);
+
+const memoryMarks = (max: number) => [
+    {mb: snapToStep(MEMORY_MIN + (max - MEMORY_MIN) * 0.25), label: "Low"},
+    {mb: snapToStep(MEMORY_MIN + (max - MEMORY_MIN) * 0.5), label: "Medium"},
+    {mb: snapToStep(MEMORY_MIN + (max - MEMORY_MIN) * 0.75), label: "High"},
+];
 
 const CreateServerDialog = ({open, onOpenChange}: { open: boolean; onOpenChange: (open: boolean) => void }) => {
     const {createServer, selectServer} = useServerSelection();
@@ -45,12 +48,16 @@ const CreateServerDialog = ({open, onOpenChange}: { open: boolean; onOpenChange:
     const [name, setName] = useState("");
     const [mcVersion, setMcVersion] = useState("");
     const [memoryMb, setMemoryMb] = useState(2048);
+    const [memoryMax, setMemoryMax] = useState(MEMORY_FALLBACK_MAX);
     const [creating, setCreating] = useState(false);
     const [serverId, setServerId] = useState<string | null>(null);
 
     useEffect(() => {
         if (!open || catalog.length) return;
         masterJson("software").then((d) => setCatalog(d.software || [])).catch(() => {});
+        masterJson("system").then((d) => {
+            if (d.totalMemoryMb) setMemoryMax(Math.max(MEMORY_MIN + MEMORY_STEP * 2, snapToStep(d.totalMemoryMb)));
+        }).catch(() => {});
     }, [open]);
 
     useEffect(() => {
@@ -167,11 +174,11 @@ const CreateServerDialog = ({open, onOpenChange}: { open: boolean; onOpenChange:
                                     {formatGb(memoryMb)}
                                 </span>
                             </div>
-                            <Slider value={[memoryMb]} min={MEMORY_MIN} max={MEMORY_MAX} step={MEMORY_STEP}
+                            <Slider value={[memoryMb]} min={MEMORY_MIN} max={memoryMax} step={MEMORY_STEP}
                                     onValueChange={([v]) => setMemoryMb(v)} aria-label="Memory"/>
                             <div className="relative h-7">
-                                {MEMORY_MARKS.map((mark) => {
-                                    const pct = ((mark.mb - MEMORY_MIN) / (MEMORY_MAX - MEMORY_MIN)) * 100;
+                                {memoryMarks(memoryMax).map((mark) => {
+                                    const pct = ((mark.mb - MEMORY_MIN) / (memoryMax - MEMORY_MIN)) * 100;
                                     const active = Math.abs(memoryMb - mark.mb) < MEMORY_STEP;
                                     return (
                                         <div key={mark.mb} style={{left: `${pct}%`}}

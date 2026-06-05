@@ -1,4 +1,5 @@
 import {join} from "node:path";
+import {totalmem} from "node:os";
 import {copyFileSync, existsSync, mkdirSync, rmSync} from "node:fs";
 import {db} from "./db.js";
 import {config} from "./config.js";
@@ -111,6 +112,10 @@ const provision = async (server) => {
 export const mountServerRoutes = (app, requireFeature) => {
     const canView = requireFeature("Servers", LEVEL.READ);
     const canManage = requireFeature("Servers", LEVEL.FULL);
+
+    app.get("/master/system", canView, (req, res) => {
+        res.json({totalMemoryMb: Math.floor(totalmem() / (1024 * 1024))});
+    });
 
     app.get("/master/software", canView, (req, res) => {
         res.json({software: listSoftware()});
