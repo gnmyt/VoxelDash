@@ -24,7 +24,7 @@ WEBUI_DIR="$DESKTOP_DIR/src-tauri/webui"
 mkdir -p "$BIN_DIR"
 
 echo "==> Building web UI (vite)"
-( cd "$ROOT/ui" && bunx vite build )
+( cd "$ROOT/ui" && pnpm install --frozen-lockfile && bunx vite build )
 
 echo "==> Staging web UI -> $WEBUI_DIR"
 rm -rf "$WEBUI_DIR"

@@ -220,7 +220,7 @@ jobs:
 
   desktop:
     name: Build Desktop (${{ matrix.target.id }})
-    needs: [setup, release]
+    needs: setup
     strategy:
       fail-fast: false
       matrix:
@@ -292,11 +292,13 @@ jobs:
             done
           ls -la dist
 
-      - name: Upload installers to release
-        uses: softprops/action-gh-release@v2
+      - name: Upload desktop installers
+        uses: actions/upload-artifact@v4
         with:
-          tag_name: ${{ github.ref_name }}
-          files: dist/*
+          name: dist-desktop-${{ matrix.target.id }}
+          path: dist/*
+          if-no-files-found: error
+          retention-days: 1
 
   deploy-maven:
     name: Publish API to Buildkite
@@ -359,7 +361,7 @@ jobs:
 
   release:
     name: Publish Release
-    needs: [setup, build, one]
+    needs: [setup, build, one, desktop]
     runs-on: ubuntu-latest
     steps:
       - name: Checkout default branch
@@ -402,10 +404,14 @@ jobs:
           files: |
             dist/*.jar
             dist/voxeldash-one-*
+            dist/*.AppImage
+            dist/*.deb
+            dist/*.msi
+            dist/*-setup.exe
 
   cleanup-on-failure:
     name: Cleanup on Failure
-    needs: [setup, build, one, release]
+    needs: [setup, build, one, desktop, release]
     if: failure()
     runs-on: ubuntu-latest
     steps:
