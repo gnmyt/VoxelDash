@@ -101,11 +101,22 @@ jobs:
         run: bash .github/scripts/set-version.sh "${{ needs.setup.outputs.version }}"
 
       - name: Install voxeldash-api into local Maven repo
-        run: mvn -B -ntp -f modules/api/pom.xml install -DskipTests
+        run: mvn -B -ntp -C -f modules/api/pom.xml install -DskipTests
 
       - name: Build module (Maven)
         if: matrix.tool == 'maven'
-        run: mvn -B -ntp -f modules/${{ matrix.module }}/pom.xml package -DskipTests
+        run: |
+          for attempt in 1 2 3; do
+            if mvn -B -ntp -C -U -f modules/${{ matrix.module }}/pom.xml package -DskipTests; then
+              exit 0
+            fi
+            echo "::warning::Maven build attempt $attempt failed; purging unreadable jars and retrying"
+            find ~/.m2/repository -name '*.jar' -print0 \
+              | while IFS= read -r -d '' j; do
+                  unzip -tqq "$j" >/dev/null 2>&1 || rm -f "$j"
+                done
+          done
+          exit 1
 
       - name: Build module (Gradle)
         if: matrix.tool == 'gradle'
@@ -343,7 +354,7 @@ jobs:
       - name: Deploy voxeldash-api
         run: |
           REPO_URL="https://packages.buildkite.com/${BUILDKITE_ORG}/${BUILDKITE_MAVEN_REGISTRY}/maven2/"
-          mvn -B -ntp -f modules/api/pom.xml deploy -DskipTests \
+          mvn -B -ntp -C -f modules/api/pom.xml deploy -DskipTests \
             -DaltDeploymentRepository="buildkite::${REPO_URL}"
 
   release:
