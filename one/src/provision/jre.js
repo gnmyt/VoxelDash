@@ -1,7 +1,11 @@
 import {join} from "node:path";
-import {existsSync, mkdirSync, readdirSync, rmSync} from "node:fs";
+import {arch as osArch, platform as osPlatform} from "node:os";
+import {chmodSync, existsSync, mkdirSync, readdirSync, rmSync} from "node:fs";
 import {config} from "../config.js";
-import {readZipEntry} from "./zip.js";
+import {extractZip, readZipEntry} from "./zip.js";
+
+const IS_WINDOWS = osPlatform() === "win32";
+const JAVA_BIN = IS_WINDOWS ? "java.exe" : "java";
 
 export const detectJarJavaMajor = (jarPath) => {
     try {
@@ -44,7 +48,7 @@ const findJavaBinary = (dir) => {
         for (const entry of entries) {
             const full = join(current, entry.name);
             if (entry.isDirectory()) stack.push(full);
-            else if (entry.name === "java" && current.endsWith("bin")) return full;
+            else if (entry.name === JAVA_BIN && current.endsWith("bin")) return full;
         }
     }
     return null;
@@ -59,10 +63,10 @@ export const ensureJre = async (major, onLog) => {
     }
 
     mkdirSync(dir, {recursive: true});
-    const arch = process.arch === "arm64" ? "aarch64" : "x64";
-    const os = process.platform === "darwin" ? "mac" : "linux";
+    const arch = osArch() === "arm64" ? "aarch64" : "x64";
+    const os = IS_WINDOWS ? "windows" : osPlatform() === "darwin" ? "mac" : "linux";
 
-    const tarPath = join(dir, "jre.tar.gz");
+    const archivePath = join(dir, IS_WINDOWS ? "jre.zip" : "jre.tar.gz");
     let lastStatus = 0;
     let downloaded = false;
     for (const image of ["jre", "jdk"]) {
@@ -70,7 +74,7 @@ export const ensureJre = async (major, onLog) => {
         onLog?.(`Downloading Temurin ${image.toUpperCase()} ${major} (${os}/${arch})...`);
         const response = await fetch(url, {headers: {"User-Agent": config.userAgent}, redirect: "follow"});
         if (response.ok) {
-            await Bun.write(tarPath, await response.arrayBuffer());
+            await Bun.write(archivePath, await response.arrayBuffer());
             downloaded = true;
             break;
         }
@@ -82,13 +86,17 @@ export const ensureJre = async (major, onLog) => {
     }
 
     onLog?.("Extracting JRE...");
-    const proc = Bun.spawnSync(["tar", "-xzf", tarPath, "-C", dir]);
-    if (proc.exitCode !== 0) throw new Error("Failed to extract JRE: " + (proc.stderr?.toString() || "unknown error"));
-    rmSync(tarPath, {force: true});
+    if (IS_WINDOWS) {
+        extractZip(archivePath, dir);
+    } else {
+        const proc = Bun.spawnSync(["tar", "-xzf", archivePath, "-C", dir]);
+        if (proc.exitCode !== 0) throw new Error("Failed to extract JRE: " + (proc.stderr?.toString() || "unknown error"));
+    }
+    rmSync(archivePath, {force: true});
 
     const java = findJavaBinary(dir);
     if (!java) throw new Error("java binary not found after extracting JRE");
-    Bun.spawnSync(["chmod", "+x", java]);
+    if (!IS_WINDOWS) chmodSync(java, 0o755);
     onLog?.(`JRE ${major} ready`);
     return java;
 };

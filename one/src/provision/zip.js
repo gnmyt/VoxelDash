@@ -1,4 +1,5 @@
-import {readFileSync} from "node:fs";
+import {mkdirSync, readFileSync, writeFileSync} from "node:fs";
+import {dirname, join} from "node:path";
 import {inflateRawSync} from "node:zlib";
 
 const EOCD_SIG = 0x06054b50;
@@ -47,4 +48,41 @@ export const readZipEntry = (zipPath, entryName) => {
         p += 46 + nameLen + extraLen + commentLen;
     }
     return null;
+};
+
+export const extractZip = (zipPath, destDir) => {
+    const buf = readFileSync(zipPath);
+    const eocd = findEocd(buf);
+    if (eocd < 0) throw new Error("Invalid zip archive (no end-of-central-directory record)");
+
+    const count = buf.readUInt16LE(eocd + 10);
+    const cdOffset = buf.readUInt32LE(eocd + 16);
+    if (count === 0xffff || cdOffset === 0xffffffff) throw new Error("Zip64 archives are not supported");
+
+    let p = cdOffset;
+    let extracted = 0;
+    for (let i = 0; i < count; i++) {
+        if (buf.readUInt32LE(p) !== CD_SIG) break;
+        const method = buf.readUInt16LE(p + 10);
+        const compSize = buf.readUInt32LE(p + 20);
+        const nameLen = buf.readUInt16LE(p + 28);
+        const extraLen = buf.readUInt16LE(p + 30);
+        const commentLen = buf.readUInt16LE(p + 32);
+        const localOffset = buf.readUInt32LE(p + 42);
+        const name = buf.toString("utf8", p + 46, p + 46 + nameLen);
+        p += 46 + nameLen + extraLen + commentLen;
+
+        if (!name || name.includes("..")) continue;
+        const target = join(destDir, ...name.split("/").filter(Boolean));
+        if (name.endsWith("/")) {
+            mkdirSync(target, {recursive: true});
+            continue;
+        }
+        const data = readLocalEntry(buf, localOffset, method, compSize);
+        if (data === null) throw new Error(`Unsupported compression method ${method} for ${name}`);
+        mkdirSync(dirname(target), {recursive: true});
+        writeFileSync(target, data);
+        extracted++;
+    }
+    return extracted;
 };
