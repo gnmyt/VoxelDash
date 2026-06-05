@@ -3,9 +3,9 @@ package de.gnm.voxeldash.pipes;
 import de.gnm.voxeldash.api.entities.OnlinePlayer;
 import de.gnm.voxeldash.api.pipes.players.OnlinePlayerPipe;
 import de.gnm.voxeldash.util.BukkitUtil;
+import de.gnm.voxeldash.util.VersionCompat;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
-import org.bukkit.Statistic;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
 
@@ -23,7 +23,7 @@ public class OnlinePlayerPipeImpl implements OnlinePlayerPipe {
                 ipAddress = player.getAddress().getAddress().getHostAddress();
             }
 
-            long playtime = player.getStatistic(Statistic.PLAY_ONE_MINUTE) * 50L;
+            long playtime = VersionCompat.playtimeMillis(player);
 
             OnlinePlayer onlinePlayer = new OnlinePlayer(
                     player.getName(),

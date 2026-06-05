@@ -3,6 +3,7 @@ package de.gnm.voxeldash.pipes;
 import de.gnm.voxeldash.api.entities.World;
 import de.gnm.voxeldash.api.pipes.worlds.WorldPipe;
 import de.gnm.voxeldash.util.BukkitUtil;
+import de.gnm.voxeldash.util.VersionCompat;
 import org.bukkit.*;
 import org.bukkit.entity.Player;
 
@@ -219,7 +220,7 @@ public class WorldPipeImpl implements WorldPipe {
                 weather,
                 world.getDifficulty().name(),
                 world.getSeed(),
-                world.isHardcore(),
+                VersionCompat.isHardcore(world),
                 worldType
         );
     }

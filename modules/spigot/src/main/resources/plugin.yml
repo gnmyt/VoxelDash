@@ -1,7 +1,7 @@
 name: VoxelDash
 version: ${project.version}
 main: de.gnm.voxeldash.VoxelDashSpigot
-api-version: '1.21'
+api-version: '1.13'
 description: A web-based dashboard for managing your Minecraft server
 author: GNM
 website: https://voxeldash.dev/

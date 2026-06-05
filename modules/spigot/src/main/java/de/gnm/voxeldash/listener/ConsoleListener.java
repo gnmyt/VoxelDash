@@ -6,8 +6,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.core.LogEvent;
 import org.apache.logging.log4j.core.Logger;
 import org.apache.logging.log4j.core.appender.AbstractAppender;
-import org.apache.logging.log4j.core.config.Property;
-import org.apache.logging.log4j.core.layout.PatternLayout;
 
 import java.time.format.DateTimeFormatter;
 
@@ -19,7 +17,7 @@ public class ConsoleListener extends AbstractAppender {
     private final VoxelDashSpigot plugin;
 
     private ConsoleListener(VoxelDashSpigot plugin) {
-        super(APPENDER_NAME, null, PatternLayout.createDefaultLayout(), true, Property.EMPTY_ARRAY);
+        super(APPENDER_NAME, null, null, true);
         this.plugin = plugin;
     }
 
@@ -33,11 +31,18 @@ public class ConsoleListener extends AbstractAppender {
             return;
         }
 
-        instance = new ConsoleListener(plugin);
-        instance.start();
+        try {
+            ConsoleListener listener = new ConsoleListener(plugin);
+            listener.start();
 
-        Logger rootLogger = (Logger) LogManager.getRootLogger();
-        rootLogger.addAppender(instance);
+            Logger rootLogger = (Logger) LogManager.getRootLogger();
+            rootLogger.addAppender(listener);
+
+            instance = listener;
+        } catch (Throwable t) {
+            instance = null;
+            plugin.getLogger().warning("Live console streaming is unavailable on this server: " + t);
+        }
     }
 
     /**

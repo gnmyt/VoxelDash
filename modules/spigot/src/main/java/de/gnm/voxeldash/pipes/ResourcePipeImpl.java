@@ -6,6 +6,7 @@ import de.gnm.voxeldash.api.entities.Resource;
 import de.gnm.voxeldash.api.entities.ResourceType;
 import de.gnm.voxeldash.api.pipes.resources.ResourcePipe;
 import de.gnm.voxeldash.util.BukkitUtil;
+import de.gnm.voxeldash.util.VersionCompat;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginDescriptionFile;
@@ -25,11 +26,12 @@ import java.util.zip.ZipFile;
 
 public class ResourcePipeImpl implements ResourcePipe {
 
-    private static final List<ResourceType> SUPPORTED_TYPES = Arrays.asList(ResourceType.PLUGIN, ResourceType.DATAPACK);
-
     @Override
     public List<ResourceType> getSupportedResourceTypes() {
-        return SUPPORTED_TYPES;
+        if (VersionCompat.supportsDatapacks()) {
+            return Arrays.asList(ResourceType.PLUGIN, ResourceType.DATAPACK);
+        }
+        return Collections.singletonList(ResourceType.PLUGIN);
     }
 
     @Override

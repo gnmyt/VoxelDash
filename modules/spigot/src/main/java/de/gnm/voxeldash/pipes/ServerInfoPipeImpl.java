@@ -12,7 +12,7 @@ public class ServerInfoPipeImpl implements ServerInfoPipe {
 
     @Override
     public String getServerVersion() {
-        return Bukkit.getBukkitVersion().split("-")[0];
+        return Bukkit.getBukkitVersion().split("-")[0].replaceAll("\\.build\\..*$", "");
     }
 
     @Override
