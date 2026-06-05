@@ -69,7 +69,7 @@ export const MasterLayout = ({active, title, subtitle, actions, children}: {
 }) => (
     <SidebarProvider>
         <MasterSidebar active={active}/>
-        <SidebarInset className="flex max-h-screen flex-col overflow-hidden md:max-h-[calc(100vh-1rem)]">
+        <SidebarInset className="flex max-h-screen flex-col overflow-hidden md:max-h-[calc(var(--app-vh)_-_1rem)]">
             <header className="flex h-16 shrink-0 items-center gap-2 px-4">
                 <SidebarTrigger className="-ml-1"/>
                 <Separator orientation="vertical" className="mr-1 h-4"/>

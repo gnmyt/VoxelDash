@@ -114,7 +114,7 @@ const Console = () => {
     };
 
     return (
-        <div className="flex flex-col p-6 pt-0 gap-4" style={{ height: 'calc(100vh - 5.5rem)' }}>
+        <div className="flex flex-col p-6 pt-0 gap-4" style={{ height: 'calc(var(--app-vh) - 5.5rem)' }}>
             <div className="bg-card border rounded-xl font-mono p-6 flex-1 flex flex-col overflow-hidden">
                 <ScrollArea className="flex-1">
                     <div className="pr-4 text-sm leading-relaxed">

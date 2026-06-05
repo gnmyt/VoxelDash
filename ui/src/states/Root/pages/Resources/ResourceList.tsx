@@ -131,7 +131,7 @@ export const ResourceList = () => {
     const Icon = getIcon();
 
     return (
-        <div className="flex flex-col p-6 pt-0 gap-6" style={{ height: 'calc(100vh - 5.5rem)' }}>
+        <div className="flex flex-col p-6 pt-0 gap-6" style={{ height: 'calc(var(--app-vh) - 5.5rem)' }}>
             <div className="flex items-center justify-between p-4 rounded-xl border bg-card shrink-0">
                 <div className="flex items-center gap-4">
                     <div className="h-12 w-12 rounded-xl bg-primary/10 flex items-center justify-center">

@@ -56,7 +56,7 @@ export default function SSHSettings() {
     }, []);
 
     return (
-        <div className="flex flex-col p-6 pt-0 gap-6" style={{ height: 'calc(100vh - 5.5rem)' }}>
+        <div className="flex flex-col p-6 pt-0 gap-6" style={{ height: 'calc(var(--app-vh) - 5.5rem)' }}>
             <ScrollArea className="flex-1">
                 <div className="space-y-4 pr-4">
                     <div className="flex items-center justify-between p-4 rounded-xl border bg-card">

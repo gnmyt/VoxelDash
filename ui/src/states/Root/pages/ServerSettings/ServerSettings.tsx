@@ -70,7 +70,7 @@ const ServerSettings = () => {
     const CurrentCategoryIcon = categoryConfig[activeCategory].icon;
 
     return (
-        <div className="flex flex-col p-6 pt-0 gap-6" style={{ height: 'calc(100vh - 5.5rem)' }}>
+        <div className="flex flex-col p-6 pt-0 gap-6" style={{ height: 'calc(var(--app-vh) - 5.5rem)' }}>
             <Alert variant="destructive" className="rounded-xl shrink-0">
                 <WarningCircleIcon className="h-5 w-5"/>
                 <AlertTitle className="text-base font-semibold">{t("action.warn")}</AlertTitle>
