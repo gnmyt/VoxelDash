@@ -120,6 +120,18 @@
   letter-spacing: -0.02em;
 }
 
+:root {
+  --titlebar-h: 0px;
+  --app-vh: calc(100vh - var(--titlebar-h));
+}
+html.desktop {
+  --titlebar-h: 32px;
+}
+
+.h-screen { height: var(--app-vh) !important; }
+.min-h-screen { min-height: var(--app-vh) !important; }
+.max-h-screen { max-height: var(--app-vh) !important; }
+
 @keyframes vd-rise {
   from { opacity: 0; transform: translateY(14px) scale(0.985); }
   to { opacity: 1; transform: none; }

@@ -13,6 +13,9 @@ import {ServerSelectionProvider} from "@/contexts/ServerSelectionContext.tsx";
 import {ServerInfoProvider} from "@/contexts/ServerInfoContext.tsx";
 import {SocketProvider} from "@/contexts/SocketContext.tsx";
 import {detectInstanceMode} from "@/lib/RequestUtil.ts";
+import {isDesktop} from "@/lib/desktop.ts";
+import {TitleBar} from "@/components/TitleBar.tsx";
+import {ReactNode} from "react";
 import Servers from "@/states/Servers/Servers.tsx";
 import Forwardings from "@/states/Servers/Forwardings/Forwardings.tsx";
 import MasterUsers from "@/states/Servers/Users/Users.tsx";
@@ -26,6 +29,16 @@ const resourceRoutes = [
     { path: "/resources/:type/:fileName", element: <ResourceDetail /> },
     { path: "/resources/:type", element: <ResourceList /> },
 ];
+
+const Shell = ({children}: { children: ReactNode }) =>
+    isDesktop()
+        ? (
+            <div className="flex h-[100vh] flex-col overflow-hidden">
+                <TitleBar/>
+                <div className="min-h-0 flex-1">{children}</div>
+            </div>
+        )
+        : <>{children}</>;
 
 const App = () => {
     const [translationsLoaded, setTranslationsLoaded] = useState(false);
@@ -51,14 +64,16 @@ const App = () => {
             dashboardRoute,
         ]);
         return (
-            <ThemeProvider defaultTheme="dark" storageKey="theme">
-                <ServerInfoProvider>
-                    <SocketProvider>
-                        <Toaster />
-                        <RouterProvider router={router}/>
-                    </SocketProvider>
-                </ServerInfoProvider>
-            </ThemeProvider>
+            <Shell>
+                <ThemeProvider defaultTheme="dark" storageKey="theme">
+                    <ServerInfoProvider>
+                        <SocketProvider>
+                            <Toaster />
+                            <RouterProvider router={router}/>
+                        </SocketProvider>
+                    </ServerInfoProvider>
+                </ThemeProvider>
+            </Shell>
         );
     }
 
@@ -70,14 +85,16 @@ const App = () => {
         dashboardRoute,
     ]);
     return (
-        <ThemeProvider defaultTheme="dark" storageKey="theme">
-            <MasterAuthProvider>
-                <ServerSelectionProvider>
-                    <Toaster />
-                    <RouterProvider router={router}/>
-                </ServerSelectionProvider>
-            </MasterAuthProvider>
-        </ThemeProvider>
+        <Shell>
+            <ThemeProvider defaultTheme="dark" storageKey="theme">
+                <MasterAuthProvider>
+                    <ServerSelectionProvider>
+                        <Toaster />
+                        <RouterProvider router={router}/>
+                    </ServerSelectionProvider>
+                </MasterAuthProvider>
+            </ThemeProvider>
+        </Shell>
     );
 };
 
