@@ -145,6 +145,40 @@ html.desktop {
 }
 .vd-pulse { animation: vd-pulse-ring 2.2s ease-out infinite; }
 
+.vd-aurora {
+  background-image:
+    radial-gradient(58% 50% at 12% -5%, hsl(var(--primary) / 0.14), transparent 68%),
+    radial-gradient(48% 42% at 102% 6%, hsl(290 85% 58% / 0.12), transparent 66%),
+    radial-gradient(46% 44% at 86% 104%, hsl(var(--primary) / 0.10), transparent 70%);
+}
+.vd-aurora::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image: radial-gradient(circle, hsl(var(--foreground) / 0.07) 1px, transparent 1.4px);
+  background-size: 22px 22px;
+  -webkit-mask-image: radial-gradient(ellipse 90% 75% at 50% 0%, #000 35%, transparent 100%);
+  mask-image: radial-gradient(ellipse 90% 75% at 50% 0%, #000 35%, transparent 100%);
+}
+.dark .vd-aurora::before {
+  background-image: radial-gradient(circle, hsl(var(--foreground) / 0.05) 1px, transparent 1.4px);
+}
+
+.vd-press { transition: transform 120ms cubic-bezier(0.22, 1, 0.36, 1); }
+.vd-press:active { transform: scale(0.96); }
+
+@keyframes vd-indeterminate {
+  0% { transform: translateX(-110%); }
+  100% { transform: translateX(420%); }
+}
+.vd-indeterminate { animation: vd-indeterminate 1.15s cubic-bezier(0.65, 0, 0.35, 1) infinite; }
+
+@media (prefers-reduced-motion: reduce) {
+  .vd-rise, .vd-pulse { animation: none !important; }
+  .vd-press { transition: none; }
+  .vd-press:active { transform: none; }
+}
+
 .react-grid-item {
   transition: all 200ms ease;
   transition-property: left, top;

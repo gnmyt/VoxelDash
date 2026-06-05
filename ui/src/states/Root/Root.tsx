@@ -26,6 +26,8 @@ import {SpinnerGapIcon, PlugsIcon, ArrowLeftIcon, ArrowsClockwiseIcon, PlayIcon}
 import {Button} from "@/components/ui/button.tsx";
 import {useState} from "react";
 import {toast} from "@/hooks/use-toast.ts";
+import {AuroraBackground} from "@/components/AuroraBackground.tsx";
+import {AnimatePresence, motion} from "motion/react";
 
 const Loader = ({label}: { label: string }) => (
     <div className="flex min-h-screen flex-col items-center justify-center gap-3 bg-background text-muted-foreground">
@@ -76,6 +78,8 @@ const OfflineBanner = () => {
     const {checkToken} = useContext(ServerInfoContext)!;
     const [busy, setBusy] = useState(false);
 
+    const starting = busy || activeServer?.status === "starting";
+
     const start = async () => {
         if (!activeServerId) return;
         setBusy(true);
@@ -90,19 +94,38 @@ const OfflineBanner = () => {
     };
 
     return (
-        <div className="mx-4 mb-4 flex items-center gap-3 rounded-xl border border-border/60 bg-muted/40 px-4 py-3">
-            <PlugsIcon className="size-5 shrink-0 text-muted-foreground"/>
+        <motion.div layout
+                    initial={{opacity: 0, y: -8}}
+                    animate={{opacity: 1, y: 0}}
+                    exit={{opacity: 0, y: -8}}
+                    transition={{duration: 0.25, ease: [0.22, 1, 0.36, 1]}}
+                    className={`relative mx-4 mb-4 flex items-center gap-3 overflow-hidden rounded-xl border px-4 py-3 transition-colors ${
+                        starting ? "border-primary/40 bg-primary/5" : "border-border/60 bg-muted/40"
+                    }`}>
+            {starting
+                ? <SpinnerGapIcon className="size-5 shrink-0 animate-spin text-primary"/>
+                : <PlugsIcon className="size-5 shrink-0 text-muted-foreground"/>}
             <div className="min-w-0 flex-1">
-                <p className="text-sm font-medium">{activeServer?.name || "Server"} is offline</p>
+                <p className="text-sm font-medium">
+                    {starting ? `Starting ${activeServer?.name || "server"}…` : `${activeServer?.name || "Server"} is offline`}
+                </p>
                 <p className="truncate text-xs text-muted-foreground">
-                    File management is available. Start the server for console, players and worlds.
+                    {starting
+                        ? "Booting up. Give it a sec..."
+                        : "File management is available. Start the server for console, players and worlds."}
                 </p>
             </div>
-            <Button size="sm" disabled={busy} onClick={start}>
-                {busy ? <SpinnerGapIcon className="mr-1.5 size-4 animate-spin"/> : <PlayIcon weight="fill" className="mr-1.5 size-4"/>}
-                Start server
+            <Button size="sm" className="vd-press" disabled={starting} onClick={start}>
+                {starting
+                    ? <><SpinnerGapIcon className="mr-1.5 size-4 animate-spin"/> Starting…</>
+                    : <><PlayIcon weight="fill" className="mr-1.5 size-4"/> Start server</>}
             </Button>
-        </div>
+            {starting && (
+                <span className="absolute inset-x-0 bottom-0 h-0.5 overflow-hidden">
+                    <span className="vd-indeterminate block h-full w-1/3 rounded-full bg-primary"/>
+                </span>
+            )}
+        </motion.div>
     );
 };
 
@@ -114,7 +137,8 @@ const RootLayout = () => {
     return (
         <SidebarProvider>
             <Sidebar/>
-            <SidebarInset className="flex flex-col max-h-[var(--app-vh)] md:max-h-[calc(var(--app-vh)_-_1rem)] overflow-hidden">
+            <SidebarInset className="isolate flex flex-col max-h-[var(--app-vh)] md:max-h-[calc(var(--app-vh)_-_1rem)] overflow-hidden">
+                <AuroraBackground/>
                 <header className="flex h-16 shrink-0 items-center gap-2">
                     <div className="flex items-center gap-2 px-4">
                         <SidebarTrigger className="-ml-1"/>
@@ -135,7 +159,9 @@ const RootLayout = () => {
                 <div className="flex-1 min-h-0 flex flex-col overflow-hidden">
                     {tokenValid === true ? (
                         <>
-                            {serverInfo.offline && <OfflineBanner/>}
+                            <AnimatePresence>
+                                {serverInfo.offline && <OfflineBanner key="offline-banner"/>}
+                            </AnimatePresence>
                             <Outlet/>
                         </>
                     ) : <ServerStatePanel/>}

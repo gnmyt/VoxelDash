@@ -26,6 +26,8 @@ interface WidgetCardProps {
     widget: Widget;
 }
 
+const cardInteract = "transition-[transform,box-shadow,border-color] duration-200 ease-out hover:-translate-y-0.5 hover:border-border/80 hover:shadow-lg motion-reduce:transition-none motion-reduce:hover:translate-y-0 animate-in fade-in-0 zoom-in-95";
+
 const getWidgetIcon = (widgetId: string): Icon => {
     const iconMap: Record<string, Icon> = {
         'online_players': UsersIcon,
@@ -79,7 +81,7 @@ const WidgetCard = ({ widget }: WidgetCardProps) => {
 
     if (isStatCard || isProgress) {
         return (
-            <Card className="h-full flex flex-col overflow-hidden group relative">
+            <Card className={`h-full flex flex-col overflow-hidden group relative ${cardInteract}`}>
                 <DotsSixVerticalIcon 
                     className="absolute top-2 right-2 h-4 w-4 text-muted-foreground/50 opacity-0 group-hover:opacity-100 transition-opacity cursor-grab drag-handle z-10" 
                     weight="bold"
@@ -108,7 +110,7 @@ const WidgetCard = ({ widget }: WidgetCardProps) => {
 
     if (isInfoCard) {
         return (
-            <Card className="h-full flex flex-col overflow-hidden group relative">
+            <Card className={`h-full flex flex-col overflow-hidden group relative ${cardInteract}`}>
                 <DotsSixVerticalIcon 
                     className="absolute top-2 right-2 h-4 w-4 text-muted-foreground/50 opacity-0 group-hover:opacity-100 transition-opacity cursor-grab drag-handle z-10" 
                     weight="bold"
@@ -136,7 +138,7 @@ const WidgetCard = ({ widget }: WidgetCardProps) => {
     }
 
     return (
-        <Card className="h-full flex flex-col overflow-hidden">
+        <Card className={`h-full flex flex-col overflow-hidden ${cardInteract}`}>
             <div className="flex items-center justify-between py-3 px-4 flex-shrink-0">
                 <div className="flex items-center gap-2">
                     <div 

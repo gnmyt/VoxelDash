@@ -8,6 +8,7 @@ import {
     Sidebar as ShadSidebar, SidebarContent, SidebarFooter, SidebarGroup, SidebarHeader,
     SidebarInset, SidebarMenu, SidebarMenuButton, SidebarMenuItem, SidebarProvider, SidebarTrigger,
 } from "@/components/ui/sidebar.tsx";
+import {AuroraBackground} from "@/components/AuroraBackground.tsx";
 import logo from "@/assets/images/logo.png";
 
 export type MasterSection = "servers" | "forwardings" | "users";
@@ -69,7 +70,8 @@ export const MasterLayout = ({active, title, subtitle, actions, children}: {
 }) => (
     <SidebarProvider>
         <MasterSidebar active={active}/>
-        <SidebarInset className="flex max-h-screen flex-col overflow-hidden md:max-h-[calc(var(--app-vh)_-_1rem)]">
+        <SidebarInset className="isolate flex max-h-screen flex-col overflow-hidden md:max-h-[calc(var(--app-vh)_-_1rem)]">
+            <AuroraBackground/>
             <header className="flex h-16 shrink-0 items-center gap-2 px-4">
                 <SidebarTrigger className="-ml-1"/>
                 <Separator orientation="vertical" className="mr-1 h-4"/>
