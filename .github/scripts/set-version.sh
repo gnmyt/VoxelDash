@@ -20,7 +20,8 @@ for rel in ['modules/api/pom.xml',
     pom.write_text(updated)
     print(f"{rel}: rewrote {n} voxeldash version(s) -> {version}")
 
-for rel in ['ui/package.json', 'one/package.json']:
+for rel in ['ui/package.json', 'one/package.json',
+            'desktop/package.json', 'desktop/src-tauri/tauri.conf.json']:
     pkg = root / rel
     text = pkg.read_text()
     text, n = re.subn(r'("version"\s*:\s*")[^"]*(")',
@@ -29,7 +30,13 @@ for rel in ['ui/package.json', 'one/package.json']:
     print(f"{rel}: set version -> {version} ({n})")
 PY
 
-GP="$ROOT/modules/fabric/gradle.properties"
-sed -i -E "s/^mod_version=.*/mod_version=$VERSION/" "$GP"
-sed -i -E "s/^voxeldash_version=.*/voxeldash_version=$VERSION/" "$GP"
-echo "modules/fabric/gradle.properties: mod_version & voxeldash_version -> $VERSION"
+CARGO="$ROOT/desktop/src-tauri/Cargo.toml"
+sed -i -E "0,/^version = \".*\"/s//version = \"$VERSION\"/" "$CARGO"
+echo "desktop/src-tauri/Cargo.toml: set version -> $VERSION"
+
+for MODULE in fabric forge; do
+  GP="$ROOT/modules/$MODULE/gradle.properties"
+  sed -i -E "s/^mod_version=.*/mod_version=$VERSION/" "$GP"
+  sed -i -E "s/^voxeldash_version=.*/voxeldash_version=$VERSION/" "$GP"
+  echo "modules/$MODULE/gradle.properties: mod_version & voxeldash_version -> $VERSION"
+done
