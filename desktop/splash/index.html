@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>VoxelDash One</title>
+    <style>
+      html,
+      body {
+        margin: 0;
+        height: 100%;
+        background: #0b0b0f;
+        color: #e7e7ee;
+        font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+        overflow: hidden;
+        user-select: none;
+        cursor: default;
+      }
+      .wrap {
+        height: 100vh;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 1.25rem;
+      }
+      .logo {
+        width: 64px;
+        height: 64px;
+        border-radius: 16px;
+        animation: pulse 1.6s ease-in-out infinite;
+      }
+      .label {
+        font-size: 0.875rem;
+        color: #9a9ab0;
+        letter-spacing: 0.01em;
+      }
+      .title {
+        font-size: 1.1rem;
+        font-weight: 600;
+      }
+      .spinner {
+        width: 22px;
+        height: 22px;
+        border: 2px solid rgba(255, 255, 255, 0.15);
+        border-top-color: #7c5cff;
+        border-radius: 50%;
+        animation: spin 0.8s linear infinite;
+      }
+      @keyframes spin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
+      @keyframes pulse {
+        0%,
+        100% {
+          opacity: 1;
+        }
+        50% {
+          opacity: 0.55;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="wrap" data-tauri-drag-region>
+      <img class="logo" src="/logo.png" alt="" data-tauri-drag-region />
+      <div class="title" data-tauri-drag-region>VoxelDash One</div>
+      <div class="spinner"></div>
+      <div class="label" data-tauri-drag-region>Starting the server backend…</div>
+    </div>
+  </body>
+</html>

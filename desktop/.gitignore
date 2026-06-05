@@ -1,0 +1,7 @@
+node_modules/
+pnpm-lock.yaml
+yarn.lock
+src-tauri/target/
+src-tauri/gen/
+src-tauri/binaries/
+src-tauri/webui/
