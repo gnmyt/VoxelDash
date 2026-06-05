@@ -1,6 +1,6 @@
 [package]
 name = "voxeldash-desktop"
-version = "1.2.0-beta.10"
+version = "1.2.0-beta.11"
 description = "VoxelDash One desktop app"
 authors = ["Mathias Wagner"]
 edition = "2021"
