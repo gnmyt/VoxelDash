@@ -115,7 +115,7 @@ const FileManager = () => {
     );
 
     return (
-        <div className="flex flex-1 flex-col gap-6 p-6 pt-0">
+        <div className="flex flex-1 flex-col gap-6 p-6 pt-0 min-h-0">
             <FileHeader currentFile={currentFile} directory={directory} setDirectory={setDirectory} setCurrentFile={setCurrentFile}
                         updateFiles={updateFiles} fileContent={fileContent} onCreateFolder={handleCreateFolder} saveFile={saveFile} />
             {loading && !currentFile && <LoadingSkeleton />}
