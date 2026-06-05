@@ -1,9 +1,9 @@
 plugins {
-    id 'eclipse'
+    id 'java'
     id 'idea'
-    id 'maven-publish'
-    id 'net.minecraftforge.gradle' version '[6.0.24,6.2)'
-    id 'com.gradleup.shadow' version '8.3.6'
+    id 'eclipse'
+    id 'net.minecraftforge.gradle' version '[7.0.17,8)'
+    id 'com.gradleup.shadow' version '9.0.0'
 }
 
 version = project.mod_version
@@ -14,32 +14,7 @@ base {
 }
 
 java {
-    toolchain.languageVersion = JavaLanguageVersion.of(21)
-    sourceCompatibility = JavaVersion.VERSION_21
-    targetCompatibility = JavaVersion.VERSION_21
-}
-
-repositories {
-    mavenLocal()
-    mavenCentral()
-}
-
-minecraft {
-    mappings channel: project.mapping_channel, version: project.mapping_version
-
-    copyIdeResources = true
-
-    runs {
-        server {
-            workingDirectory project.file('run')
-            property 'forge.logging.console.level', 'info'
-            mods {
-                voxeldash {
-                    source sourceSets.main
-                }
-            }
-        }
-    }
+    toolchain.languageVersion = JavaLanguageVersion.of(25)
 }
 
 configurations {
@@ -47,8 +22,16 @@ configurations {
     implementation.extendsFrom shade
 }
 
+repositories {
+    minecraft.mavenizer(it)
+    maven fg.forgeMaven
+    maven fg.minecraftLibsMaven
+    mavenLocal()
+    mavenCentral()
+}
+
 dependencies {
-    minecraft "net.minecraftforge:forge:${project.minecraft_version}-${project.forge_version}"
+    implementation minecraft.dependency("net.minecraftforge:forge:${project.minecraft_version}-${project.forge_version}")
 
     shade("de.gnm:voxeldash-api:${project.voxeldash_version}") {
         exclude group: 'com.google.code.gson'
@@ -100,7 +83,7 @@ processResources {
 
 tasks.withType(JavaCompile).configureEach {
     it.options.encoding = 'UTF-8'
-    it.options.release = 21
+    it.options.release = 25
 }
 
 shadowJar {
@@ -132,15 +115,4 @@ artifacts {
 
 tasks.named('assemble').configure {
     dependsOn 'shadowJar'
-}
-
-publishing {
-    publications {
-        register('mavenJava', MavenPublication) {
-            artifactId = project.archives_base_name
-            artifact shadowJar
-        }
-    }
-    repositories {
-    }
 }

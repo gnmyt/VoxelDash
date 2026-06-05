@@ -60,6 +60,9 @@ jobs:
           - module: forge
             tool: gradle
             webui: true
+          - module: forge26
+            tool: gradle
+            webui: true
     steps:
       - name: Checkout
         uses: actions/checkout@v4
