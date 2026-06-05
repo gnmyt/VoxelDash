@@ -1,0 +1,31 @@
+modLoader="javafml"
+# Wide loader range so the same artifact loads across the whole 1.21.x Forge line.
+loaderVersion="${loader_version_range}"
+license="CC0-1.0"
+issueTrackerURL="https://github.com/gnmyt/VoxelDash/issues"
+
+[[mods]]
+modId="voxeldash"
+version="${mod_version}"
+displayName="VoxelDash"
+authors="GNM"
+displayURL="https://voxeldash.dev/"
+# Server-side dashboard: never block a vanilla/other client from connecting.
+displayTest="IGNORE_ALL_VERSION"
+description='''
+A simple dashboard for your Minecraft server.
+'''
+
+[[dependencies.voxeldash]]
+modId="forge"
+mandatory=true
+versionRange="${forge_version_range}"
+ordering="NONE"
+side="SERVER"
+
+[[dependencies.voxeldash]]
+modId="minecraft"
+mandatory=true
+versionRange="${minecraft_version_range}"
+ordering="NONE"
+side="SERVER"

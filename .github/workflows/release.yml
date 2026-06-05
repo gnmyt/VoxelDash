@@ -46,31 +46,67 @@ jobs:
       matrix:
         include:
           - module: spigot
+            path: spigot
             tool: maven
             webui: true
+            java: "21"
           - module: bungeecord
+            path: bungeecord
             tool: maven
             webui: true
+            java: "21"
           - module: vanilla
+            path: vanilla
             tool: maven
             webui: true
+            java: "21"
           - module: fabric
+            path: fabric
             tool: gradle
             webui: true
+            java: "21"
+          - module: forge8
+            path: forge/mc1.8
+            tool: gradle
+            webui: true
+            java: "8"
+            legacyGradle: true
+          - module: forge12
+            path: forge/mc1.12
+            tool: gradle
+            webui: true
+            java: "8"
+            legacyGradle: true
+          - module: forge16
+            path: forge/mc1.16
+            tool: gradle
+            webui: true
+            java: "8"
+          - module: forge20
+            path: forge/mc1.20
+            tool: gradle
+            webui: true
+            java: "17"
           - module: forge
+            path: forge/mc1.21
             tool: gradle
             webui: true
+            java: "21"
           - module: forge26
+            path: forge/mc26
             tool: gradle
             webui: true
+            java: "25"
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Set up JDK 21
+      - name: Set up JDKs
         uses: actions/setup-java@v4
         with:
-          java-version: "21"
+          java-version: |
+            ${{ matrix.java }}
+            21
           distribution: temurin
           cache: maven
 
@@ -97,7 +133,7 @@ jobs:
           cache-dependency-path: ui/pnpm-lock.yaml
 
       - name: Set up Gradle
-        if: matrix.tool == 'gradle'
+        if: matrix.tool == 'gradle' && !matrix.legacyGradle
         uses: gradle/actions/setup-gradle@v4
 
       - name: Stamp release version
@@ -110,7 +146,7 @@ jobs:
         if: matrix.tool == 'maven'
         run: |
           for attempt in 1 2 3; do
-            if mvn -B -ntp -C -U -f modules/${{ matrix.module }}/pom.xml package -DskipTests; then
+            if mvn -B -ntp -C -U -f modules/${{ matrix.path }}/pom.xml package -DskipTests; then
               exit 0
             fi
             echo "::warning::Maven build attempt $attempt failed; purging unreadable jars and retrying"
@@ -123,9 +159,12 @@ jobs:
 
       - name: Build module (Gradle)
         if: matrix.tool == 'gradle'
-        working-directory: modules/${{ matrix.module }}
+        working-directory: modules/${{ matrix.path }}
         run: |
           chmod +x ./gradlew
+          JDK_VAR="JAVA_HOME_${{ matrix.java }}_X64"
+          export JAVA_HOME="${!JDK_VAR}"
+          echo "Building ${{ matrix.module }} with JAVA_HOME=$JAVA_HOME"
           ./gradlew build --no-daemon
 
       - name: Stage release artifact
@@ -134,12 +173,13 @@ jobs:
           set -euo pipefail
           VERSION="${{ needs.setup.outputs.version }}"
           MODULE="${{ matrix.module }}"
+          MODULE_PATH="${{ matrix.path }}"
           mkdir -p dist
           if [[ "${{ matrix.tool }}" == "maven" ]]; then
-            SRC=$(ls modules/$MODULE/target/voxeldash-$MODULE-*.jar \
+            SRC=$(ls modules/$MODULE_PATH/target/voxeldash-$MODULE-*.jar \
                   | grep -Ev '\-sources|\-javadoc' | head -n1)
           else
-            SRC=$(ls modules/$MODULE/build/libs/voxeldash-*.jar \
+            SRC=$(ls modules/$MODULE_PATH/build/libs/voxeldash-*.jar \
                   | grep -Ev '\-dev|\-sources' | head -n1)
           fi
           cp "$SRC" "dist/voxeldash-$MODULE-$VERSION.jar"

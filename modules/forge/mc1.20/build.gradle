@@ -1,0 +1,161 @@
+plugins {
+    id 'eclipse'
+    id 'idea'
+    id 'maven-publish'
+    id 'net.minecraftforge.gradle' version '[6.0,6.2)'
+    id 'com.gradleup.shadow' version '8.3.6'
+}
+
+version = project.mod_version
+group = project.maven_group
+
+base {
+    archivesName = project.archives_base_name
+}
+
+sourceSets {
+    main {
+        java { srcDir "${projectDir}/../shared/src/main/java" }
+        resources { srcDir "${projectDir}/../shared/src/main/resources" }
+    }
+}
+
+java {
+    toolchain.languageVersion = JavaLanguageVersion.of(17)
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
+}
+
+repositories {
+    mavenLocal()
+    mavenCentral()
+}
+
+minecraft {
+    mappings channel: project.mapping_channel, version: project.mapping_version
+
+    copyIdeResources = true
+
+    runs {
+        server {
+            workingDirectory project.file('run')
+            property 'forge.logging.console.level', 'info'
+            mods {
+                voxeldash {
+                    source sourceSets.main
+                }
+            }
+        }
+    }
+}
+
+configurations {
+    shade
+    implementation.extendsFrom shade
+}
+
+dependencies {
+    minecraft "net.minecraftforge:forge:${project.minecraft_version}-${project.forge_version}"
+
+    shade("de.gnm:voxeldash-api:${project.voxeldash_version}") {
+        exclude group: 'com.google.code.gson'
+        exclude group: 'org.slf4j'
+    }
+}
+
+tasks.register('buildWebUI', Exec) {
+    description = 'Builds the web UI using pnpm'
+    workingDir = file("${projectDir}/../../../ui")
+
+    commandLine 'sh', '-c', 'pnpm install && pnpm run build'
+
+    inputs.dir("${projectDir}/../../../ui/src")
+    inputs.file("${projectDir}/../../../ui/package.json")
+    inputs.file("${projectDir}/../../../ui/vite.config.ts")
+    outputs.dir("${projectDir}/../../../ui/dist")
+}
+
+tasks.register('copyWebUI', Copy) {
+    description = 'Copies the built web UI to resources'
+    dependsOn 'buildWebUI'
+
+    from "${projectDir}/../../../ui/dist"
+    into "${projectDir}/src/main/resources/webui"
+}
+
+tasks.named('clean') {
+    doLast {
+        delete "${projectDir}/src/main/resources/webui"
+    }
+}
+
+processResources {
+    dependsOn 'copyWebUI'
+
+    def replaceProperties = [
+            mod_version              : project.mod_version,
+            minecraft_version_range  : project.minecraft_version_range,
+            forge_version_range      : project.forge_version_range,
+            loader_version_range     : project.loader_version_range
+    ]
+    inputs.properties replaceProperties
+
+    filesMatching(['META-INF/mods.toml', 'pack.mcmeta']) {
+        expand replaceProperties
+    }
+}
+
+tasks.withType(JavaCompile).configureEach {
+    it.options.encoding = 'UTF-8'
+    it.options.release = 17
+}
+
+shadowJar {
+    dependsOn 'copyWebUI'
+    configurations = [project.configurations.shade]
+    archiveClassifier.set('')
+
+    mergeServiceFiles()
+
+    relocate 'io.undertow', 'de.gnm.voxeldash.libs.undertow'
+    relocate 'org.apache.commons', 'de.gnm.voxeldash.libs.commons'
+    relocate 'com.fasterxml.jackson', 'de.gnm.voxeldash.libs.jackson'
+    relocate 'org.apache.sshd', 'de.gnm.voxeldash.libs.sshd'
+    relocate 'org.jboss', 'de.gnm.voxeldash.libs.jboss'
+    relocate 'org.xnio', 'de.gnm.voxeldash.libs.xnio'
+    relocate 'org.wildfly', 'de.gnm.voxeldash.libs.wildfly'
+    relocate 'org.reflections', 'de.gnm.voxeldash.libs.reflections'
+    relocate 'org.mindrot', 'de.gnm.voxeldash.libs.mindrot'
+    relocate 'org.yaml.snakeyaml', 'de.gnm.voxeldash.libs.snakeyaml'
+}
+
+jar {
+    archiveClassifier.set('dev')
+}
+
+reobf {
+    shadowJar {}
+}
+
+tasks.named('shadowJar').configure {
+    finalizedBy 'reobfShadowJar'
+}
+
+artifacts {
+    archives shadowJar
+}
+
+tasks.named('assemble').configure {
+    dependsOn 'shadowJar'
+}
+
+publishing {
+    publications {
+        register('mavenJava', MavenPublication) {
+            artifactId = project.archives_base_name
+            artifact shadowJar
+        }
+    }
+    repositories {
+    }
+}

@@ -23,7 +23,7 @@ actions:
 The Web Interface :br for Minecraft Servers
 
 #description
-VoxelDash is a modern, beautiful web dashboard for managing your Minecraft server. Monitor performance, manage players, edit files, install plugins, schedule tasks, and more — all from your browser.
+VoxelDash is a modern, beautiful web dashboard for managing your Minecraft server. Monitor performance, manage players, edit files, install plugins, schedule tasks, and more - all from your browser.
 ::
 
 <div class="rounded-lg">

@@ -1,0 +1,123 @@
+buildscript {
+    repositories {
+        maven { url = 'https://maven.minecraftforge.net' }
+        maven { url = 'https://plugins.gradle.org/m2/' }
+        mavenCentral()
+    }
+    dependencies {
+        classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: '2.1-SNAPSHOT', changing: true
+        classpath group: 'com.github.jengelman.gradle.plugins', name: 'shadow', version: '1.2.4'
+    }
+}
+
+apply plugin: 'net.minecraftforge.gradle.forge'
+apply plugin: 'com.github.johnrengelman.shadow'
+
+version = project.mod_version
+group = project.maven_group
+archivesBaseName = project.archives_base_name
+
+sourceCompatibility = '1.8'
+targetCompatibility = '1.8'
+
+sourceSets {
+    main {
+        java {
+            srcDir "${projectDir}/../shared/src/main/java"
+            exclude '**/listener/ConsoleListener.java'
+        }
+        resources {
+            srcDir "${projectDir}/../shared/src/main/resources"
+        }
+    }
+}
+
+repositories {
+    mavenLocal()
+    mavenCentral()
+}
+
+minecraft {
+    version = "${project.minecraft_version}-${project.forge_version}"
+    runDir = 'run'
+    mappings = project.mapping_version
+}
+
+configurations {
+    shade
+    compile.extendsFrom shade
+}
+
+dependencies {
+    shade('de.gnm:voxeldash-api:' + project.voxeldash_version) {
+        exclude group: 'com.google.code.gson'
+    }
+}
+
+task buildWebUI(type: Exec) {
+    workingDir = file("${projectDir}/../../../ui")
+    commandLine 'sh', '-c', 'pnpm install && pnpm run build'
+}
+
+task copyWebUI(type: Copy, dependsOn: buildWebUI) {
+    from "${projectDir}/../../../ui/dist"
+    into "${projectDir}/src/main/resources/webui"
+}
+
+clean.doLast {
+    delete "${projectDir}/src/main/resources/webui"
+}
+
+processResources {
+    dependsOn copyWebUI
+
+    inputs.property 'mod_version', project.mod_version
+    inputs.property 'minecraft_version_range', project.minecraft_version_range
+
+    filesMatching('mcmod.info') {
+        expand(['mod_version'             : project.mod_version,
+                'minecraft_version_range' : project.minecraft_version_range,
+                'forge_version_range'     : project.forge_version_range,
+                'loader_version_range'    : project.loader_version_range])
+    }
+}
+
+compileJava {
+    options.encoding = 'UTF-8'
+}
+
+shadowJar {
+    dependsOn copyWebUI
+    classifier ''
+    configurations = [project.configurations.shade]
+
+    mergeServiceFiles()
+
+    exclude 'META-INF/versions/**'
+    exclude 'module-info.class'
+    exclude '**/module-info.class'
+
+    relocate 'io.undertow', 'de.gnm.voxeldash.libs.undertow'
+    relocate 'org.apache.commons', 'de.gnm.voxeldash.libs.commons'
+    relocate 'com.fasterxml.jackson', 'de.gnm.voxeldash.libs.jackson'
+    relocate 'org.apache.sshd', 'de.gnm.voxeldash.libs.sshd'
+    relocate 'org.jboss', 'de.gnm.voxeldash.libs.jboss'
+    relocate 'org.xnio', 'de.gnm.voxeldash.libs.xnio'
+    relocate 'org.wildfly', 'de.gnm.voxeldash.libs.wildfly'
+    relocate 'org.reflections', 'de.gnm.voxeldash.libs.reflections'
+    relocate 'org.mindrot', 'de.gnm.voxeldash.libs.mindrot'
+    relocate 'org.yaml.snakeyaml', 'de.gnm.voxeldash.libs.snakeyaml'
+    relocate 'org.slf4j', 'de.gnm.voxeldash.libs.slf4j'
+}
+
+jar {
+    classifier 'dev'
+}
+
+reobf {
+    shadowJar {
+        mappingType = 'SEARGE'
+    }
+}
+
+tasks.build.dependsOn reobfShadowJar

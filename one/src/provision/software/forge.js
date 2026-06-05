@@ -10,9 +10,15 @@ const PROMOS = "https://files.minecraftforge.net/net/minecraftforge/forge/promot
 const yearMajor = (mc) => parseInt(String(mc).split(".")[0], 10);
 
 const LINES = [
-    {test: (mc) => /^1\.21(\.\d+)?$/.test(mc), artifact: "forge", minForge: 52},
-    {test: (mc) => yearMajor(mc) >= 26, artifact: "forge26", minForge: 62},
+    {test: (mc) => mc === "1.8.9", artifact: "forge8", minForge: 11, java: 8},
+    {test: (mc) => /^1\.12(\.\d+)?$/.test(mc), artifact: "forge12", minForge: 14, java: 8},
+    {test: (mc) => /^1\.16(\.\d+)?$/.test(mc), artifact: "forge16", minForge: 36, java: 8},
+    {test: (mc) => mc === "1.20.1", artifact: "forge20", minForge: 47, java: 17},
+    {test: (mc) => /^1\.21(\.\d+)?$/.test(mc), artifact: "forge", minForge: 52, java: 21},
+    {test: (mc) => yearMajor(mc) >= 26, artifact: "forge26", minForge: 62, java: 25},
 ];
+
+const SUPPORTED_MC = "1.8.9, 1.12.x, 1.16.x, 1.20.1, 1.21.x and 26.x";
 
 const lineFor = (mcVersion) => LINES.find((line) => line.test(mcVersion)) || null;
 
@@ -36,7 +42,7 @@ const compareMc = (a, b) => {
 
 const resolveForgeVersion = async (mcVersion) => {
     const line = lineFor(mcVersion);
-    if (!line) throw new Error(`VoxelDash has no Forge mod for Minecraft ${mcVersion} (supported: 1.21.x and 26.x).`);
+    if (!line) throw new Error(`VoxelDash has no Forge mod for Minecraft ${mcVersion} (supported: ${SUPPORTED_MC}).`);
     const promos = await fetchPromos();
     const version = promos[`${mcVersion}-recommended`] || promos[`${mcVersion}-latest`];
     if (!version) throw new Error(`No Forge build published for Minecraft ${mcVersion}`);
@@ -85,7 +91,7 @@ export const forge = {
     kind: "server",
     voxeldashArtifact: "forge",
     installDir: "mods",
-    minJava: 21,
+    minJava: 8,
 
     installer: true,
     provisionedMarker: ".voxeldash-forge.args",
@@ -104,7 +110,7 @@ export const forge = {
     },
 
     async javaMajor(mcVersion) {
-        return (await mojangJavaMajor(mcVersion)) || 21;
+        return (await mojangJavaMajor(mcVersion)) || lineFor(mcVersion)?.java || 21;
     },
 
     resolveArtifact(mcVersion) {
