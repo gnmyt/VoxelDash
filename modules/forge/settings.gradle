@@ -1,0 +1,15 @@
+pluginManagement {
+    repositories {
+        gradlePluginPortal()
+        maven {
+            name = 'MinecraftForge'
+            url = 'https://maven.minecraftforge.net/'
+        }
+        mavenCentral()
+    }
+}
+
+plugins {
+    // Mirrors the toolchain resolver used by the other JVM modules.
+    id 'org.gradle.toolchains.foojay-resolver-convention' version '0.8.0'
+}

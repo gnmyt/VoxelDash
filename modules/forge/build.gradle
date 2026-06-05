@@ -1,0 +1,164 @@
+plugins {
+    id 'eclipse'
+    id 'idea'
+    id 'maven-publish'
+    id 'net.minecraftforge.gradle' version '[6.0.24,6.2)'
+    id 'com.github.johnrengelman.shadow' version '8.1.1'
+}
+
+version = project.mod_version
+group = project.maven_group
+
+base {
+    archivesName = project.archives_base_name
+}
+
+java {
+    toolchain.languageVersion = JavaLanguageVersion.of(21)
+    sourceCompatibility = JavaVersion.VERSION_21
+    targetCompatibility = JavaVersion.VERSION_21
+}
+
+repositories {
+    mavenLocal()
+    mavenCentral()
+}
+
+minecraft {
+    // Official Mojang mappings — same names you see in the source (ServerPlayer,
+    // getPlayerList(), Level, Component, ...). Channel/version live in gradle.properties.
+    mappings channel: project.mapping_channel, version: project.mapping_version
+
+    copyIdeResources = true
+
+    runs {
+        server {
+            workingDirectory project.file('run')
+            property 'forge.logging.console.level', 'info'
+            mods {
+                voxeldash {
+                    source sourceSets.main
+                }
+            }
+        }
+    }
+}
+
+// Bundled dependencies are collected under this configuration and folded into the
+// final jar by shadow (mirrors the Fabric module's `shadow` configuration).
+configurations {
+    shade
+    implementation.extendsFrom shade
+}
+
+dependencies {
+    minecraft "net.minecraftforge:forge:${project.minecraft_version}-${project.forge_version}"
+
+    // VoxelDash shared API + everything it drags in is shaded into the mod jar.
+    shade("de.gnm:voxeldash-api:${project.voxeldash_version}") {
+        // Gson is provided by Minecraft itself.
+        exclude group: 'com.google.code.gson'
+    }
+}
+
+tasks.register('buildWebUI', Exec) {
+    description = 'Builds the web UI using pnpm'
+    workingDir = file("${projectDir}/../../ui")
+
+    commandLine 'sh', '-c', 'pnpm install && pnpm run build'
+
+    inputs.dir("${projectDir}/../../ui/src")
+    inputs.file("${projectDir}/../../ui/package.json")
+    inputs.file("${projectDir}/../../ui/vite.config.ts")
+    outputs.dir("${projectDir}/../../ui/dist")
+}
+
+tasks.register('copyWebUI', Copy) {
+    description = 'Copies the built web UI to resources'
+    dependsOn 'buildWebUI'
+
+    from "${projectDir}/../../ui/dist"
+    into "${projectDir}/src/main/resources/webui"
+}
+
+tasks.named('clean') {
+    doLast {
+        delete "${projectDir}/src/main/resources/webui"
+    }
+}
+
+processResources {
+    dependsOn 'copyWebUI'
+
+    def replaceProperties = [
+            mod_version              : project.mod_version,
+            minecraft_version_range  : project.minecraft_version_range,
+            forge_version_range      : project.forge_version_range,
+            loader_version_range     : project.loader_version_range
+    ]
+    inputs.properties replaceProperties
+
+    filesMatching(['META-INF/mods.toml', 'pack.mcmeta']) {
+        expand replaceProperties
+    }
+}
+
+tasks.withType(JavaCompile).configureEach {
+    it.options.encoding = 'UTF-8'
+    it.options.release = 21
+}
+
+// Fat jar: relocate every bundled library so it can never clash with another mod
+// on the server (identical relocations to the Fabric/Spigot builds).
+//
+// Forge 1.21 runs on official Mojang names at runtime, so the compiled names are
+// already the production names — no re-obfuscation step is required and the shaded
+// jar is the final artifact. If you ever retarget this module at an older Forge
+// (1.20.1 and below) that still ships SRG names at runtime, add back:
+//     reobf { shadowJar {} }
+//     tasks.named('shadowJar').configure { finalizedBy 'reobfShadowJar' }
+shadowJar {
+    dependsOn 'copyWebUI'
+    configurations = [project.configurations.shade]
+    archiveClassifier.set('')
+
+    mergeServiceFiles()
+
+    relocate 'io.undertow', 'de.gnm.voxeldash.libs.undertow'
+    relocate 'org.apache.commons', 'de.gnm.voxeldash.libs.commons'
+    relocate 'com.fasterxml.jackson', 'de.gnm.voxeldash.libs.jackson'
+    relocate 'org.apache.sshd', 'de.gnm.voxeldash.libs.sshd'
+    relocate 'org.jboss', 'de.gnm.voxeldash.libs.jboss'
+    relocate 'org.xnio', 'de.gnm.voxeldash.libs.xnio'
+    relocate 'org.wildfly', 'de.gnm.voxeldash.libs.wildfly'
+    relocate 'org.reflections', 'de.gnm.voxeldash.libs.reflections'
+    relocate 'org.mindrot', 'de.gnm.voxeldash.libs.mindrot'
+    relocate 'org.yaml.snakeyaml', 'de.gnm.voxeldash.libs.snakeyaml'
+}
+
+// The plain (non-shaded) jar is unused; the shaded jar is what ships. The `dev`
+// classifier keeps it out of the release pipeline's artifact selection, which
+// filters on `-dev`/`-sources`.
+jar {
+    archiveClassifier.set('dev')
+}
+
+artifacts {
+    archives shadowJar
+}
+
+tasks.named('assemble').configure {
+    dependsOn 'shadowJar'
+}
+
+publishing {
+    publications {
+        register('mavenJava', MavenPublication) {
+            artifactId = project.archives_base_name
+            artifact shadowJar
+        }
+    }
+    repositories {
+        // Add publishing targets here if needed.
+    }
+}
