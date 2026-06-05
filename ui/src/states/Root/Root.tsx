@@ -22,8 +22,10 @@ import {getLocationByPath} from "@/states/Root/routes.tsx";
 import {useMasterAuth} from "@/contexts/MasterAuthContext.tsx";
 import {useServerSelection} from "@/contexts/ServerSelectionContext.tsx";
 import {isMasterMode} from "@/lib/RequestUtil.ts";
-import {SpinnerGapIcon, PlugsIcon, ArrowLeftIcon, ArrowsClockwiseIcon} from "@phosphor-icons/react";
+import {SpinnerGapIcon, PlugsIcon, ArrowLeftIcon, ArrowsClockwiseIcon, PlayIcon} from "@phosphor-icons/react";
 import {Button} from "@/components/ui/button.tsx";
+import {useState} from "react";
+import {toast} from "@/hooks/use-toast.ts";
 
 const Loader = ({label}: { label: string }) => (
     <div className="flex min-h-screen flex-col items-center justify-center gap-3 bg-background text-muted-foreground">
@@ -69,15 +71,50 @@ const ServerStatePanel = () => {
     );
 };
 
+const OfflineBanner = () => {
+    const {activeServer, activeServerId, startServer} = useServerSelection();
+    const {checkToken} = useContext(ServerInfoContext)!;
+    const [busy, setBusy] = useState(false);
+
+    const start = async () => {
+        if (!activeServerId) return;
+        setBusy(true);
+        try {
+            await startServer(activeServerId);
+            await checkToken();
+        } catch (err) {
+            toast({description: (err as Error).message, variant: "destructive"});
+        } finally {
+            setBusy(false);
+        }
+    };
+
+    return (
+        <div className="mx-4 mb-4 flex items-center gap-3 rounded-xl border border-border/60 bg-muted/40 px-4 py-3">
+            <PlugsIcon className="size-5 shrink-0 text-muted-foreground"/>
+            <div className="min-w-0 flex-1">
+                <p className="text-sm font-medium">{activeServer?.name || "Server"} is offline</p>
+                <p className="truncate text-xs text-muted-foreground">
+                    File management is available. Start the server for console, players and worlds.
+                </p>
+            </div>
+            <Button size="sm" disabled={busy} onClick={start}>
+                {busy ? <SpinnerGapIcon className="mr-1.5 size-4 animate-spin"/> : <PlayIcon weight="fill" className="mr-1.5 size-4"/>}
+                Start server
+            </Button>
+        </div>
+    );
+};
+
 const RootLayout = () => {
-    const {tokenValid} = useContext(ServerInfoContext)!;
+    const {tokenValid, serverInfo} = useContext(ServerInfoContext)!;
     const location = useLocation();
     const navigate = useNavigate();
 
     return (
         <SidebarProvider>
             <Sidebar/>
-            <SidebarInset className="flex flex-col max-h-screen md:max-h-[calc(100vh-1rem)] overflow-hidden">
+            <SidebarInset className="flex flex-col max-h-[var(--app-vh)] md:max-h-[calc(var(--app-vh)_-_1rem)] overflow-hidden">
                 <header className="flex h-16 shrink-0 items-center gap-2">
                     <div className="flex items-center gap-2 px-4">
                         <SidebarTrigger className="-ml-1"/>
@@ -96,7 +133,12 @@ const RootLayout = () => {
                     </div>
                 </header>
                 <div className="flex-1 min-h-0 flex flex-col overflow-hidden">
-                    {tokenValid === true ? <Outlet/> : <ServerStatePanel/>}
+                    {tokenValid === true ? (
+                        <>
+                            {serverInfo.offline && <OfflineBanner/>}
+                            <Outlet/>
+                        </>
+                    ) : <ServerStatePanel/>}
                 </div>
             </SidebarInset>
         </SidebarProvider>

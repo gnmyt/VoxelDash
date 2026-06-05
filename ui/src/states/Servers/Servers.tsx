@@ -84,6 +84,7 @@ const ServerRow = ({server, index, onLog, tunnel, playitLinked, canForward, onFo
     const isOnline = server.status === "online";
     const isBusy = server.status === "installing" || server.status === "starting";
     const canStart = server.status === "offline" || server.status === "install_failed";
+    const canOpen = isOnline || server.status === "offline";
 
     const run = async (fn: () => Promise<void>) => {
         setBusy(true);
@@ -97,16 +98,16 @@ const ServerRow = ({server, index, onLog, tunnel, playitLinked, canForward, onFo
     };
 
     const open = () => {
-        if (!isOnline) return;
+        if (!canOpen) return;
         selectServer(server.id);
-        navigate("/");
+        navigate(isOnline ? "/" : "/files/");
     };
 
     return (
-        <div role={isOnline ? "button" : undefined} tabIndex={isOnline ? 0 : undefined}
+        <div role={canOpen ? "button" : undefined} tabIndex={canOpen ? 0 : undefined}
              onClick={open}
-             onKeyDown={(e) => { if (isOnline && (e.key === "Enter" || e.key === " ")) { e.preventDefault(); open(); } }}
-             className={`vd-rise group flex items-center gap-5 rounded-2xl border border-border/60 bg-card/40 px-5 py-5 transition-colors hover:border-border hover:bg-card/80 ${isOnline ? "cursor-pointer" : ""}`}
+             onKeyDown={(e) => { if (canOpen && (e.key === "Enter" || e.key === " ")) { e.preventDefault(); open(); } }}
+             className={`vd-rise group flex items-center gap-5 rounded-2xl border border-border/60 bg-card/40 px-5 py-5 transition-colors hover:border-border hover:bg-card/80 ${canOpen ? "cursor-pointer" : ""}`}
              style={{animationDelay: `${index * 45}ms`}}>
             <SoftwareMark software={server.software}/>
 

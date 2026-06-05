@@ -11,6 +11,7 @@ interface ServerInfo {
     availableFeatures?: string[];
     resourceTypes?: ResourceType[];
     isAdmin?: boolean;
+    offline?: boolean;
 }
 
 interface ServerInfoContextType {
@@ -28,6 +29,7 @@ interface ServerInfoProviderProps {
 export const ServerInfoProvider = (props: ServerInfoProviderProps) => {
     const selection = useContext(ServerSelectionContext);
     const activeServerId = selection?.activeServerId ?? null;
+    const activeStatus = selection?.activeServer?.status ?? null;
     const [tokenValid, setTokenValid] = useState<boolean | null>(null);
     const [serverInfo, setServerInfo] = useState<ServerInfo>({});
 
@@ -47,7 +49,7 @@ export const ServerInfoProvider = (props: ServerInfoProviderProps) => {
         setTokenValid(null);
         setServerInfo({});
         if (!isMasterMode() || activeServerId) checkToken();
-    }, [activeServerId]);
+    }, [activeServerId, activeStatus]);
 
     return (
         <ServerInfoContext.Provider value={{ tokenValid, checkToken, serverInfo }}>

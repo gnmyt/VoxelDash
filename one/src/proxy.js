@@ -3,6 +3,7 @@ import {registry} from "./tunnel/registry.js";
 import {randomId} from "./util.js";
 import {requireFeature, requireServerAccess} from "./auth.js";
 import {LEVEL} from "./permissions.js";
+import {serveOffline} from "./offline/handler.js";
 
 const PROXY_TIMEOUT_MS = 60_000;
 const SKIP_REQUEST_HEADERS = new Set(["host", "connection", "content-length", "authorization", "upgrade"]);
@@ -13,9 +14,10 @@ export const mountProxy = (app) => {
         requireFeature("Servers", LEVEL.READ),
         requireServerAccess,
         express.raw({type: () => true, limit: "64mb"}),
-        (req, res) => {
+        async (req, res) => {
             const entry = registry.get(req.params.serverId);
             if (!entry || entry.socket.readyState !== 1) {
+                if (await serveOffline(req, res, req.params.serverId, req.params[0] || "")) return;
                 return res.status(503).json({error: "Server is offline"});
             }
 
