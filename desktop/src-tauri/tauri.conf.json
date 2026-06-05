@@ -30,7 +30,7 @@
   },
   "bundle": {
     "active": true,
-    "targets": ["deb", "appimage", "nsis", "msi"],
+    "targets": ["deb", "nsis", "msi"],
     "category": "Utility",
     "shortDescription": "Manage and create Minecraft servers",
     "longDescription": "Create, run and manage Minecraft servers from a single desktop app.",
