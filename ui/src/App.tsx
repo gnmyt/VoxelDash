@@ -19,6 +19,7 @@ import {ReactNode} from "react";
 import Servers from "@/states/Servers/Servers.tsx";
 import Forwardings from "@/states/Servers/Forwardings/Forwardings.tsx";
 import MasterUsers from "@/states/Servers/Users/Users.tsx";
+import Updates from "@/states/Servers/Updates/Updates.tsx";
 import { ResourceList, ResourceStore, ResourceDetail } from "@/states/Root/pages/Resources";
 import NotFound from "@/states/Root/pages/NotFound/NotFound.tsx";
 
@@ -82,6 +83,7 @@ const App = () => {
         {path: "/servers", element: <Servers />},
         {path: "/forwardings", element: <Forwardings />},
         {path: "/users", element: <MasterUsers />},
+        {path: "/updates", element: <Updates />},
         dashboardRoute,
     ]);
     return (

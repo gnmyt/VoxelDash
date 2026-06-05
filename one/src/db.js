@@ -58,6 +58,11 @@ const MIGRATIONS = [
     proto TEXT,
     created_at TEXT NOT NULL DEFAULT (datetime('now'))
   );`,
+    `ALTER TABLE servers ADD COLUMN voxeldash_version TEXT;
+  CREATE TABLE IF NOT EXISTS master_settings (
+    key TEXT PRIMARY KEY,
+    value TEXT
+  );`,
 ];
 
 const migrate = (database) => {

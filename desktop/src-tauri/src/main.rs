@@ -73,6 +73,7 @@ fn spawn_backend(app: &tauri::App) {
     let cmd = cmd
         .env("PORT", PORT.to_string())
         .env("MASTER_HOST", "127.0.0.1")
+        .env("VOXELDASH_DESKTOP", "1")
         .env("VOXELDASH_HOME", data_dir.to_string_lossy().to_string())
         .env("VOXELDASH_UI", ui_dir.to_string_lossy().to_string());
 

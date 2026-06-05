@@ -1,5 +1,6 @@
 import {existsSync, mkdirSync} from "node:fs";
 import {dirname, join, resolve} from "node:path";
+import pkg from "../package.json";
 
 const STANDALONE = !existsSync(import.meta.dir);
 const EXEC_DIR = dirname(process.execPath);
@@ -19,6 +20,11 @@ export const config = {
     uiDist: UI_DIST,
     home: HOME,
     standalone: STANDALONE,
+    version: pkg.version,
+    platform: process.platform === "win32" ? "windows" : "linux",
+    execPath: process.execPath,
+    execDir: EXEC_DIR,
+    isDesktop: !!process.env.VOXELDASH_DESKTOP,
     port: parseInt(process.env.PORT || "7867", 10),
     masterHost: process.env.MASTER_HOST || "127.0.0.1",
     repo: "gnmyt/VoxelDash",

@@ -1,6 +1,6 @@
 import {ReactNode} from "react";
 import {useNavigate} from "react-router-dom";
-import {GlobeSimpleIcon, HardDrivesIcon, UsersThreeIcon} from "@phosphor-icons/react";
+import {ArrowsClockwiseIcon, GlobeSimpleIcon, HardDrivesIcon, UsersThreeIcon} from "@phosphor-icons/react";
 import {useMasterAuth} from "@/contexts/MasterAuthContext.tsx";
 import {UserProfile} from "@/components/UserProfile.tsx";
 import {Separator} from "@/components/ui/separator.tsx";
@@ -11,16 +11,17 @@ import {
 import {AuroraBackground} from "@/components/AuroraBackground.tsx";
 import logo from "@/assets/images/logo.png";
 
-export type MasterSection = "servers" | "forwardings" | "users";
+export type MasterSection = "servers" | "forwardings" | "users" | "updates";
 
 const MasterSidebar = ({active}: { active: MasterSection }) => {
-    const {can} = useMasterAuth();
+    const {can, user} = useMasterAuth();
     const navigate = useNavigate();
 
     const items: { key: MasterSection; label: string; icon: typeof HardDrivesIcon; path: string; show: boolean }[] = [
         {key: "servers", label: "Servers", icon: HardDrivesIcon, path: "/servers", show: true},
         {key: "forwardings", label: "Forwardings", icon: GlobeSimpleIcon, path: "/forwardings", show: can("Forwardings", 1)},
         {key: "users", label: "Users", icon: UsersThreeIcon, path: "/users", show: can("UserManagement", 2)},
+        {key: "updates", label: "Updates", icon: ArrowsClockwiseIcon, path: "/updates", show: !!user?.isAdmin},
     ];
 
     return (

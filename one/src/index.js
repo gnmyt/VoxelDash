@@ -13,6 +13,7 @@ import {handleConsoleConnection, mountProxy} from "./proxy.js";
 import {handleTunnelConnection} from "./tunnel/server.js";
 import {mountPlayitRoutes} from "./playit/routes.js";
 import {bootstrapPlayit} from "./playit/manager.js";
+import {mountUpdateRoutes, startAutoUpdater} from "./updater/routes.js";
 
 const app = express();
 app.disable("x-powered-by");
@@ -22,6 +23,7 @@ mountAuthRoutes(app);
 mountServerRoutes(app, requireFeature);
 mountUserRoutes(app, requireFeature);
 mountPlayitRoutes(app, requireFeature);
+mountUpdateRoutes(app);
 mountProxy(app);
 
 const uiDist = config.uiDist;
@@ -65,4 +67,5 @@ server.listen(config.port, () => {
     const {c} = db.query("SELECT COUNT(*) AS c FROM servers").get();
     console.log(`${c} server(s) registered. Orphaned servers will re-attach via the tunnel.`);
     bootstrapPlayit();
+    startAutoUpdater();
 });

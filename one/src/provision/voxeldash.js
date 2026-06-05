@@ -1,13 +1,14 @@
 import {join} from "node:path";
 import {existsSync, readdirSync, statSync} from "node:fs";
 import {config} from "../config.js";
+import {findServerAsset, normalizeVersion} from "../updater/releases.js";
 
 const ARTIFACT_MODULE = {
     spigot: "spigot",
     bungeecord: "bungeecord",
     fabric: "fabric",
-    forge: "forge",
-    forge26: "forge26",
+    forge: "forge/mc1.21",
+    forge26: "forge/mc26",
     vanilla: "vanilla",
 };
 
@@ -29,7 +30,7 @@ export const resolveVoxelDashJar = async (artifact, onLog) => {
     const newest = candidates.sort((a, b) => b.mtime - a.mtime)[0];
     if (newest) {
         onLog?.(`Using locally built ${artifact}: ${newest.path}`);
-        return newest.path;
+        return {path: newest.path, version: null};
     }
 
     return downloadFromRelease(artifact, onLog);
@@ -53,21 +54,26 @@ const fetchRelease = async () => {
 };
 
 const downloadFromRelease = async (artifact, onLog) => {
-    const release = await fetchRelease();
+    return downloadArtifactFromRelease(artifact, await fetchRelease(), onLog);
+};
+
+export const downloadArtifactFromRelease = async (artifact, release, onLog) => {
+    if (!ARTIFACT_MODULE[artifact]) throw new Error(`Unknown VoxelDash artifact: ${artifact}`);
     onLog?.(`Fetching ${artifact} from release ${release.tag_name}...`);
 
-    const asset = (release.assets || []).find((a) => a.name.includes(`voxeldash-${artifact}-`) && a.name.endsWith(".jar"));
+    const asset = findServerAsset(release, artifact);
     if (!asset) throw new Error(`No ${artifact} asset found in release ${release.tag_name}`);
 
+    const version = normalizeVersion(release.tag_name);
     const dest = join(config.paths.cache, asset.name);
     if (existsSync(dest)) {
         onLog?.(`Using cached ${asset.name}`);
-        return dest;
+        return {path: dest, version};
     }
 
     onLog?.(`Downloading ${asset.name}...`);
     const dl = await fetch(asset.browser_download_url, {headers: {"User-Agent": config.userAgent}, redirect: "follow"});
     if (!dl.ok) throw new Error(`Failed to download ${asset.name}: ${dl.status}`);
     await Bun.write(dest, await dl.arrayBuffer());
-    return dest;
+    return {path: dest, version};
 };

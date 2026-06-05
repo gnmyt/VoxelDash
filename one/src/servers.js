@@ -61,7 +61,9 @@ const provision = async (server) => {
 
         if (software.loaderJar) {
             log(`Installing ${software.name} loader...`);
-            copyFileSync(await resolveVoxelDashJar(artifact, log), serverJar);
+            const loader = await resolveVoxelDashJar(artifact, log);
+            copyFileSync(loader.path, serverJar);
+            db.query("UPDATE servers SET voxeldash_version = ? WHERE id = ?").run(loader.version, server.id);
             log("Installed VoxelDash loader.");
         } else {
             log(`Resolving ${software.name} ${server.mc_version}...`);
@@ -71,7 +73,9 @@ const provision = async (server) => {
 
             const installDir = software.installDir ? join(dir, software.installDir) : dir;
             mkdirSync(installDir, {recursive: true});
-            copyFileSync(await resolveVoxelDashJar(artifact, log), join(installDir, "voxeldash.jar"));
+            const vd = await resolveVoxelDashJar(artifact, log);
+            copyFileSync(vd.path, join(installDir, "voxeldash.jar"));
+            db.query("UPDATE servers SET voxeldash_version = ? WHERE id = ?").run(vd.version, server.id);
             log("Installed VoxelDash.");
 
             if (software.extraMods) {
