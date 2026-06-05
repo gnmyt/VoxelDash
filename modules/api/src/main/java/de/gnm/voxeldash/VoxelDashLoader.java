@@ -22,12 +22,27 @@ import de.gnm.voxeldash.api.http.HTTPMethod;
 import de.gnm.voxeldash.api.http.RouteMeta;
 import de.gnm.voxeldash.api.pipes.BasePipe;
 import de.gnm.voxeldash.api.routes.BaseRoute;
+import de.gnm.voxeldash.api.routes.BackupRouter;
+import de.gnm.voxeldash.api.routes.InfoRouter;
+import de.gnm.voxeldash.api.routes.PingRouter;
+import de.gnm.voxeldash.api.routes.PropertyRouter;
+import de.gnm.voxeldash.api.routes.QuickActionRouter;
+import de.gnm.voxeldash.api.routes.ScheduleRouter;
+import de.gnm.voxeldash.api.routes.SessionRouter;
+import de.gnm.voxeldash.api.routes.UserRouter;
+import de.gnm.voxeldash.api.routes.WidgetRouter;
+import de.gnm.voxeldash.api.routes.files.FileRouter;
+import de.gnm.voxeldash.api.routes.files.FolderRouter;
+import de.gnm.voxeldash.api.routes.players.PlayerRouter;
+import de.gnm.voxeldash.api.routes.resources.ResourceRouter;
+import de.gnm.voxeldash.api.routes.resources.StoreRouter;
+import de.gnm.voxeldash.api.routes.service.SSHRouter;
+import de.gnm.voxeldash.api.routes.worlds.WorldRouter;
 import de.gnm.voxeldash.api.tunnel.ConnectionConfig;
 import de.gnm.voxeldash.api.tunnel.MasterTunnelClient;
 import io.undertow.Undertow;
 import io.undertow.server.handlers.PathHandler;
 import io.undertow.websockets.WebSocketProtocolHandshakeHandler;
-import org.reflections.Reflections;
 
 import java.io.File;
 import java.lang.reflect.Method;
@@ -125,12 +140,8 @@ public class VoxelDashLoader {
         internalToken = sessions.generateSessionToken(userId, "voxeldash-internal");
     }
 
-    /**
-     * Registers all routes in the {@link de.gnm.voxeldash.api.routes} package
-     */
     public void registerRoutes() {
-        Reflections reflections = new Reflections(getRoutePackageName());
-        reflections.getSubTypesOf(BaseRoute.class).forEach(clazz -> {
+        for (Class<? extends BaseRoute> clazz : ROUTES) {
             try {
                 BaseRoute baseRoute = clazz.getDeclaredConstructor().newInstance();
 
@@ -150,8 +161,19 @@ public class VoxelDashLoader {
                 }
             } catch (Exception ignored) {
             }
-        });
+        }
     }
+
+    /**
+     * Explicit registry of every {@link BaseRoute} to register at startup
+     * (see {@link #registerRoutes()}).
+     */
+    private static final List<Class<? extends BaseRoute>> ROUTES = Arrays.asList(
+            BackupRouter.class, FileRouter.class, FolderRouter.class, InfoRouter.class,
+            PingRouter.class, PlayerRouter.class, PropertyRouter.class, QuickActionRouter.class,
+            ResourceRouter.class, StoreRouter.class, ScheduleRouter.class, SSHRouter.class,
+            SessionRouter.class, UserRouter.class, WidgetRouter.class, WorldRouter.class
+    );
 
     /**
      * Gets the name of the route package
