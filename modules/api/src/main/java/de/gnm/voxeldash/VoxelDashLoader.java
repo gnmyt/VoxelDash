@@ -2,17 +2,8 @@ package de.gnm.voxeldash;
 
 
 import de.gnm.voxeldash.api.annotations.Path;
-import de.gnm.voxeldash.api.controller.AccountController;
-import de.gnm.voxeldash.api.controller.ActionRegistry;
-import de.gnm.voxeldash.api.controller.ApiKeyController;
-import de.gnm.voxeldash.api.controller.BackupRegistry;
+import de.gnm.voxeldash.api.controller.*;
 import de.gnm.voxeldash.api.entities.BackupPart;
-import de.gnm.voxeldash.api.controller.ControllerManager;
-import de.gnm.voxeldash.api.controller.PermissionController;
-import de.gnm.voxeldash.api.controller.ScheduleController;
-import de.gnm.voxeldash.api.controller.SSHController;
-import de.gnm.voxeldash.api.controller.SessionController;
-import de.gnm.voxeldash.api.controller.WidgetRegistry;
 import de.gnm.voxeldash.api.entities.Feature;
 import de.gnm.voxeldash.api.entities.PermissionLevel;
 import de.gnm.voxeldash.api.event.EventDispatcher;
@@ -23,16 +14,7 @@ import de.gnm.voxeldash.api.helper.ScheduleExecutor;
 import de.gnm.voxeldash.api.http.HTTPMethod;
 import de.gnm.voxeldash.api.http.RouteMeta;
 import de.gnm.voxeldash.api.pipes.BasePipe;
-import de.gnm.voxeldash.api.routes.BaseRoute;
-import de.gnm.voxeldash.api.routes.BackupRouter;
-import de.gnm.voxeldash.api.routes.InfoRouter;
-import de.gnm.voxeldash.api.routes.PingRouter;
-import de.gnm.voxeldash.api.routes.PropertyRouter;
-import de.gnm.voxeldash.api.routes.QuickActionRouter;
-import de.gnm.voxeldash.api.routes.ScheduleRouter;
-import de.gnm.voxeldash.api.routes.SessionRouter;
-import de.gnm.voxeldash.api.routes.UserRouter;
-import de.gnm.voxeldash.api.routes.WidgetRouter;
+import de.gnm.voxeldash.api.routes.*;
 import de.gnm.voxeldash.api.routes.files.FileRouter;
 import de.gnm.voxeldash.api.routes.files.FolderRouter;
 import de.gnm.voxeldash.api.routes.players.PlayerRouter;
@@ -173,7 +155,7 @@ public class VoxelDashLoader {
      */
     private static final List<Class<? extends BaseRoute>> ROUTES = Arrays.asList(
             BackupRouter.class, FileRouter.class, FolderRouter.class, InfoRouter.class,
-            PingRouter.class, PlayerRouter.class, PropertyRouter.class, QuickActionRouter.class,
+            MotdRouter.class, PingRouter.class, PlayerRouter.class, PropertyRouter.class, QuickActionRouter.class,
             ResourceRouter.class, StoreRouter.class, ScheduleRouter.class, SSHRouter.class,
             SessionRouter.class, UserRouter.class, WidgetRouter.class, WorldRouter.class
     );

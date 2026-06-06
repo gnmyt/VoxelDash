@@ -41,6 +41,7 @@
     "players": "Players",
     "files": "File Manager",
     "console": "Console",
+    "motd": "MOTD",
     "worlds": "Worlds",
     "plugins": "Plugins",
     "backups": "Backups",
@@ -51,6 +52,45 @@
       "ssh": "SSH/SFTP Access",
       "server": "Server",
       "users": "Users"
+    }
+  },
+  "motd": {
+    "title": "Message of the Day",
+    "subtitle": "Design the message and icon shown in the multiplayer server list",
+    "save": "Save",
+    "saved_title": "MOTD saved",
+    "saved_description": "Your message of the day has been applied.",
+    "save_error_title": "Could not save the MOTD",
+    "preview": "Preview",
+    "editor_hint": "Type below. This is exactly how it appears in the server list.",
+    "restart_title": "Restart required",
+    "restart_description": "This platform applies the MOTD on the next server start. Restart the server for the changes to appear.",
+    "default_color": "Default",
+    "hex": "Hex",
+    "no_hex_hint": "This platform does not render hex colors; they will be matched to the nearest classic color.",
+    "clear": "Clear formatting",
+    "line": "Line {{number}}",
+    "line_placeholder": "Type your message…",
+    "add_line": "Add second line",
+    "selection_hint": "Select text, then pick a color or style to apply it. With no selection, the next characters you type use the chosen style.",
+    "style": {
+      "bold": "Bold",
+      "italic": "Italic",
+      "underline": "Underline",
+      "strikethrough": "Strikethrough",
+      "obfuscated": "Obfuscated"
+    },
+    "icon": {
+      "title": "Server icon",
+      "description": "A 64x64 image shown next to your MOTD. Larger images are scaled down automatically.",
+      "upload": "Upload icon",
+      "remove": "Remove icon",
+      "updated_title": "Server icon updated",
+      "updated_description": "The new icon has been applied.",
+      "removed_title": "Server icon removed",
+      "removed_description": "The custom icon has been deleted.",
+      "error_title": "Could not update the icon",
+      "error_description": "The image could not be processed. Please try a different file."
     }
   },
   "overview": {

@@ -1,30 +1,29 @@
 import {
+    BroadcastIcon,
     ChartLineUpIcon,
-    WarningIcon,
-    CubeIcon,
     CommandIcon,
+    CubeIcon,
     DatabaseIcon,
     EyeIcon,
     FileCodeIcon,
     GameControllerIcon,
+    GlobeHemisphereWestIcon,
     GlobeIcon,
     HeartIcon,
     KeyIcon,
     LayoutIcon,
     ListIcon,
     LockKeyIcon,
-    ChatCircleIcon,
-    WifiHighIcon,
     PackageIcon,
     PlayIcon,
-    BroadcastIcon,
     ShieldIcon,
     SwordIcon,
     TerminalIcon,
     TimerIcon,
     UserIcon,
     UsersIcon,
-    GlobeHemisphereWestIcon
+    WarningIcon,
+    WifiHighIcon
 } from "@phosphor-icons/react";
 import {PropertyMapping} from "@/types/config"
 
@@ -84,7 +83,6 @@ export const propertyMappings: PropertyMapping[] = [
     {name: "resource-pack", icon: PackageIcon, type: "string", category: "resourcepack"},
     {name: "require-resource-pack", icon: PackageIcon, type: "boolean", category: "resourcepack"},
 
-    {name: "motd", icon: ChatCircleIcon, type: "string", category: "info"},
     {name: "enable-status", icon: WifiHighIcon, type: "boolean", category: "info"},
 
     {name: "enable-jmx-monitoring", icon: ChartLineUpIcon, type: "boolean", category: "advanced"},

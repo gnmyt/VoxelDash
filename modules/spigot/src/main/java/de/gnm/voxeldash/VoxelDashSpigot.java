@@ -6,6 +6,7 @@ import de.gnm.voxeldash.api.entities.Feature;
 import de.gnm.voxeldash.api.entities.schedule.ActionInputType;
 import de.gnm.voxeldash.api.entities.schedule.ScheduleAction;
 import de.gnm.voxeldash.api.helper.BackupHelper;
+import de.gnm.voxeldash.api.pipes.MotdPipe;
 import de.gnm.voxeldash.api.pipes.QuickActionPipe;
 import de.gnm.voxeldash.api.pipes.ServerInfoPipe;
 import de.gnm.voxeldash.api.pipes.players.BanPipe;
@@ -16,18 +17,11 @@ import de.gnm.voxeldash.api.pipes.resources.ResourcePipe;
 import de.gnm.voxeldash.api.pipes.worlds.WorldPipe;
 import de.gnm.voxeldash.command.PasswordCommand;
 import de.gnm.voxeldash.listener.ConsoleListener;
-import de.gnm.voxeldash.pipes.BanPipeImpl;
-import de.gnm.voxeldash.pipes.OnlinePlayerPipeImpl;
-import de.gnm.voxeldash.pipes.OperatorPipeImpl;
-import de.gnm.voxeldash.pipes.QuickActionPipeImpl;
-import de.gnm.voxeldash.pipes.ResourcePipeImpl;
-import de.gnm.voxeldash.pipes.ServerInfoPipeImpl;
-import de.gnm.voxeldash.pipes.WhitelistPipeImpl;
-import de.gnm.voxeldash.pipes.WorldPipeImpl;
+import de.gnm.voxeldash.pipes.*;
 import de.gnm.voxeldash.util.BukkitUtil;
+import de.gnm.voxeldash.widgets.SpigotWidgetProvider;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
-import de.gnm.voxeldash.widgets.SpigotWidgetProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
@@ -110,6 +104,10 @@ public class VoxelDashSpigot extends JavaPlugin {
         loader.registerPipe(BanPipe.class, new BanPipeImpl());
         loader.registerPipe(WorldPipe.class, new WorldPipeImpl());
         loader.registerPipe(ResourcePipe.class, new ResourcePipeImpl());
+
+        MotdPipeImpl motdPipe = new MotdPipeImpl();
+        loader.registerPipe(MotdPipe.class, motdPipe);
+        getServer().getPluginManager().registerEvents(motdPipe, this);
     }
 
     /**
@@ -204,7 +202,8 @@ public class VoxelDashSpigot extends JavaPlugin {
                 Feature.Players,
                 Feature.Schedules,
                 Feature.Worlds,
-                Feature.Resources
+                Feature.Resources,
+                Feature.Motd
         );
 
         loader.registerBackupParts(BackupPart.WORLDS, BackupPart.PLUGINS, BackupPart.CONFIGS, BackupPart.LOGS);

@@ -11,7 +11,8 @@ public enum Feature {
     UserManagement(64),
     Schedules(128),
     Worlds(256),
-    Resources(512);
+    Resources(512),
+    Motd(1024);
 
     private final int permissionBit;
 

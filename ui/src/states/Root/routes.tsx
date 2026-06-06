@@ -1,4 +1,20 @@
-import {ArchiveIcon, FolderOpenIcon, SquaresFourIcon, WifiHighIcon, HardDrivesIcon, GearSixIcon, TerminalIcon, UsersIcon, UsersThreeIcon, CalendarIcon, GlobeHemisphereWestIcon, PuzzlePieceIcon, PackageIcon} from "@phosphor-icons/react";
+import {
+    ArchiveIcon,
+    CalendarIcon,
+    ChatCircleTextIcon,
+    FolderOpenIcon,
+    GearSixIcon,
+    GlobeHemisphereWestIcon,
+    HardDrivesIcon,
+    Icon,
+    PackageIcon,
+    PuzzlePieceIcon,
+    SquaresFourIcon,
+    TerminalIcon,
+    UsersIcon,
+    UsersThreeIcon,
+    WifiHighIcon
+} from "@phosphor-icons/react";
 import {t} from "i18next";
 import FileManager from "@/states/Root/pages/FileManager/FileManager.tsx";
 import Overview from "@/states/Root/pages/Overview/Overview.tsx";
@@ -10,7 +26,7 @@ import Players from "@/states/Root/pages/Players/Players.tsx";
 import Users from "@/states/Root/pages/Users/Users.tsx";
 import Schedules from "@/states/Root/pages/Schedules/Schedules.tsx";
 import Worlds from "@/states/Root/pages/Worlds/Worlds.tsx";
-import { Icon } from "@phosphor-icons/react";
+import Motd from "@/states/Root/pages/Motd/Motd.tsx";
 
 export const getResourceIcon = (typeIdentifier: string): Icon => {
     switch (typeIdentifier) {
@@ -55,6 +71,13 @@ export const sidebar = [
         requiredFeatures: ["Console"],
         element: <Console />,
         name: () => t("nav.console")
+    },
+    {
+        path: "/motd",
+        icon: ChatCircleTextIcon,
+        requiredFeatures: ["Motd"],
+        element: <Motd/>,
+        name: () => t("nav.motd")
     },
     {
         path: "/worlds",

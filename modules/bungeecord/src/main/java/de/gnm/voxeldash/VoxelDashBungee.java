@@ -6,6 +6,7 @@ import de.gnm.voxeldash.api.entities.Feature;
 import de.gnm.voxeldash.api.entities.schedule.ActionInputType;
 import de.gnm.voxeldash.api.entities.schedule.ScheduleAction;
 import de.gnm.voxeldash.api.helper.BackupHelper;
+import de.gnm.voxeldash.api.pipes.MotdPipe;
 import de.gnm.voxeldash.api.pipes.QuickActionPipe;
 import de.gnm.voxeldash.api.pipes.ServerInfoPipe;
 import de.gnm.voxeldash.api.pipes.players.BanPipe;
@@ -113,6 +114,10 @@ public class VoxelDashBungee extends Plugin {
 
         loader.registerPipe(WhitelistPipe.class, new WhitelistPipeImpl());
         loader.registerPipe(BanPipe.class, new BanPipeImpl());
+
+        MotdPipeImpl motdPipe = new MotdPipeImpl();
+        loader.registerPipe(MotdPipe.class, motdPipe);
+        getProxy().getPluginManager().registerListener(this, motdPipe);
     }
 
     /**
@@ -207,7 +212,8 @@ public class VoxelDashBungee extends Plugin {
                 Feature.Console,
                 Feature.Players,
                 Feature.Schedules,
-                Feature.Resources
+                Feature.Resources,
+                Feature.Motd
         );
 
         loader.registerBackupParts(BackupPart.PLUGINS, BackupPart.CONFIGS, BackupPart.LOGS);
