@@ -32,7 +32,7 @@ const toDataUrl = (icon: string | null) =>
     icon ? (icon.startsWith("data:") ? icon : `data:image/png;base64,${icon}`) : null;
 
 const IconEditorDialog = ({open, onOpenChange, currentIcon, onSave}: IconEditorDialogProps) => {
-    const canvasRef = useRef<HTMLCanvasElement>(null);
+    const canvasRef = useRef<HTMLCanvasElement | null>(null);
     const drawing = useRef(false);
     const last = useRef<{ x: number; y: number } | null>(null);
     const [tool, setTool] = useState<Tool>("pen");
