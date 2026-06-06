@@ -531,14 +531,23 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - { module: fabric8,  label: "Fabric 1.8.9",  suffix: "fabric-1.8.9" }
-          - { module: fabric12, label: "Fabric 1.12.2", suffix: "fabric-1.12.2" }
-          - { module: fabric14, label: "Fabric 1.14.4", suffix: "fabric-1.14.4" }
-          - { module: fabric16, label: "Fabric 1.16.5", suffix: "fabric-1.16.5" }
-          - { module: fabric20, label: "Fabric 1.20.1", suffix: "fabric-1.20.1" }
-          - { module: fabric,   label: "Fabric 1.21",   suffix: "fabric-1.21" }
-          - { module: forge8,   label: "Forge 1.8.9",  suffix: "forge-1.8.9" }
-          - { module: forge12,  label: "Forge 1.12.2", suffix: "forge-1.12.2" }
+          - { module: fabric8,  label: "Fabric 1.8.9",  suffix: "fabric-1.8.9",  loaders: fabric, game_versions: "1.8.9" }
+          - { module: fabric12, label: "Fabric 1.12.2", suffix: "fabric-1.12.2", loaders: fabric, game_versions: "1.12.2" }
+          - { module: fabric14, label: "Fabric 1.14.4", suffix: "fabric-1.14.4", loaders: fabric, game_versions: "1.14.4" }
+          - { module: fabric16, label: "Fabric 1.16.5", suffix: "fabric-1.16.5", loaders: fabric, game_versions: "1.16.5" }
+          - { module: fabric20, label: "Fabric 1.20.1", suffix: "fabric-1.20.1", loaders: fabric, game_versions: "1.20.1" }
+          - module: fabric
+            label: "Fabric 1.21"
+            suffix: "fabric-1.21"
+            loaders: fabric
+            game_versions: |
+              1.21
+              1.21.1
+              1.21.2
+              1.21.3
+              1.21.4
+          - { module: forge8,   label: "Forge 1.8.9",  suffix: "forge-1.8.9",  loaders: forge, game_versions: "1.8.9" }
+          - { module: forge12,  label: "Forge 1.12.2", suffix: "forge-1.12.2", loaders: forge, game_versions: "1.12.2" }
           - { module: forge16,  label: "Forge 1.16.5", suffix: "forge-1.16.5" }
           - { module: forge20,  label: "Forge 1.20.1", suffix: "forge-1.20.1" }
           - { module: forge,    label: "Forge 1.21",   suffix: "forge-1.21" }
@@ -560,6 +569,8 @@ jobs:
           name: VoxelDash ${{ needs.setup.outputs.version }} (${{ matrix.label }})
           version: ${{ needs.setup.outputs.version }}+${{ matrix.suffix }}
           version-type: ${{ needs.setup.outputs.version_type }}
+          loaders: ${{ matrix.loaders }}
+          game-versions: ${{ matrix.game_versions }}
           changelog: ${{ needs.release.outputs.changelog }}
           modrinth-unfeature-mode: subset
           retry-attempts: 3
