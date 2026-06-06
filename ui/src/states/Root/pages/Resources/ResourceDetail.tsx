@@ -34,7 +34,7 @@ export const ResourceDetail = () => {
     const fetchResource = async () => {
         if (!type || !fileName) return;
         try {
-            const data = await jsonRequest(`resources/get?type=${type}&fileName=${decodeURIComponent(fileName)}`);
+            const data = await jsonRequest(`resources/get?type=${encodeURIComponent(type)}&fileName=${encodeURIComponent(fileName)}`);
             setResource(data.resource || null);
         } catch (error) {
             console.error("Failed to fetch resource:", error);
