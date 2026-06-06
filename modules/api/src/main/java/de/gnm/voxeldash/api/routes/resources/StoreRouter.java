@@ -23,6 +23,8 @@ import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import static de.gnm.voxeldash.api.http.HTTPMethod.*;
 
@@ -402,8 +404,44 @@ public class StoreRouter extends BaseRoute {
         String fullVersion = infoPipe.getServerVersion();
         if (fullVersion == null) return null;
 
-        String[] parts = fullVersion.split("-");
-        return parts[0];
+        return normalizeGameVersion(fullVersion);
+    }
+
+    /**
+     * Pattern matching the version identifiers the stores (Modrinth/CurseForge) actually tag
+     * releases with: plain releases ({@code 1.21.1}, {@code 26.1.2}, {@code 26.1}), weekly
+     * snapshots ({@code 26w14a}) and Mojang's own pre-release/release-candidate/snapshot names
+     * ({@code 26.2-pre-1}, {@code 1.21.11-rc1}, {@code 26.2-snapshot-8}).
+     */
+    private static final Pattern GAME_VERSION_PATTERN = Pattern.compile(
+            "\\d+w\\d+[a-z]+" +
+            "|\\d+\\.\\d+(?:\\.\\d+)?(?:-(?:pre|rc|snapshot)-?\\d*)?",
+            Pattern.CASE_INSENSITIVE);
+
+    /**
+     * Normalizes a server-reported version string to the game version identifier the stores tag
+     * releases with, by extracting the leading Minecraft version and discarding any server-software
+     * build metadata appended to it.
+     * <p>
+     * Taking everything before the first {@code -} (the previous behaviour) is not enough: server
+     * software appends arbitrary junk after the version, e.g. CraftBukkit's {@code 1.21.1-R0.1-SNAPSHOT}
+     * or a fork's {@code 1.20.1-bukkit-<gitcommit>}, which would be searched verbatim and match
+     * nothing. It also over-strips Mojang's own dash-separated names ({@code 26.2-pre-1}), which the
+     * stores do tag, reducing them to non-existent releases like {@code 26.2}. Matching the known
+     * version shapes instead keeps those intact while dropping the build metadata.
+     */
+    static String normalizeGameVersion(String version) {
+        if (version == null) return null;
+
+        String v = version.trim();
+        if (v.isEmpty()) return v;
+
+        Matcher matcher = GAME_VERSION_PATTERN.matcher(v);
+        if (matcher.find()) {
+            return matcher.group();
+        }
+
+        return v;
     }
 
     private String getServerSoftware() {
