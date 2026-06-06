@@ -31,10 +31,11 @@ import {
 import {Collapsible, CollapsibleContent, CollapsibleTrigger} from "@/components/ui/collapsible.tsx";
 import {sidebar, getResourceIcon} from "@/states/Root/routes.tsx";
 import {useContext, useState, useMemo} from "react";
-import {useLocation, useNavigate} from "react-router-dom";
+import {Link, useLocation, useNavigate} from "react-router-dom";
 import {ServerInfoContext} from "@/contexts/ServerInfoContext.tsx";
 import {ResourcesContext} from "@/contexts/ResourcesContext.tsx";
 import {UserProfile} from "@/components/UserProfile.tsx";
+import logo from "@/assets/images/logo.png";
 import {t} from "i18next";
 
 function ServerSwitcher() {
@@ -42,23 +43,17 @@ function ServerSwitcher() {
 }
 
 function StandaloneServerHeader() {
-    const {serverInfo} = useContext(ServerInfoContext)!;
-    const meta = softwareMeta((serverInfo.serverSoftware || "").toLowerCase());
-
     return (
         <SidebarMenu>
             <SidebarMenuItem>
-                <SidebarMenuButton size="lg" className="pointer-events-none">
-                    <div className="flex size-9 shrink-0 items-center justify-center rounded-lg text-xs font-bold text-white"
-                         style={{backgroundColor: meta.accent}}>
-                        {meta.short}
-                    </div>
-                    <div className="grid flex-1 text-left leading-tight">
-                        <span className="truncate font-display font-semibold">{serverInfo.serverSoftware || "VoxelDash"}</span>
-                        {serverInfo.serverVersion && (
-                            <span className="truncate text-xs text-muted-foreground">{serverInfo.serverVersion}</span>
-                        )}
-                    </div>
+                <SidebarMenuButton size="lg" asChild>
+                    <Link to="/" className="flex items-center gap-2 cursor-pointer">
+                        <img src={logo} alt="VoxelDash" className="size-9 shrink-0 rounded-lg"/>
+                        <div className="grid flex-1 text-left leading-tight">
+                            <span className="truncate font-display font-semibold">VoxelDash</span>
+                            <span className="truncate text-xs text-muted-foreground">{__APP_VERSION__}</span>
+                        </div>
+                    </Link>
                 </SidebarMenuButton>
             </SidebarMenuItem>
         </SidebarMenu>
