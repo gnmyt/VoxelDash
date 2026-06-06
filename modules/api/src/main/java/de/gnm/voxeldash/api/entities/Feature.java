@@ -12,7 +12,8 @@ public enum Feature {
     Schedules(128),
     Worlds(256),
     Resources(512),
-    Motd(1024);
+    Motd(1024),
+    Profiling(2048);
 
     private final int permissionBit;
 
