@@ -82,8 +82,8 @@ const Schedules = () => {
     }, []);
 
     return (
-        <div className="flex flex-col p-6 pt-0 gap-6" style={{ height: 'calc(var(--app-vh) - 5.5rem)' }}>
-            <div className="flex items-center justify-between p-4 rounded-xl border bg-card shrink-0">
+        <div className="flex flex-col p-4 md:p-6 pt-0 gap-6" style={{ height: 'calc(var(--app-vh) - 5.5rem)' }}>
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 p-4 rounded-xl border bg-card shrink-0">
                 <div className="flex items-center gap-4">
                     <div className="h-12 w-12 rounded-xl bg-primary/10 flex items-center justify-center">
                         <CalendarIcon className="h-6 w-6 text-primary" weight="fill" />
@@ -93,9 +93,9 @@ const Schedules = () => {
                         <p className="text-sm text-muted-foreground">{t("schedules.subtitle")}</p>
                     </div>
                 </div>
-                <Button 
-                    size="lg" 
-                    className="h-12 px-6 rounded-xl text-base"
+                <Button
+                    size="lg"
+                    className="h-12 px-6 rounded-xl text-base w-full sm:w-auto"
                     onClick={() => setCreateDialogOpen(true)}
                 >
                     <PlusIcon className="h-5 w-5 mr-2" weight="bold" />

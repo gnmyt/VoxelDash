@@ -1119,5 +1119,15 @@
       "description": "The page you're looking for doesn't exist or has been moved.",
       "backHome": "Back to Home"
     }
+  },
+  "pwa": {
+    "update_available": "A new version is available",
+    "update_desc": "Reload to get the latest VoxelDash.",
+    "reload": "Reload",
+    "dismiss": "Dismiss",
+    "install_title": "Install VoxelDash",
+    "install_desc": "Add it to your home screen for a faster, full-screen experience.",
+    "install": "Install",
+    "not_now": "Not now"
   }
 }

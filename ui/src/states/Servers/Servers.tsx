@@ -138,7 +138,7 @@ const ServerRow = ({server, index, onLog, tunnel, playitLinked, canForward, onFo
                 <Stat label={t("servers.stat.build")} value={server.build || "-"}/>
             </div>
 
-            <div className="flex shrink-0 items-center gap-1.5" onClick={(e) => e.stopPropagation()}>
+            <div className="flex shrink-0 flex-wrap items-center gap-1.5" onClick={(e) => e.stopPropagation()}>
                 {canStart && (
                     <Button size="sm" disabled={busy} onClick={() => run(() => startServer(server.id))}>
                         {busy ? <SpinnerGapIcon className="size-4 animate-spin"/> : <><PlayIcon weight="fill" className="mr-1.5 size-4"/> {t("servers.start")}</>}
@@ -236,7 +236,7 @@ const LogDialog = ({server, onClose}: { server: ManagedServer | null; onClose: (
 
     return (
         <Dialog open={!!server} onOpenChange={(o) => !o && onClose()}>
-            <DialogContent className="max-w-2xl">
+            <DialogContent className="w-full max-w-2xl">
                 <DialogHeader>
                     <DialogTitle className="font-display">{t("servers.log_title", {name: server?.name})}</DialogTitle>
                 </DialogHeader>

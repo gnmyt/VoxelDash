@@ -113,9 +113,9 @@ const FileHeader = ({currentFile, directory, setDirectory, setCurrentFile, updat
 
     return (
         <>
-            <div className="flex items-center justify-between py-2">
-                <Breadcrumb>
-                    <BreadcrumbList className="text-base gap-2">
+            <div className="flex flex-wrap items-center justify-between gap-3 py-2">
+                <Breadcrumb className="min-w-0 flex-1 overflow-x-auto">
+                    <BreadcrumbList className="text-base gap-2 flex-nowrap">
                         <HouseIcon className="h-5 w-5 text-primary cursor-pointer transition-colors hover:text-primary/80" onClick={() => !currentFile && setDirectory("/")}/>
                         <BreadcrumbSeparator className="hidden md:block"/>
 
@@ -158,7 +158,7 @@ const FileHeader = ({currentFile, directory, setDirectory, setCurrentFile, updat
                 )}
                 
                 {currentFile !== null && (
-                    <div className="flex gap-3">
+                    <div className="flex gap-2 shrink-0">
                         <Button variant="outline" size="lg" className="rounded-xl h-12 px-5 text-base" onClick={saveFile}>
                             <FloppyDiskIcon className="mr-2 h-5 w-5"/> {t("files.save_file")}
                         </Button>

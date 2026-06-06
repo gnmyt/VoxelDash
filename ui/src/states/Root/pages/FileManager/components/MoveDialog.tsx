@@ -157,7 +157,7 @@ const MoveDialog = ({isOpen, setOpen, sourcePath, fileName, isFolder, isCopy, up
                     </div>
                 </div>
 
-                <DialogFooter>
+                <DialogFooter className="flex-col-reverse sm:flex-row gap-2">
                     <Button variant="outline" onClick={() => setOpen(false)} className="rounded-lg">
                         {t("action.cancel")}
                     </Button>

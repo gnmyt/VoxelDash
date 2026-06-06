@@ -48,7 +48,12 @@ public enum ContentType {
     /**
      * The woff2 content type
      */
-    WOFF2("font/woff2", "woff2");
+    WOFF2("font/woff2", "woff2"),
+
+    /**
+     * The web app manifest content type
+     */
+    WEBMANIFEST("application/manifest+json", "webmanifest");
 
     private final String type;
     private final String fileEnding;

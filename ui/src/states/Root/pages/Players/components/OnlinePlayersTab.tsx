@@ -174,7 +174,7 @@ const OnlinePlayersTab = ({ players, onRefresh, onBanComplete }: OnlinePlayersTa
     return (
         <div className="space-y-4">
             {hasSelection && (
-                <div className="flex items-center gap-2 p-3 rounded-xl bg-muted/50 border">
+                <div className="flex flex-wrap items-center gap-2 p-3 rounded-xl bg-muted/50 border">
                     <span className="text-sm text-muted-foreground">
                         {t("players.selected", { count: selectedPlayers.length })}
                     </span>
@@ -190,12 +190,12 @@ const OnlinePlayersTab = ({ players, onRefresh, onBanComplete }: OnlinePlayersTa
                 </div>
             )}
 
-            <div className="rounded-xl border bg-card">
+            <div className="rounded-xl border bg-card overflow-x-auto">
                 <Table>
                     <TableHeader>
                         <TableRow>
                             <TableHead className="w-12">
-                                <Checkbox 
+                                <Checkbox
                                     checked={isAllSelected}
                                     onCheckedChange={toggleAll}
                                 />

@@ -64,7 +64,7 @@ const CreateWorldDialog = ({ onCreate, disabled }: CreateWorldDialogProps) => {
     return (
         <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger asChild>
-                <Button disabled={disabled} size="lg" className="h-12 px-6 rounded-xl text-base">
+                <Button disabled={disabled} size="lg" className="h-12 px-6 rounded-xl text-base w-full sm:w-auto">
                     <PlusIcon className="h-5 w-5 mr-2" weight="bold" />
                     {t("worlds.create")}
                 </Button>
@@ -151,19 +151,19 @@ const CreateWorldDialog = ({ onCreate, disabled }: CreateWorldDialogProps) => {
                         </div>
                     </div>
 
-                    <DialogFooter>
-                        <Button 
-                            type="button" 
-                            variant="outline" 
+                    <DialogFooter className="flex-col-reverse sm:flex-row gap-2">
+                        <Button
+                            type="button"
+                            variant="outline"
                             onClick={() => setOpen(false)}
-                            className="rounded-xl"
+                            className="rounded-xl w-full sm:w-auto"
                         >
                             {t("action.cancel")}
                         </Button>
-                        <Button 
-                            type="submit" 
+                        <Button
+                            type="submit"
                             disabled={!isValid || isSubmitting}
-                            className="rounded-xl"
+                            className="rounded-xl w-full sm:w-auto"
                         >
                             {t("action.create")}
                         </Button>

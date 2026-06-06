@@ -7,8 +7,8 @@ const NotFound = () => {
 
     return (
         <div className="flex-1 flex items-center justify-center p-8">
-            <div className="flex flex-row items-center gap-8">
-                <WarningCircleIcon className="w-32 h-32 text-muted-foreground shrink-0" weight="duotone" />
+            <div className="flex flex-col sm:flex-row items-center gap-8 text-center sm:text-left">
+                <WarningCircleIcon className="w-24 h-24 sm:w-32 sm:h-32 text-muted-foreground shrink-0" weight="duotone" />
                 <div className="flex flex-col gap-1">
                     <h1 className="text-4xl font-bold tracking-tight">404</h1>
                     <h2 className="text-xl font-semibold text-muted-foreground">

@@ -56,10 +56,10 @@ export default function SSHSettings() {
     }, []);
 
     return (
-        <div className="flex flex-col p-6 pt-0 gap-6" style={{ height: 'calc(var(--app-vh) - 5.5rem)' }}>
+        <div className="flex flex-col p-4 md:p-6 pt-0 gap-6" style={{ height: 'calc(var(--app-vh) - 5.5rem)' }}>
             <ScrollArea className="flex-1">
                 <div className="space-y-4 pr-4">
-                    <div className="flex items-center justify-between p-4 rounded-xl border bg-card">
+                    <div className="flex flex-wrap items-center justify-between gap-3 p-4 rounded-xl border bg-card">
                         <div className="flex items-center gap-4">
                             <div className="h-12 w-12 rounded-xl bg-primary/10 flex items-center justify-center">
                                 <PowerIcon className="h-6 w-6 text-primary" weight="fill"/>
@@ -69,7 +69,7 @@ export default function SSHSettings() {
                                 <p className="text-sm text-muted-foreground">{t("ssh.status.description")}</p>
                             </div>
                         </div>
-                        <div className="flex items-center gap-4">
+                        <div className="flex items-center gap-3 flex-wrap">
                             <div className="flex items-center gap-3">
                                 <Switch id="server-status" checked={serverEnabled} onCheckedChange={changeEnabled}/>
                                 <span className={`text-sm font-medium ${serverEnabled ? 'text-primary' : 'text-muted-foreground'}`}>
@@ -83,7 +83,7 @@ export default function SSHSettings() {
                         </div>
                     </div>
 
-                    <div className="flex items-center justify-between p-4 rounded-xl border bg-card">
+                    <div className="flex flex-wrap items-center justify-between gap-3 p-4 rounded-xl border bg-card">
                         <div className="flex items-center gap-4">
                             <div className="h-12 w-12 rounded-xl bg-muted flex items-center justify-center">
                                 <GlobeIcon className="h-6 w-6 text-muted-foreground"/>
@@ -172,6 +172,7 @@ export default function SSHSettings() {
                                 {t("ssh.sessions.none")}
                             </div>
                         ) : (
+                            <div className="overflow-x-auto">
                             <Table className="text-base">
                                 <TableHeader>
                                     <TableRow className="hover:bg-transparent">
@@ -219,6 +220,7 @@ export default function SSHSettings() {
                                     ))}
                                 </TableBody>
                             </Table>
+                            </div>
                         )}
                     </div>
                 </div>

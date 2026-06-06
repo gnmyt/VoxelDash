@@ -114,7 +114,7 @@ const WhitelistTab = ({ data, onRefresh }: WhitelistTabProps) => {
                 />
             </div>
 
-            <div className="flex items-center gap-2">
+            <div className="flex flex-wrap items-center gap-2">
                 <Dialog open={addDialogOpen} onOpenChange={setAddDialogOpen}>
                     <DialogTrigger asChild>
                         <Button className="rounded-lg">
@@ -168,7 +168,7 @@ const WhitelistTab = ({ data, onRefresh }: WhitelistTabProps) => {
                     <p className="text-sm text-muted-foreground mt-1">{t("players.no_whitelisted_description")}</p>
                 </div>
             ) : (
-                <div className="rounded-xl border bg-card">
+                <div className="rounded-xl border bg-card overflow-x-auto">
                     <Table>
                         <TableHeader>
                             <TableRow>
@@ -202,8 +202,8 @@ const WhitelistTab = ({ data, onRefresh }: WhitelistTabProps) => {
                                             <span className="font-medium">{player.name}</span>
                                         </div>
                                     </TableCell>
-                                    <TableCell>
-                                        <code className="text-xs text-muted-foreground bg-muted px-2 py-1 rounded">
+                                    <TableCell className="max-w-[160px]">
+                                        <code className="text-xs text-muted-foreground bg-muted px-2 py-1 rounded block truncate">
                                             {player.uuid}
                                         </code>
                                     </TableCell>

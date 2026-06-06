@@ -121,7 +121,7 @@ export const ResourceDetail = () => {
 
     if (loading) {
         return (
-            <div className="flex flex-col p-6 pt-0 gap-6">
+            <div className="flex flex-col p-4 md:p-6 pt-0 gap-6">
                 <div className="flex items-center justify-between p-4 rounded-xl border bg-card">
                     <div className="flex items-center gap-4">
                         <Skeleton className="h-12 w-12 rounded-xl" />
@@ -131,7 +131,7 @@ export const ResourceDetail = () => {
                         </div>
                     </div>
                 </div>
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
                     {[...Array(4)].map((_, i) => (
                         <div key={i} className="flex items-center gap-3 p-4 rounded-xl border bg-card">
                             <Skeleton className="h-10 w-10 rounded-lg" />
@@ -148,7 +148,7 @@ export const ResourceDetail = () => {
 
     if (!resource) {
         return (
-            <div className="flex flex-col p-6 pt-0 gap-6">
+            <div className="flex flex-col p-4 md:p-6 pt-0 gap-6">
                 <div className="flex items-center justify-center py-16">
                     <div className="text-center">
                         <Icon className="h-16 w-16 text-muted-foreground mx-auto mb-4" />
@@ -169,10 +169,10 @@ export const ResourceDetail = () => {
     }
 
     return (
-        <div className="flex flex-col px-6 pb-6 gap-6 flex-1 min-h-0 overflow-hidden">
-            <div className="flex items-center justify-between p-4 rounded-xl border bg-card shrink-0">
-                <div className="flex items-center gap-4">
-                    <div className={`h-12 w-12 rounded-xl flex items-center justify-center ${
+        <div className="flex flex-col px-4 md:px-6 pb-6 gap-6 flex-1 min-h-0 overflow-hidden">
+            <div className="flex flex-wrap items-center justify-between gap-3 p-4 rounded-xl border bg-card shrink-0">
+                <div className="flex items-center gap-4 min-w-0">
+                    <div className={`h-12 w-12 rounded-xl flex items-center justify-center shrink-0 ${
                         resource.enabled ? "bg-primary/10" : "bg-muted"
                     }`}>
                         <Icon className={`h-6 w-6 ${
@@ -188,7 +188,7 @@ export const ResourceDetail = () => {
                         </div>
                     </div>
                 </div>
-                <div className="flex items-center gap-3">
+                <div className="flex items-center gap-2 shrink-0 flex-wrap justify-end">
                     <div className="flex items-center gap-2">
                         <span className="text-sm text-muted-foreground">
                             {resource.enabled ? t("resources.enabled") : t("resources.disabled")}

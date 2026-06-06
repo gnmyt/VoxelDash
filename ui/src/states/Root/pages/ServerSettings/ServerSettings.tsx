@@ -70,7 +70,7 @@ const ServerSettings = () => {
     const CurrentCategoryIcon = categoryConfig[activeCategory].icon;
 
     return (
-        <div className="flex flex-col p-6 pt-0 gap-6" style={{ height: 'calc(var(--app-vh) - 5.5rem)' }}>
+        <div className="flex flex-col p-4 md:p-6 pt-0 gap-6" style={{ height: 'calc(var(--app-vh) - 5.5rem)' }}>
             <Alert variant="destructive" className="rounded-xl shrink-0">
                 <WarningCircleIcon className="h-5 w-5"/>
                 <AlertTitle className="text-base font-semibold">{t("action.warn")}</AlertTitle>
@@ -79,11 +79,11 @@ const ServerSettings = () => {
                 </AlertDescription>
             </Alert>
             
-            <div className="flex gap-6 flex-1 min-h-0">
-                <div className="w-64 shrink-0">
-                    <div className="bg-card border rounded-xl p-3 h-full">
-                        <ScrollArea className="h-full">
-                            <nav className="space-y-1">
+            <div className="flex flex-col md:flex-row gap-6 flex-1 min-h-0">
+                <div className="md:w-64 shrink-0">
+                    <div className="bg-card border rounded-xl p-3 md:h-full">
+                        <ScrollArea className="md:h-full">
+                            <nav className="flex md:flex-col gap-1 overflow-x-auto md:overflow-x-visible pb-1 md:pb-0">
                                 {categories.map((category) => {
                                     const config = categoryConfig[category];
                                     const Icon = config.icon;
@@ -97,7 +97,7 @@ const ServerSettings = () => {
                                             key={category}
                                             variant="ghost"
                                             onClick={() => setActiveCategory(category)}
-                                            className={`w-full flex items-center justify-start gap-3 px-4 py-3 h-12 rounded-xl text-left ${isActive ? 'bg-accent font-semibold' : ''}`}
+                                            className={`shrink-0 md:w-full flex items-center justify-start gap-3 px-4 py-3 h-12 rounded-xl text-left ${isActive ? 'bg-accent font-semibold' : ''}`}
                                         >
                                             <Icon className="h-5 w-5 shrink-0" weight={isActive ? "fill" : "regular"} />
                                             <span className="text-base truncate">{t(config.label)}</span>

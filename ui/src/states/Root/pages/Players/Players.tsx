@@ -41,7 +41,7 @@ const Players = () => {
     }, []);
 
     return (
-        <div className="flex flex-col p-6 pt-0 gap-6" style={{ height: 'calc(var(--app-vh) - 5.5rem)' }}>
+        <div className="flex flex-col p-4 md:p-6 pt-0 gap-6" style={{ height: 'calc(var(--app-vh) - 5.5rem)' }}>
             <div className="flex items-center justify-between p-4 rounded-xl border bg-card shrink-0">
                 <div className="flex items-center gap-4">
                     <div className="h-12 w-12 rounded-xl bg-primary/10 flex items-center justify-center">
@@ -56,20 +56,20 @@ const Players = () => {
 
             <div className="flex-1 min-h-0">
                 <Tabs defaultValue="online" className="h-full flex flex-col">
-                    <TabsList className="w-fit mb-4">
-                        <TabsTrigger value="online" className="gap-2">
+                    <TabsList className="w-full sm:w-fit mb-4 overflow-x-auto">
+                        <TabsTrigger value="online" className="gap-2 flex-1 sm:flex-none whitespace-nowrap">
                             {t("players.tabs.online")}
                             <span className="bg-primary/20 text-primary px-2 py-0.5 rounded-md text-xs font-medium">
                                 {onlinePlayers.length}
                             </span>
                         </TabsTrigger>
-                        <TabsTrigger value="whitelist" className="gap-2">
+                        <TabsTrigger value="whitelist" className="gap-2 flex-1 sm:flex-none whitespace-nowrap">
                             {t("players.tabs.whitelist")}
                             <span className="bg-muted px-2 py-0.5 rounded-md text-xs font-medium">
                                 {whitelistData.players.length}
                             </span>
                         </TabsTrigger>
-                        <TabsTrigger value="banned" className="gap-2">
+                        <TabsTrigger value="banned" className="gap-2 flex-1 sm:flex-none whitespace-nowrap">
                             {t("players.tabs.banned")}
                             <span className="bg-destructive/20 text-destructive px-2 py-0.5 rounded-md text-xs font-medium">
                                 {bannedPlayers.length}

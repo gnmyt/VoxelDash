@@ -113,7 +113,7 @@ const CreateServerDialog = ({open, onOpenChange}: { open: boolean; onOpenChange:
 
     return (
         <Dialog open={open} onOpenChange={handleOpenChange}>
-            <DialogContent className="max-w-xl">
+            <DialogContent className="w-full max-w-xl">
                 <DialogHeader>
                     <DialogTitle className="font-display text-xl">{t("create_server.title")}</DialogTitle>
                 </DialogHeader>

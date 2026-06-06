@@ -36,7 +36,7 @@ interface BackupCardProps {
 
 const BackupCard = ({backup, onRestore, onDelete, onDownload}: BackupCardProps) => {
     return (
-        <div className="flex items-center justify-between p-4 rounded-xl border bg-card hover:bg-accent/50 transition-colors">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 p-4 rounded-xl border bg-card hover:bg-accent/50 transition-colors">
             <div className="flex items-center gap-4 min-w-0 flex-1">
                 <div className="h-12 w-12 rounded-xl bg-muted flex items-center justify-center shrink-0">
                     <ArchiveIcon className="h-6 w-6 text-muted-foreground"/>
@@ -48,7 +48,7 @@ const BackupCard = ({backup, onRestore, onDelete, onDownload}: BackupCardProps) 
                             {convertSize(backup.size)}
                         </span>
                     </div>
-                    <div className="flex items-center gap-4 mt-1">
+                    <div className="flex flex-wrap items-center gap-x-4 gap-y-1.5 mt-1">
                         <div className="flex items-center gap-1.5 text-sm text-muted-foreground">
                             <CalendarIcon className="h-4 w-4"/>
                             <span>{new Date(backup.id).toLocaleString()}</span>
@@ -65,7 +65,7 @@ const BackupCard = ({backup, onRestore, onDelete, onDownload}: BackupCardProps) 
                 </div>
             </div>
             
-            <div className="flex items-center gap-2 shrink-0 ml-4">
+            <div className="flex flex-wrap items-center gap-2 shrink-0 sm:ml-4">
                 <AlertDialog>
                     <AlertDialogTrigger asChild>
                         <Button variant="outline" size="lg" className="h-10 px-4 rounded-xl">

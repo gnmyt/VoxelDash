@@ -51,7 +51,7 @@ const AuthLayout = ({brand, tagline, description, title, subtitle, children}: Au
             <div aria-hidden/>
         </div>
 
-        <div className="relative flex items-center justify-center p-6 md:p-10">
+        <div className="relative flex items-center justify-center px-4 py-8 sm:p-6 md:p-10">
             <div className="vd-rise w-full max-w-sm">
                 <div className="mb-10 flex items-center gap-3 lg:hidden">
                     <img src={logo} alt={brand} className="size-10 rounded-xl"/>

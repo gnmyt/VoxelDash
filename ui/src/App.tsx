@@ -15,6 +15,7 @@ import {SocketProvider} from "@/contexts/SocketContext.tsx";
 import {detectInstanceMode} from "@/lib/RequestUtil.ts";
 import {isDesktop} from "@/lib/desktop.ts";
 import {TitleBar} from "@/components/TitleBar.tsx";
+import {PWAManager} from "@/components/PWAManager.tsx";
 import {ReactNode} from "react";
 import Servers from "@/states/Servers/Servers.tsx";
 import Forwardings from "@/states/Servers/Forwardings/Forwardings.tsx";
@@ -39,7 +40,7 @@ const Shell = ({children}: { children: ReactNode }) =>
                 <div className="min-h-0 flex-1">{children}</div>
             </div>
         )
-        : <>{children}</>;
+        : <>{children}<PWAManager/></>;
 
 const App = () => {
     const [translationsLoaded, setTranslationsLoaded] = useState(false);

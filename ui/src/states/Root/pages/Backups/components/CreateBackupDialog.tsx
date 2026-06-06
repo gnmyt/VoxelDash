@@ -53,7 +53,7 @@ const CreateBackupDialog = ({ options, onBackup, disabled }: CreateBackupDialogP
     return (
         <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger asChild>
-                <Button disabled={disabled} size="lg" className="h-12 px-6 rounded-xl text-base">
+                <Button disabled={disabled} size="lg" className="h-12 px-6 rounded-xl text-base w-full sm:w-auto">
                     <PlusIcon className="h-5 w-5 mr-2" weight="bold" />
                     {t("backup.create")}
                 </Button>

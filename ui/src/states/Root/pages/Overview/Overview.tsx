@@ -4,6 +4,7 @@ import { jsonRequest } from "@/lib/RequestUtil";
 import { Widget, SavedLayout } from "@/types/widget";
 import WidgetCard from "./components/WidgetCard";
 import { useResizeObserver } from "@/hooks/useResizeObserver";
+import { useIsMobile } from "@/hooks/use-mobile";
 import { DotsThreeIcon, ArrowsClockwiseIcon, GridFourIcon } from "@phosphor-icons/react";
 import { Button } from "@/components/ui/button";
 import {
@@ -35,6 +36,7 @@ const Overview = () => {
     const [layout, setLayout] = useState<LayoutItem[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [containerRef, containerSize] = useResizeObserver<HTMLDivElement>();
+    const isMobile = useIsMobile();
 
     const fetchWidgets = useCallback(async () => {
         try {
@@ -191,8 +193,8 @@ const Overview = () => {
 
     if (isLoading && widgets.length === 0) {
         return (
-            <div className="flex flex-col flex-1 p-6 pt-0">
-                <div className="grid grid-cols-3 gap-4">
+            <div className="flex flex-col flex-1 p-4 md:p-6 pt-0">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                     {[1, 2, 3, 4, 5, 6].map((i) => (
                         <div key={i} className="aspect-video rounded-xl bg-muted/50 animate-pulse" />
                     ))}
@@ -202,7 +204,7 @@ const Overview = () => {
     }
 
     return (
-        <div className="flex flex-col flex-1 p-6 pt-0 min-h-0 overflow-hidden">
+        <div className="flex flex-col flex-1 p-4 md:p-6 pt-0 min-h-0 overflow-hidden">
             <div className="flex items-center justify-end mb-4 shrink-0">
                 <DropdownMenu>
                     <DropdownMenuTrigger asChild>
@@ -224,32 +226,46 @@ const Overview = () => {
             </div>
 
             <div ref={containerRef} className="flex-1 min-h-0 overflow-auto">
-                {layout.length > 0 && (
-                    <GridLayout
-                        className="layout"
-                        layout={layout}
-                        width={gridWidth}
-                        gridConfig={{
-                            cols: GRID_COLS,
-                            rowHeight: ROW_HEIGHT,
-                            margin: [16, 16],
-                            containerPadding: [0, 0],
-                        }}
-                        dragConfig={{
-                            enabled: true,
-                            handle: ".drag-handle",
-                        }}
-                        resizeConfig={{
-                            enabled: true,
-                        }}
-                        onLayoutChange={handleLayoutChange}
-                    >
-                        {widgets.map((widget) => (
-                            <div key={widget.id}>
-                                <WidgetCard widget={widget} />
-                            </div>
-                        ))}
-                    </GridLayout>
+                {isMobile ? (
+                    <div className="flex flex-col gap-4">
+                        {widgets.map((widget) => {
+                            const item = layout.find((l) => l.i === widget.id);
+                            const height = item ? item.h * ROW_HEIGHT + (item.h - 1) * 16 : 160;
+                            return (
+                                <div key={widget.id} style={{ height }}>
+                                    <WidgetCard widget={widget} />
+                                </div>
+                            );
+                        })}
+                    </div>
+                ) : (
+                    layout.length > 0 && (
+                        <GridLayout
+                            className="layout"
+                            layout={layout}
+                            width={gridWidth}
+                            gridConfig={{
+                                cols: GRID_COLS,
+                                rowHeight: ROW_HEIGHT,
+                                margin: [16, 16],
+                                containerPadding: [0, 0],
+                            }}
+                            dragConfig={{
+                                enabled: true,
+                                handle: ".drag-handle",
+                            }}
+                            resizeConfig={{
+                                enabled: true,
+                            }}
+                            onLayoutChange={handleLayoutChange}
+                        >
+                            {widgets.map((widget) => (
+                                <div key={widget.id}>
+                                    <WidgetCard widget={widget} />
+                                </div>
+                            ))}
+                        </GridLayout>
+                    )
                 )}
             </div>
         </div>

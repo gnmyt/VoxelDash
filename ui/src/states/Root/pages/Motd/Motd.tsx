@@ -199,8 +199,8 @@ const Motd = () => {
     return (
         <>
             <style>{EDITOR_STYLES}</style>
-            <div className="flex flex-col p-6 pt-0 gap-6" style={{height: "calc(var(--app-vh) - 5.5rem)"}}>
-                <div className="flex items-center justify-between p-4 rounded-xl border bg-card shrink-0">
+            <div className="flex flex-col p-4 md:p-6 pt-0 gap-6" style={{height: "calc(var(--app-vh) - 5.5rem)"}}>
+                <div className="flex flex-wrap items-center justify-between gap-3 p-4 rounded-xl border bg-card shrink-0">
                     <div className="flex items-center gap-4">
                         <div className="h-12 w-12 rounded-xl bg-primary/10 flex items-center justify-center">
                             <ChatCircleTextIcon className="h-6 w-6 text-primary" weight="fill"/>
@@ -344,7 +344,7 @@ const Motd = () => {
                             </p>
 
                             {capabilities.favicon && (
-                                <div className="bg-card border rounded-xl p-4 flex items-center gap-4">
+                                <div className="bg-card border rounded-xl p-4 flex flex-wrap items-center gap-4">
                                     <div
                                         className="h-16 w-16 rounded-md overflow-hidden flex items-center justify-center bg-muted shrink-0"
                                         style={{imageRendering: "pixelated"}}

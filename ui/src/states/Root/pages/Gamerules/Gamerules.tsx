@@ -2,7 +2,7 @@ import {useEffect, useMemo, useState} from "react";
 import {BookOpenTextIcon, GameControllerIcon, MagnifyingGlassIcon} from "@phosphor-icons/react";
 import {t} from "i18next";
 import {jsonRequest, postRequest} from "@/lib/RequestUtil";
-import {GameRule, GameRuleCapabilities} from "@/types/gamerule";
+import {GameRule} from "@/types/gamerule";
 import {GAME_RULE_WIKI_URL, humanizeGameRule} from "@/lib/GameRuleUtil";
 import {ScrollArea} from "@/components/ui/scroll-area";
 import {Input} from "@/components/ui/input";
@@ -11,7 +11,6 @@ import {GameRuleCard} from "./components/GameRuleCard";
 
 const Gamerules = () => {
     const [rules, setRules] = useState<GameRule[]>([]);
-    const [capabilities, setCapabilities] = useState<GameRuleCapabilities | null>(null);
     const [loaded, setLoaded] = useState(false);
     const [search, setSearch] = useState("");
 
@@ -20,7 +19,6 @@ const Gamerules = () => {
         const list: GameRule[] = data.gamerules || [];
         list.sort((a, b) => humanizeGameRule(a.key).localeCompare(humanizeGameRule(b.key)));
         setRules(list);
-        setCapabilities(data.capabilities || null);
         setLoaded(true);
     };
 
@@ -48,8 +46,8 @@ const Gamerules = () => {
     }, [rules, search]);
 
     return (
-        <div className="flex flex-col p-6 pt-0 gap-6" style={{height: 'calc(var(--app-vh) - 5.5rem)'}}>
-            <div className="flex items-center justify-between gap-4 p-4 rounded-xl border bg-card shrink-0">
+        <div className="flex flex-col p-4 md:p-6 pt-0 gap-6" style={{height: 'calc(var(--app-vh) - 5.5rem)'}}>
+            <div className="flex flex-wrap items-center justify-between gap-3 p-4 rounded-xl border bg-card shrink-0">
                 <div className="flex items-center gap-4 min-w-0">
                     <div className="h-12 w-12 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
                         <GameControllerIcon className="h-6 w-6 text-primary" weight="fill"/>
@@ -59,7 +57,7 @@ const Gamerules = () => {
                         <p className="text-sm text-muted-foreground truncate">{t("gamerules.subtitle")}</p>
                     </div>
                 </div>
-                <div className="flex items-center gap-3 shrink-0">
+                <div className="flex items-center gap-3 w-full sm:w-auto shrink-0">
                     <a
                         href={GAME_RULE_WIKI_URL}
                         target="_blank"
@@ -69,7 +67,7 @@ const Gamerules = () => {
                         <BookOpenTextIcon className="h-4 w-4"/>
                         {t("gamerules.wiki_learn")}
                     </a>
-                    <div className="relative w-64 max-w-[40vw]">
+                    <div className="relative w-full sm:w-64">
                         <MagnifyingGlassIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground"/>
                         <Input
                             value={search}

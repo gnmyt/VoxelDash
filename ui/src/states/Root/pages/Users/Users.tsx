@@ -187,8 +187,8 @@ const Users = () => {
     };
 
     return (
-        <div className="flex flex-col p-6 pt-0 gap-6" style={{ height: 'calc(var(--app-vh) - 5.5rem)' }}>
-            <div className="flex items-center justify-between p-4 rounded-xl border bg-card shrink-0">
+        <div className="flex flex-col p-4 md:p-6 pt-0 gap-6" style={{ height: 'calc(var(--app-vh) - 5.5rem)' }}>
+            <div className="flex flex-wrap items-center justify-between gap-3 p-4 rounded-xl border bg-card shrink-0">
                 <div className="flex items-center gap-4">
                     <div className="h-12 w-12 rounded-xl bg-primary/10 flex items-center justify-center">
                         <UsersThreeIcon className="h-6 w-6 text-primary" weight="fill" />
@@ -218,7 +218,7 @@ const Users = () => {
                         <p className="text-sm text-muted-foreground mt-1">{t("users.no_users_description")}</p>
                     </div>
                 ) : (
-                    <div className="rounded-xl border bg-card">
+                    <div className="rounded-xl border bg-card overflow-x-auto">
                         <Table>
                             <TableHeader>
                                 <TableRow>

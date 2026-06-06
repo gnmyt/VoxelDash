@@ -32,7 +32,7 @@ export function GameRuleCard({rule, onChange}: GameRuleCardProps) {
     const TypeIcon = isBoolean ? ToggleRightIcon : HashIcon;
 
     return (
-        <div className="flex items-center gap-4 p-4 rounded-xl border bg-card hover:border-primary/40 transition-colors">
+        <div className="flex flex-wrap items-center gap-4 p-4 rounded-xl border bg-card hover:border-primary/40 transition-colors">
             <div className="h-10 w-10 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
                 <TypeIcon className="h-5 w-5 text-primary" weight="fill"/>
             </div>

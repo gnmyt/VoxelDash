@@ -149,8 +149,8 @@ const Profiling = () => {
         : memRatio > 0.9 ? "hsl(0 72% 55%)" : memRatio > 0.75 ? "hsl(38 92% 50%)" : "hsl(var(--primary))";
 
     return (
-        <div className="flex min-w-0 flex-col p-6 pt-0 gap-6" style={{height: "calc(var(--app-vh) - 5.5rem)"}}>
-            <div className="flex items-center justify-between p-4 rounded-xl border bg-card shrink-0">
+        <div className="flex min-w-0 flex-col p-4 md:p-6 pt-0 gap-6" style={{height: "calc(var(--app-vh) - 5.5rem)"}}>
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 p-4 rounded-xl border bg-card shrink-0">
                 <div className="flex items-center gap-4">
                     <GaugeIcon className="h-6 w-6 text-primary" weight="fill"/>
                     <div>
@@ -272,7 +272,9 @@ const Profiling = () => {
                             <div className="min-w-0 overflow-hidden rounded-xl border bg-card p-4">
                                 <h2 className="text-sm font-semibold">{t("profiling.tree.title")}</h2>
                                 <p className="mb-3 text-xs text-muted-foreground">{t("profiling.tree.hint")}</p>
-                                {result.root && <CallTreeView root={result.root} highlight={selected}/>}
+                                <div className="overflow-x-auto">
+                                    {result.root && <CallTreeView root={result.root} highlight={selected}/>}
+                                </div>
                             </div>
                         </div>
                     )}

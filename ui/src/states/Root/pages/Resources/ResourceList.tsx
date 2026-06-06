@@ -131,8 +131,8 @@ export const ResourceList = () => {
     const Icon = getIcon();
 
     return (
-        <div className="flex flex-col p-6 pt-0 gap-6" style={{ height: 'calc(var(--app-vh) - 5.5rem)' }}>
-            <div className="flex items-center justify-between p-4 rounded-xl border bg-card shrink-0">
+        <div className="flex flex-col p-4 md:p-6 pt-0 gap-6" style={{ height: 'calc(var(--app-vh) - 5.5rem)' }}>
+            <div className="flex flex-wrap items-center justify-between gap-3 p-4 rounded-xl border bg-card shrink-0">
                 <div className="flex items-center gap-4">
                     <div className="h-12 w-12 rounded-xl bg-primary/10 flex items-center justify-center">
                         <Icon className="h-6 w-6 text-primary" weight="fill" />
@@ -151,7 +151,7 @@ export const ResourceList = () => {
             </div>
 
             <ScrollArea className="flex-1">
-                <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+                <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
                     {loading ? (
                         Array.from({ length: 6 }).map((_, i) => (
                             <Card key={i}>

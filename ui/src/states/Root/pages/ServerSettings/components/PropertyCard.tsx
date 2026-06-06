@@ -37,18 +37,18 @@ export function PropertyCard({property, onValueChange}: PropertyCardProps) {
                 )
             case 'number':
                 return (
-                    <Input 
-                        type="number" 
+                    <Input
+                        type="number"
                         value={value}
-                        onChange={(e) => handleChange(e.target.value)} 
-                        className="w-48 h-12 text-base rounded-xl"
+                        onChange={(e) => handleChange(e.target.value)}
+                        className="w-full sm:w-48 h-12 text-base rounded-xl"
                     />
                 )
             case 'gamemode':
             case 'difficulty':
                 return (
                     <Select value={value} onValueChange={handleChange}>
-                        <SelectTrigger className="w-48 h-12 text-base rounded-xl">
+                        <SelectTrigger className="w-full sm:w-48 h-12 text-base rounded-xl">
                             <SelectValue/>
                         </SelectTrigger>
                         <SelectContent className="rounded-xl">
@@ -80,7 +80,7 @@ export function PropertyCard({property, onValueChange}: PropertyCardProps) {
     }
 
     return (
-        <div className="flex items-center justify-between p-4 rounded-xl border bg-background hover:bg-accent/50 transition-colors">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 p-4 rounded-xl border bg-background hover:bg-accent/50 transition-colors">
             <div className="flex items-center gap-4 min-w-0">
                 <div className="h-10 w-10 rounded-xl bg-muted flex items-center justify-center shrink-0">
                     <Icon className="h-5 w-5 text-muted-foreground"/>
@@ -94,7 +94,7 @@ export function PropertyCard({property, onValueChange}: PropertyCardProps) {
                     </p>
                 </div>
             </div>
-            <div className="shrink-0 ml-4">
+            <div className="shrink-0 sm:ml-4 self-start sm:self-auto">
                 {renderInput()}
             </div>
         </div>

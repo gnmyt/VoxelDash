@@ -306,7 +306,7 @@ const Users = () => {
             {loading ? (
                 <div className="space-y-2.5">{[0, 1, 2].map((i) => <Skeleton key={i} className="h-14 rounded-xl"/>)}</div>
             ) : (
-                <div className="rounded-2xl border border-border/60 bg-card/40">
+                <div className="overflow-x-auto rounded-2xl border border-border/60 bg-card/40">
                     <Table>
                         <TableHeader>
                             <TableRow>

@@ -284,7 +284,7 @@ const FileView = ({
     }
 
     return (
-        <div className="rounded-xl border flex-grow min-h-0 overflow-hidden bg-card flex flex-col">
+        <div className="rounded-xl border flex-grow min-h-0 overflow-hidden bg-card flex flex-col overflow-x-auto">
             <DeleteDialog path={directory + selectedFile?.name} isOpen={isDeleteOpen} setOpen={setIsDeleteOpen}
                           updateFiles={updateFiles} isFolder={selectedFile?.is_folder ?? false}/>
             <MoveDialog
@@ -400,7 +400,7 @@ const FileView = ({
                                                         className="h-7 text-sm py-0 px-2"
                                                     />
                                                 ) : (
-                                                    <span className="text-sm">{item.name}</span>
+                                                    <span className="text-sm truncate min-w-0">{item.name}</span>
                                                 )}
                                             </div>
                                         </TableCell>
