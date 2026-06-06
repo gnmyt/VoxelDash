@@ -20,7 +20,7 @@ public class ResourcePipeImpl implements ResourcePipe {
 
     private static final List<ResourceType> SUPPORTED_TYPES = Collections.singletonList(ResourceType.PLUGIN);
     private static final int MAX_CONFIG_FILES = 10;
-    private static final String[] CONFIG_EXTENSIONS = {".yml", ".yaml", ".json"};
+    private static final String[] CONFIG_EXTENSIONS = {".yml", ".yaml", ".json", ".toml", ".properties", ".conf", ".cfg"};
 
     @Override
     public List<ResourceType> getSupportedResourceTypes() {
