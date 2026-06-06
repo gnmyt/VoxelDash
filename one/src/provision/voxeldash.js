@@ -1,4 +1,4 @@
-import {join} from "node:path";
+import {basename, join} from "node:path";
 import {existsSync, readdirSync, statSync} from "node:fs";
 import {config} from "../config.js";
 import {findServerAsset, latestForChannel, normalizeVersion} from "../updater/releases.js";
@@ -22,6 +22,13 @@ const ARTIFACT_MODULE = {
     vanilla: "vanilla",
 };
 
+const versionFromJarName = (artifact, name) => {
+    const prefix = `voxeldash-${artifact}-`;
+    if (!name.startsWith(prefix) || !name.endsWith(".jar")) return null;
+    const version = name.slice(prefix.length, -".jar".length);
+    return version || null;
+};
+
 export const resolveVoxelDashJar = async (artifact, onLog) => {
     const moduleName = ARTIFACT_MODULE[artifact];
     if (!moduleName) throw new Error(`Unknown VoxelDash artifact: ${artifact}`);
@@ -40,7 +47,7 @@ export const resolveVoxelDashJar = async (artifact, onLog) => {
     const newest = candidates.sort((a, b) => b.mtime - a.mtime)[0];
     if (newest) {
         onLog?.(`Using locally built ${artifact}: ${newest.path}`);
-        return {path: newest.path, version: null};
+        return {path: newest.path, version: versionFromJarName(artifact, basename(newest.path))};
     }
 
     return downloadFromRelease(artifact, onLog);

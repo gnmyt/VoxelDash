@@ -432,16 +432,10 @@ public class StoreRouter extends BaseRoute {
      */
     static String normalizeGameVersion(String version) {
         if (version == null) return null;
-
         String v = version.trim();
         if (v.isEmpty()) return v;
-
         Matcher matcher = GAME_VERSION_PATTERN.matcher(v);
-        if (matcher.find()) {
-            return matcher.group();
-        }
-
-        return v;
+        return matcher.find() ? matcher.group() : v;
     }
 
     private String getServerSoftware() {

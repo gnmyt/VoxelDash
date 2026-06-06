@@ -1,5 +1,6 @@
 import {registry} from "./registry.js";
 import {db} from "../db.js";
+import {syncVoxelDashVersion} from "../version-sync.js";
 
 const HOP_BY_HOP = new Set(["content-length", "transfer-encoding", "connection", "keep-alive", "upgrade"]);
 
@@ -25,6 +26,7 @@ export const handleTunnelConnection = (socket) => {
             registry.attach(serverId, socket);
             socket.send(JSON.stringify({type: "hello-ack"}));
             console.log(`[tunnel] server ${serverId} connected`);
+            syncVoxelDashVersion(serverId).catch(() => {});
             return;
         }
 
