@@ -132,6 +132,9 @@ tasks.named("shadowJar") {
     relocate 'kotlin', 'de.gnm.voxeldash.libs.kotlin'
     relocate 'okhttp3', 'de.gnm.voxeldash.libs.okhttp3'
     relocate 'okio', 'de.gnm.voxeldash.libs.okio'
+    relocate 'org.jetbrains.annotations', 'de.gnm.voxeldash.libs.jetbrains.annotations'
+    relocate 'org.intellij', 'de.gnm.voxeldash.libs.intellij'
+    relocate 'javassist', 'de.gnm.voxeldash.libs.javassist'
 }
 
 tasks.named("remapJar") {
