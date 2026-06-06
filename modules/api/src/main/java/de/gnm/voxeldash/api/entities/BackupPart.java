@@ -3,38 +3,46 @@ package de.gnm.voxeldash.api.entities;
 public enum BackupPart {
 
     /**
-     * Backups the root directory
+     * Backups the complete server directory
      */
-    ROOT(0),
+    ROOT(0, "root"),
 
     /**
-     * Backups the worlds (only the world that are loaded)
+     * Backups the world directories (every top-level directory containing a level.dat)
      */
-//    WORLDS(1), TODO: Implement this with a pipe to save worlds / get them
+    WORLDS(1, "worlds"),
 
     /**
      * Backups the plugins directory
      */
-    PLUGINS(2),
+    PLUGINS(2, "plugins"),
 
     /**
-     * Backups the configs (e.g. the server.properties, bukkit.yml, etc.)
+     * Backups the configs (e.g. the server.properties, bukkit.yml, config/, etc.)
      */
-    CONFIGS(4),
+    CONFIGS(4, "configs"),
 
     /**
      * Backups the logs directory
      */
-    LOGS(8);
+    LOGS(8, "logs"),
+
+    /**
+     * Backups the mods directory
+     */
+    MODS(16, "mods");
 
     private final int backupBit;
+    private final String id;
 
     /**
      * Constructor of the {@link BackupPart}
      * @param backupBit The backup bit of the backup part
+     * @param id        The stable lowercase identifier (used as i18n key)
      */
-    BackupPart(int backupBit) {
+    BackupPart(int backupBit, String id) {
         this.backupBit = backupBit;
+        this.id = id;
     }
 
     /**
@@ -43,6 +51,14 @@ public enum BackupPart {
      */
     public int getBackupBit() {
         return backupBit;
+    }
+
+    /**
+     * Gets the stable lowercase identifier of the backup part
+     * @return the identifier of the backup part
+     */
+    public String getId() {
+        return id;
     }
 
     /**

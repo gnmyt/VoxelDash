@@ -1,7 +1,12 @@
-export type BackupType = "ROOT" | "PLUGINS" | "CONFIGS" | "LOGS"
+export type BackupType = "ROOT" | "WORLDS" | "PLUGINS" | "CONFIGS" | "LOGS" | "MODS"
 
 export interface Backup {
   id: number
   size: number
   modes: BackupType[]
+}
+
+export interface BackupOption {
+  id: string
+  bit: number
 }

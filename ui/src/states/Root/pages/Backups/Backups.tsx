@@ -1,6 +1,6 @@
 import * as React from "react";
 import {SpinnerGapIcon, ArchiveIcon} from "@phosphor-icons/react";
-import {Backup} from "@/types/backup.ts";
+import {Backup, BackupOption} from "@/types/backup.ts";
 import BackupCard from "@/states/Root/pages/Backups/components/BackupCard.tsx";
 import CreateBackupDialog from "@/states/Root/pages/Backups/components/CreateBackupDialog.tsx";
 import {deleteRequest, downloadRequest, jsonRequest, postRequest} from "@/lib/RequestUtil.ts";
@@ -11,6 +11,7 @@ import {ScrollArea} from "@/components/ui/scroll-area.tsx";
 
 const Backups = () => {
     const [backups, setBackups] = React.useState<Backup[]>([]);
+    const [options, setOptions] = React.useState<BackupOption[]>([]);
     const [isCreating, setIsCreating] = React.useState(false);
 
     const handleCreateBackup = async (backupMode: number) => {
@@ -42,8 +43,13 @@ const Backups = () => {
         setBackups(data.backups.sort((a: { id: number }, b: { id: number }) => b.id - a.id));
     });
 
+    const fetchOptions = async () => jsonRequest("backups/options").then((data) => {
+        setOptions(data.options ?? []);
+    });
+
     useEffect(() => {
         fetchBackups();
+        fetchOptions();
     }, []);
 
     return (
@@ -58,7 +64,7 @@ const Backups = () => {
                         <p className="text-sm text-muted-foreground">{t("backup.subtitle")}</p>
                     </div>
                 </div>
-                <CreateBackupDialog onBackup={handleCreateBackup} disabled={isCreating}/>
+                <CreateBackupDialog options={options} onBackup={handleCreateBackup} disabled={isCreating}/>
             </div>
 
             {isCreating && (

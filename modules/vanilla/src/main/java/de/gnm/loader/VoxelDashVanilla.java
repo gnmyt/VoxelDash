@@ -7,6 +7,7 @@ import de.gnm.loader.pipes.*;
 import de.gnm.loader.widgets.VanillaWidgetProvider;
 import de.gnm.voxeldash.VoxelDashLoader;
 import de.gnm.voxeldash.api.controller.ActionRegistry;
+import de.gnm.voxeldash.api.entities.BackupPart;
 import de.gnm.voxeldash.api.entities.Feature;
 import de.gnm.voxeldash.api.entities.schedule.ActionInputType;
 import de.gnm.voxeldash.api.entities.schedule.ScheduleAction;
@@ -119,6 +120,8 @@ public class VoxelDashVanilla {
                 Feature.Worlds,
                 Feature.Resources
         );
+
+        loader.registerBackupParts(BackupPart.WORLDS, BackupPart.CONFIGS, BackupPart.LOGS);
     }
 
     /**

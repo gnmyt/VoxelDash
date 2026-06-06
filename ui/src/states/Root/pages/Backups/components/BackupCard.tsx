@@ -1,4 +1,4 @@
-import {ArchiveIcon, DownloadSimpleIcon, GearIcon, FileTextIcon, ArrowCounterClockwiseIcon, TrashIcon, CalendarIcon} from "@phosphor-icons/react";
+import {ArchiveIcon, DownloadSimpleIcon, GearIcon, FileTextIcon, ArrowCounterClockwiseIcon, TrashIcon, CalendarIcon, PlanetIcon, PuzzlePieceIcon} from "@phosphor-icons/react";
 import {Button} from "@/components/ui/button.tsx";
 import {
     AlertDialog,
@@ -18,10 +18,14 @@ import {t} from "i18next";
 
 const TYPE_ICONS: Record<BackupType, ReactNode> = {
     ROOT: <ArchiveIcon className="h-4 w-4"/>,
+    WORLDS: <PlanetIcon className="h-4 w-4"/>,
     PLUGINS: <GearIcon className="h-4 w-4"/>,
+    MODS: <PuzzlePieceIcon className="h-4 w-4"/>,
     CONFIGS: <GearIcon className="h-4 w-4"/>,
     LOGS: <FileTextIcon className="h-4 w-4"/>,
 }
+
+const FALLBACK_ICON = <ArchiveIcon className="h-4 w-4"/>;
 
 interface BackupCardProps {
     backup: Backup;
@@ -52,7 +56,7 @@ const BackupCard = ({backup, onRestore, onDelete, onDownload}: BackupCardProps) 
                         <div className="flex items-center gap-1.5">
                             {backup.modes.map((type) => (
                                 <div className="flex items-center gap-1 rounded-lg bg-muted px-2 py-1 text-xs" key={type}>
-                                    {TYPE_ICONS[type]}
+                                    {TYPE_ICONS[type] ?? FALLBACK_ICON}
                                     <span>{t(`backup.mapping.${type.toLowerCase()}`)}</span>
                                 </div>
                             ))}

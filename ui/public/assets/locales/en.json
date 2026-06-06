@@ -503,6 +503,7 @@
       "root": "Complete server",
       "worlds": "Worlds",
       "plugins": "Plugins",
+      "mods": "Mods",
       "configs": "Configurations",
       "logs": "Logs"
     }
@@ -618,7 +619,7 @@
       "reload": "Reload Server",
       "stop": "Stop Server",
       "backup": "Create Backup",
-      "backup_input": "Backup mode (0=full, or sum of: 2=plugins, 4=configs, 8=logs)",
+      "backup_input": "Backup mode (0=full, or sum of: 1=worlds, 2=plugins, 4=configs, 8=logs, 16=mods)",
       "kick_all": "Kick All Players",
       "kick_all_input": "Kick reason message"
     },

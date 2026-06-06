@@ -47,11 +47,26 @@ public class BackupHelper {
                     }
                     break;
                 }
+                case WORLDS: {
+                    File[] serverFolder = new File(".").listFiles();
+                    if (serverFolder != null) {
+                        for (File file : serverFolder) {
+                            if (file.isDirectory() && new File(file, "level.dat").exists()) {
+                                directories.add(file);
+                            }
+                        }
+                    }
+                    break;
+                }
                 case PLUGINS:
                     directories.add(new File("plugins"));
                     break;
+                case MODS:
+                    directories.add(new File("mods"));
+                    break;
                 case CONFIGS:
-                    directories.addAll(FileUtils.listFiles(new File("."), new String[]{"yml", "properties", "json"}, false));
+                    directories.addAll(FileUtils.listFiles(new File("."), new String[]{"yml", "properties", "json", "toml"}, false));
+                    directories.addAll(Arrays.asList(new File("config"), new File("defaultconfigs")));
                     break;
                 case LOGS:
                     directories.addAll(Arrays.asList(new File("logs"), new File("crash-reports")));

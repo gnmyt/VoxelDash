@@ -12,42 +12,42 @@ import {
     DialogTrigger,
 } from "@/components/ui/dialog.tsx";
 import { Label } from "@/components/ui/label.tsx";
-import { BackupType } from "@/types/backup.ts";
+import { BackupOption } from "@/types/backup.ts";
 import {t} from "i18next";
 
 interface CreateBackupDialogProps {
+    options: BackupOption[];
     onBackup: (data: number) => Promise<void>;
     disabled?: boolean;
 }
 
-export const BACKUP_TYPES: { value: BackupType; bit: number }[] = [
-    { value: 'PLUGINS', bit: 2 },
-    { value: 'CONFIGS',bit: 4 },
-    { value: 'LOGS', bit: 8 },
-];
-
-const CreateBackupDialog = ({ onBackup, disabled }: CreateBackupDialogProps) => {
+const CreateBackupDialog = ({ options, onBackup, disabled }: CreateBackupDialogProps) => {
     const [open, setOpen] = React.useState(false);
-    const [selectedTypes, setSelectedTypes] = React.useState<BackupType[]>([]);
+    const [selected, setSelected] = React.useState<number[]>([]);
+
+    const granular = options.filter(o => o.bit !== 0);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setOpen(false);
 
-        let backupBit = selectedTypes.reduce((acc, type) => acc | BACKUP_TYPES.find(t => t.value === type)!.bit, 0);
-
-        if (selectedTypes.length === BACKUP_TYPES.length) backupBit = 0;
+        const backupBit = selected.includes(0) ? 0 : selected.reduce((acc, bit) => acc | bit, 0);
 
         await onBackup(backupBit);
-        setSelectedTypes([]);
+        setSelected([]);
     }
 
-    const toggleType = (type: BackupType) => {
-        setSelectedTypes(prev => prev.includes(type) ? prev.filter(t => t !== type) : [...prev, type]);
+    const toggle = (bit: number) => {
+        setSelected(prev => {
+            if (prev.includes(bit)) return prev.filter(b => b !== bit);
+
+            if (bit === 0) return [0];
+            return [...prev.filter(b => b !== 0), bit];
+        });
     }
 
     const selectAll = () => {
-        setSelectedTypes(BACKUP_TYPES.map(t => t.value));
+        setSelected(granular.map(o => o.bit));
     }
 
     return (
@@ -75,25 +75,25 @@ const CreateBackupDialog = ({ onBackup, disabled }: CreateBackupDialogProps) => 
                                 </Button>
                             </div>
                             <div className="grid grid-cols-1 gap-2">
-                                {BACKUP_TYPES.map((type) => (
-                                    <Button 
-                                        key={type.value} 
+                                {options.map((option) => (
+                                    <Button
+                                        key={option.id}
                                         type="button"
                                         variant="outline"
-                                        onClick={() => toggleType(type.value)}
-                                        className={`flex items-center justify-start gap-3 h-14 px-4 rounded-xl text-left ${selectedTypes.includes(type.value) ? 'border-primary bg-primary/10' : ''}`}
+                                        onClick={() => toggle(option.bit)}
+                                        className={`flex items-center justify-start gap-3 h-14 px-4 rounded-xl text-left ${selected.includes(option.bit) ? 'border-primary bg-primary/10' : ''}`}
                                     >
                                         <div className={`flex h-5 w-5 items-center justify-center rounded-md border-2 transition-colors ${
-                                            selectedTypes.includes(type.value) 
-                                                ? "bg-primary border-primary" 
+                                            selected.includes(option.bit)
+                                                ? "bg-primary border-primary"
                                                 : "border-muted-foreground"}`}
                                         >
-                                            {selectedTypes.includes(type.value) && (
+                                            {selected.includes(option.bit) && (
                                                 <CheckIcon className="h-3 w-3 text-primary-foreground" weight="bold" />
                                             )}
                                         </div>
                                         <span className="text-base font-medium">
-                                            {t("backup.mapping." + type.value.toLowerCase())}
+                                            {t("backup.mapping." + option.id)}
                                         </span>
                                     </Button>
                                 ))}
@@ -101,7 +101,7 @@ const CreateBackupDialog = ({ onBackup, disabled }: CreateBackupDialogProps) => 
                         </div>
                     </div>
                     <DialogFooter>
-                        <Button type="submit" disabled={selectedTypes.length === 0} size="lg" className="w-full h-12 rounded-xl text-base">
+                        <Button type="submit" disabled={selected.length === 0} size="lg" className="w-full h-12 rounded-xl text-base">
                             {t("action.create")}
                         </Button>
                     </DialogFooter>

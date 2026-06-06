@@ -5,6 +5,8 @@ import de.gnm.voxeldash.api.annotations.Path;
 import de.gnm.voxeldash.api.controller.AccountController;
 import de.gnm.voxeldash.api.controller.ActionRegistry;
 import de.gnm.voxeldash.api.controller.ApiKeyController;
+import de.gnm.voxeldash.api.controller.BackupRegistry;
+import de.gnm.voxeldash.api.entities.BackupPart;
 import de.gnm.voxeldash.api.controller.ControllerManager;
 import de.gnm.voxeldash.api.controller.PermissionController;
 import de.gnm.voxeldash.api.controller.ScheduleController;
@@ -57,6 +59,7 @@ public class VoxelDashLoader {
     private final EventDispatcher eventDispatcher = new EventDispatcher();
     private final ActionRegistry actionRegistry = new ActionRegistry();
     private final WidgetRegistry widgetRegistry = new WidgetRegistry();
+    private final BackupRegistry backupRegistry = new BackupRegistry();
     private String databaseFile = "voxeldash.db";
     private File serverRoot = new File(System.getProperty("user.dir"));
     private File logFile = new File("logs/latest.log");
@@ -266,6 +269,25 @@ public class VoxelDashLoader {
      */
     public WidgetRegistry getWidgetRegistry() {
         return widgetRegistry;
+    }
+
+    /**
+     * Gets the backup registry holding the backup categories offered by this module
+     *
+     * @return the backup registry
+     */
+    public BackupRegistry getBackupRegistry() {
+        return backupRegistry;
+    }
+
+    /**
+     * Registers the backup parts (categories) offered by this module.
+     * {@link BackupPart#ROOT} is always available and does not need to be registered.
+     *
+     * @param backupParts the backup parts to offer
+     */
+    public void registerBackupParts(BackupPart... backupParts) {
+        backupRegistry.register(backupParts);
     }
 
     /**

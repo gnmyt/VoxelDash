@@ -1,6 +1,7 @@
 package de.gnm.voxeldash;
 
 import de.gnm.voxeldash.api.controller.ActionRegistry;
+import de.gnm.voxeldash.api.entities.BackupPart;
 import de.gnm.voxeldash.api.entities.Feature;
 import de.gnm.voxeldash.api.entities.schedule.ActionInputType;
 import de.gnm.voxeldash.api.entities.schedule.ScheduleAction;
@@ -145,6 +146,8 @@ public class VoxelDashMod implements DedicatedServerModInitializer {
     private void registerFeatures() {
         loader.registerFeatures(Feature.FileManager, Feature.Properties, Feature.SSH, Feature.Backups,
                 Feature.Console, Feature.Players, Feature.Schedules, Feature.Worlds, Feature.Resources);
+
+        loader.registerBackupParts(BackupPart.WORLDS, BackupPart.MODS, BackupPart.CONFIGS, BackupPart.LOGS);
     }
 
     private void registerWidgets() {

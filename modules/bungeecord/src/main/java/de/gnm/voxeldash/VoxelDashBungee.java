@@ -1,6 +1,7 @@
 package de.gnm.voxeldash;
 
 import de.gnm.voxeldash.api.controller.ActionRegistry;
+import de.gnm.voxeldash.api.entities.BackupPart;
 import de.gnm.voxeldash.api.entities.Feature;
 import de.gnm.voxeldash.api.entities.schedule.ActionInputType;
 import de.gnm.voxeldash.api.entities.schedule.ScheduleAction;
@@ -208,6 +209,8 @@ public class VoxelDashBungee extends Plugin {
                 Feature.Schedules,
                 Feature.Resources
         );
+
+        loader.registerBackupParts(BackupPart.PLUGINS, BackupPart.CONFIGS, BackupPart.LOGS);
     }
 
     /**

@@ -36,6 +36,23 @@ public class BackupRouter extends BaseRoute {
         backupHelper = new BackupHelper(new File(serverRoot, "backups"));
     }
 
+    @ApiDoc(summary = "List backup options", description = "Returns the backup categories offered by this module (tailored to the platform, e.g. plugins vs mods), each with its identifier and backup mode bit.", tag = "Backups")
+    @AuthenticatedRoute
+    @RequiresFeatures(Feature.Backups)
+    @Path("/backups/options")
+    @Method(GET)
+    public Response listOptions() {
+        ArrayNode options = getMapper().createArrayNode();
+        for (BackupPart part : getLoader().getBackupRegistry().getParts()) {
+            ObjectNode option = getMapper().createObjectNode();
+            option.put("id", part.getId());
+            option.put("bit", part.getBackupBit());
+            options.add(option);
+        }
+
+        return new JSONResponse().add("options", options);
+    }
+
     @ApiDoc(summary = "List backups", description = "Returns all available backups including their ID, size and included backup modes.", tag = "Backups")
     @AuthenticatedRoute
     @RequiresFeatures(Feature.Backups)
