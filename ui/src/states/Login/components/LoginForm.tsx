@@ -1,9 +1,10 @@
-import { Label } from "@/components/ui/label.js";
-import { Input } from "@/components/ui/input.js";
-import { Button } from "@/components/ui/button.js";
+import {Label} from "@/components/ui/label.js";
+import {Input} from "@/components/ui/input.js";
+import {Button} from "@/components/ui/button.js";
 
 import PasswordDialog from "@/states/Login/components/PasswordDialog.tsx";
 import React from "react";
+import {SpinnerGapIcon, ArrowRightIcon} from "@phosphor-icons/react";
 import {t} from "i18next";
 
 interface LoginFormProps {
@@ -12,45 +13,48 @@ interface LoginFormProps {
     password: string;
     setPassword: (value: string) => void;
     login: (event: React.FormEvent<HTMLFormElement>) => void;
+    busy?: boolean;
 }
 
-const LoginForm: React.FC<LoginFormProps> = ({ username, setUsername, password, setPassword, login }) => {
-
+const LoginForm: React.FC<LoginFormProps> = ({username, setUsername, password, setPassword, login, busy}) => {
     return (
-        <form className="flex flex-col gap-6" onSubmit={login}>
-            <div className="flex flex-col items-center gap-2 text-center">
-                <h1 className="text-2xl font-bold">{t("login.sign_in")}</h1>
+        <form className="space-y-4" onSubmit={login}>
+            <div className="space-y-2">
+                <Label htmlFor="username">{t("login.name")}</Label>
+                <Input
+                    id="username"
+                    type="text"
+                    placeholder={t("login.name")}
+                    required
+                    autoFocus
+                    autoComplete="username"
+                    value={username}
+                    onChange={(e) => setUsername(e.target.value)}
+                />
             </div>
-            <div className="grid gap-6">
-                <div className="grid gap-2">
-                    <Label htmlFor="username">{t("login.name")}</Label>
-                    <Input
-                        id="username"
-                        type="text"
-                        placeholder={t("login.name")}
-                        required
-                        value={username}
-                        onChange={(e) => setUsername(e.target.value)}
-                    />
+            <div className="space-y-2">
+                <div className="flex items-center justify-between">
+                    <Label htmlFor="password">{t("login.password")}</Label>
+                    <PasswordDialog/>
                 </div>
-                <div className="grid gap-2">
-                    <div className="flex items-center justify-between">
-                        <Label htmlFor="password">{t("login.password")}</Label>
-                        <PasswordDialog />
-                    </div>
-                    <Input
-                        id="password"
-                        type="password"
-                        placeholder={t("login.password")}
-                        required
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                    />
-                </div>
-                <Button type="submit" className="w-full">
-                    {t("login.sign_in")}
-                </Button>
+                <Input
+                    id="password"
+                    type="password"
+                    placeholder="••••••••"
+                    required
+                    autoComplete="current-password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                />
             </div>
+            <Button type="submit" size="lg" className="mt-2 w-full" disabled={busy || !username || !password}>
+                {busy ? <SpinnerGapIcon className="size-4 animate-spin"/> : (
+                    <>
+                        {t("login.sign_in")}
+                        <ArrowRightIcon weight="bold" className="ml-1.5 size-4"/>
+                    </>
+                )}
+            </Button>
         </form>
     );
 };

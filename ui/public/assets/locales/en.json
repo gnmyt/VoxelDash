@@ -29,13 +29,18 @@
     "logout": "Logout"
   },
   "login": {
-    "sign_in": "Sign In",
+    "sign_in": "Sign in",
     "failed": "Login failed, check your credentials.",
     "name": "Ingame-name",
     "password": "Password",
     "forgot_password": "Forgot your password?",
     "forgot_password_description": "If you've forgotten your password, you can reset it by using the /account command in-game.",
     "auth_failed": "Authentication failed",
+    "docs": "Documentation",
+    "tagline": "Your Minecraft server, fully in your hands.",
+    "description": "Manage players, console, files, worlds and settings from one clean dashboard. No SSH, no fiddling with config files.",
+    "welcome_title": "Welcome back",
+    "welcome_subtitle": "Sign in to your server dashboard.",
     "master": {
       "tagline": "All your Minecraft servers in one place.",
       "description": "Create Paper, Fabric, Vanilla or proxy servers from here. VoxelDash One downloads the server jar and a matching Java version, then starts it for you. No manual setup, no SSH.",
