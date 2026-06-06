@@ -13,6 +13,7 @@ const ARTIFACT_MODULE = {
     fabric16: "fabric/mc1.16",
     fabric20: "fabric/mc1.20",
     fabric: "fabric/mc1.21",
+    fabric26: "fabric/mc26",
     forge8: "forge/mc1.8",
     forge12: "forge/mc1.12",
     forge16: "forge/mc1.16",

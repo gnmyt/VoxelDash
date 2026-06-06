@@ -21,6 +21,8 @@ const LEGACY_API_MODS_1_8 = [
     "legacy-fabric-lifecycle-events-v1-common/1.0.1+095a57597c92",
 ];
 
+const yearMajor = (mc) => parseInt(String(mc).split(".")[0], 10);
+
 const LINES = [
     {test: (mc) => mc === "1.8.9", artifact: "fabric8", java: 8, legacy: true, mc: "1.8.9", legacyApiMods: LEGACY_API_MODS_1_8},
     {test: (mc) => mc === "1.12.2", artifact: "fabric12", java: 8, legacy: true, mc: "1.12.2", legacyApiMods: LEGACY_API_MODS_1_12},
@@ -28,9 +30,10 @@ const LINES = [
     {test: (mc) => mc === "1.16.5", artifact: "fabric16", java: 8},
     {test: (mc) => mc === "1.20.1", artifact: "fabric20", java: 17},
     {test: (mc) => /^1\.21(\.\d+)?$/.test(mc), artifact: "fabric", java: 21},
+    {test: (mc) => yearMajor(mc) >= 26, artifact: "fabric26", java: 25},
 ];
 
-const SUPPORTED_MC = "1.8.9, 1.12.2, 1.14.4, 1.16.5, 1.20.1 and 1.21.x";
+const SUPPORTED_MC = "1.8.9, 1.12.2, 1.14.4, 1.16.5, 1.20.1, 1.21.x and 26.x";
 
 const lineFor = (mcVersion) => LINES.find((line) => line.test(mcVersion)) || null;
 
