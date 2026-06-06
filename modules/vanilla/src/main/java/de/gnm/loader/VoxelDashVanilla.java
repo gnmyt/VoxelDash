@@ -20,8 +20,12 @@ import de.gnm.voxeldash.api.pipes.MotdPipe;
 import de.gnm.voxeldash.api.pipes.QuickActionPipe;
 import de.gnm.voxeldash.api.pipes.ServerInfoPipe;
 import de.gnm.voxeldash.api.pipes.players.BanPipe;
+import de.gnm.voxeldash.api.pipes.players.InventoryPipe;
+import de.gnm.voxeldash.api.pipes.players.MessagePipe;
 import de.gnm.voxeldash.api.pipes.players.OnlinePlayerPipe;
 import de.gnm.voxeldash.api.pipes.players.OperatorPipe;
+import de.gnm.voxeldash.api.pipes.players.ProfilePipe;
+import de.gnm.voxeldash.api.pipes.players.TeleportPipe;
 import de.gnm.voxeldash.api.pipes.players.WhitelistPipe;
 import de.gnm.voxeldash.api.pipes.resources.ResourcePipe;
 import de.gnm.voxeldash.api.pipes.worlds.WorldPipe;
@@ -128,6 +132,11 @@ public class VoxelDashVanilla {
 
         GameRulePipeImpl gameRuleFallback = new GameRulePipeImpl(outputStream, SERVER_ROOT);
         loader.registerPipe(GameRulePipe.class, new MsmpGameRulePipe(msmpClient, gameRuleFallback));
+
+        loader.registerPipe(InventoryPipe.class, new InventoryPipeImpl(SERVER_ROOT));
+        loader.registerPipe(ProfilePipe.class, new ProfilePipeImpl(SERVER_ROOT));
+        loader.registerPipe(TeleportPipe.class, new TeleportPipeImpl(outputStream));
+        loader.registerPipe(MessagePipe.class, new MessagePipeImpl(outputStream));
     }
 
     /**
@@ -229,15 +238,7 @@ public class VoxelDashVanilla {
             "schedules.actions.backup_input",
             metadata -> {
                 try {
-                    int backupMode = 0;
-                    if (metadata != null && !metadata.isEmpty()) {
-                        try {
-                            backupMode = Integer.parseInt(metadata);
-                        } catch (NumberFormatException ignored) {
-                        }
-                    }
-                    backupHelper.createBackup(String.valueOf(backupMode),
-                        backupHelper.getBackupDirectories(backupMode).toArray(new File[0]));
+                    backupHelper.createScheduledBackup(metadata);
                 } catch (Exception e) {
                     LOG.error("Failed to create backup", e);
                 }
