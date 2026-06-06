@@ -7,6 +7,7 @@ import {
     EraserIcon,
     FloppyDiskIcon,
     ImageIcon,
+    PencilSimpleIcon,
     SparkleIcon,
     TextBolderIcon,
     TextItalicIcon,
@@ -24,6 +25,7 @@ import {ScrollArea} from "@/components/ui/scroll-area.tsx";
 import {MotdCapabilities, StyleKey} from "@/types/motd";
 import {countDocLines, docToMotd, MAX_MOTD_LINES, motdToDoc, NAMED_COLORS, normalizeColor} from "@/lib/MotdUtil.ts";
 import {Obfuscated} from "@/states/Root/pages/Motd/components/ObfuscatedMark.ts";
+import IconEditorDialog from "@/states/Root/pages/Motd/components/IconEditorDialog.tsx";
 
 const EDITOR_STYLES = `
 .motd-surface .ProseMirror {
@@ -56,6 +58,7 @@ const Motd = () => {
     const [icon, setIcon] = useState<string | null>(null);
     const [capabilities, setCapabilities] = useState<MotdCapabilities | null>(null);
     const [saving, setSaving] = useState(false);
+    const [editorOpen, setEditorOpen] = useState(false);
     const [, setTick] = useState(0);
 
     const loaded = useRef(false);
@@ -158,6 +161,16 @@ const Motd = () => {
         if (result?.error) {
             toast({title: t("motd.icon.error_title"), description: result.error, variant: "destructive"});
             return;
+        }
+        setIcon(png);
+        toast({title: t("motd.icon.updated_title"), description: t("motd.icon.updated_description")});
+    };
+
+    const applyIconPng = async (png: string) => {
+        const result = await postRequest("motd/icon", {image: png});
+        if (result?.error) {
+            toast({title: t("motd.icon.error_title"), description: result.error, variant: "destructive"});
+            throw new Error(result.error);
         }
         setIcon(png);
         toast({title: t("motd.icon.updated_title"), description: t("motd.icon.updated_description")});
@@ -308,8 +321,14 @@ const Motd = () => {
                                     style={{background: "linear-gradient(180deg, #2a2a32 0%, #232329 100%)"}}
                                 >
                                     <div className="flex gap-3">
-                                        <div
-                                            className="h-16 w-16 shrink-0 rounded-md overflow-hidden flex items-center justify-center select-none pointer-events-none"
+                                        <button
+                                            type="button"
+                                            onClick={() => capabilities.favicon && setEditorOpen(true)}
+                                            disabled={!capabilities.favicon}
+                                            title={capabilities.favicon ? t("motd.icon.editor.open") : undefined}
+                                            className={`group relative h-16 w-16 shrink-0 rounded-md overflow-hidden flex items-center justify-center select-none ${
+                                                capabilities.favicon ? "cursor-pointer" : "pointer-events-none"
+                                            }`}
                                             style={{
                                                 imageRendering: "pixelated",
                                                 background: "repeating-conic-gradient(#3b3b44 0% 25%, #34343c 0% 50%) 50% / 16px 16px",
@@ -321,7 +340,12 @@ const Motd = () => {
                                             ) : (
                                                 <ImageIcon className="h-6 w-6 text-white/40"/>
                                             )}
-                                        </div>
+                                            {capabilities.favicon && (
+                                                <span className="absolute inset-0 flex items-center justify-center bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity">
+                                                    <PencilSimpleIcon className="h-5 w-5 text-white"/>
+                                                </span>
+                                            )}
+                                        </button>
                                         <div className="min-w-0 flex flex-col justify-center flex-1">
                                             <div
                                                 className="text-white/90 font-semibold mb-1 select-none pointer-events-none"
@@ -394,6 +418,12 @@ const Motd = () => {
                     </ScrollArea>
                 </div>
             </div>
+            <IconEditorDialog
+                open={editorOpen}
+                onOpenChange={setEditorOpen}
+                currentIcon={icon}
+                onSave={applyIconPng}
+            />
         </>
     );
 };
