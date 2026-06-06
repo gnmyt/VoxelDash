@@ -10,7 +10,10 @@ import de.gnm.voxeldash.api.pipes.MotdPipe;
 import de.gnm.voxeldash.api.pipes.QuickActionPipe;
 import de.gnm.voxeldash.api.pipes.ServerInfoPipe;
 import de.gnm.voxeldash.api.pipes.players.BanPipe;
+import de.gnm.voxeldash.api.pipes.players.MessagePipe;
 import de.gnm.voxeldash.api.pipes.players.OnlinePlayerPipe;
+import de.gnm.voxeldash.api.pipes.players.PunishmentPipe;
+import de.gnm.voxeldash.api.pipes.players.TeleportPipe;
 import de.gnm.voxeldash.api.pipes.players.WhitelistPipe;
 import de.gnm.voxeldash.api.pipes.resources.ResourcePipe;
 import de.gnm.voxeldash.command.PasswordCommand;
@@ -118,6 +121,13 @@ public class VoxelDashBungee extends Plugin {
         MotdPipeImpl motdPipe = new MotdPipeImpl();
         loader.registerPipe(MotdPipe.class, motdPipe);
         getProxy().getPluginManager().registerListener(this, motdPipe);
+
+        loader.registerPipe(MessagePipe.class, new MessagePipeImpl());
+        loader.registerPipe(TeleportPipe.class, new TeleportPipeImpl());
+
+        PunishmentPipeImpl punishmentPipe = new PunishmentPipeImpl();
+        loader.registerPipe(PunishmentPipe.class, punishmentPipe);
+        getProxy().getPluginManager().registerListener(this, punishmentPipe);
     }
 
     /**
@@ -171,15 +181,7 @@ public class VoxelDashBungee extends Plugin {
             "schedules.actions.backup_input",
             metadata -> {
                 try {
-                    int backupMode = 0;
-                    if (metadata != null && !metadata.isEmpty()) {
-                        try {
-                            backupMode = Integer.parseInt(metadata);
-                        } catch (NumberFormatException ignored) {
-                        }
-                    }
-                    backupHelper.createBackup(String.valueOf(backupMode),
-                        backupHelper.getBackupDirectories(backupMode).toArray(new File[0]));
+                    backupHelper.createScheduledBackup(metadata);
                 } catch (Exception e) {
                     getLogger().log(Level.SEVERE, "Failed to create backup", e);
                 }
