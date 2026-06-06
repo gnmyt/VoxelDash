@@ -34,7 +34,7 @@ const RenameDialog = ({directory, selectedFile, updateFiles, isOpen, setOpen}: R
 
     return (
         <Dialog open={isOpen} onOpenChange={setOpen}>
-            <DialogContent className="sm:max-w-[425px] rounded-xl" aria-label="Create New Folder">
+            <DialogContent className="sm:max-w-[425px] rounded-xl" aria-label={t("files.rename")}>
                 <DialogHeader>
                     <DialogTitle className="text-lg">{t("files.rename")}</DialogTitle>
                 </DialogHeader>

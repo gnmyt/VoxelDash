@@ -2,6 +2,7 @@ import {ReactNode, useEffect, useState} from "react";
 import {getCurrentWindow} from "@tauri-apps/api/window";
 import {CopyIcon, MinusIcon, SquareIcon, XIcon} from "@phosphor-icons/react";
 import logo from "@/assets/images/logo.png";
+import {t} from "i18next";
 
 const ControlButton = ({onClick, label, danger, children}: {
     onClick: () => void;
@@ -47,13 +48,13 @@ export const TitleBar = () => {
                 <span className="font-display text-xs font-semibold text-muted-foreground">VoxelDash One</span>
             </div>
             <div className="flex h-full">
-                <ControlButton label="Minimize" onClick={() => appWindow.minimize()}>
+                <ControlButton label={t("titlebar.minimize")} onClick={() => appWindow.minimize()}>
                     <MinusIcon size={14} weight="bold"/>
                 </ControlButton>
-                <ControlButton label={maximized ? "Restore" : "Maximize"} onClick={() => appWindow.toggleMaximize()}>
+                <ControlButton label={maximized ? t("titlebar.restore") : t("titlebar.maximize")} onClick={() => appWindow.toggleMaximize()}>
                     {maximized ? <CopyIcon size={13} weight="bold"/> : <SquareIcon size={12} weight="bold"/>}
                 </ControlButton>
-                <ControlButton label="Close" danger onClick={() => appWindow.hide()}>
+                <ControlButton label={t("titlebar.close")} danger onClick={() => appWindow.hide()}>
                     <XIcon size={15} weight="bold"/>
                 </ControlButton>
             </div>

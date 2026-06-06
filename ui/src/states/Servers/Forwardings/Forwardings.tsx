@@ -1,5 +1,6 @@
 import {useEffect, useRef, useState} from "react";
 import {Navigate} from "react-router-dom";
+import {t} from "i18next";
 import {
     ArrowSquareOutIcon, CopyIcon, GlobeSimpleIcon, LinkIcon, PlugsIcon, SpinnerGapIcon, TrashIcon,
 } from "@phosphor-icons/react";
@@ -36,29 +37,29 @@ interface PlayitStatus {
     claimPending: boolean;
 }
 
-const AGENT_BADGE: Record<string, { label: string; dot: string; text: string; pulse?: string }> = {
-    connected: {label: "Agent online", dot: "bg-green-500", text: "text-green-600 dark:text-green-400"},
-    connecting: {label: "Connecting…", dot: "bg-yellow-500", text: "text-yellow-600 dark:text-yellow-400", pulse: "45 93% 47%"},
-    error: {label: "Agent error, reconnecting", dot: "bg-red-500", text: "text-red-600 dark:text-red-400", pulse: "0 84% 60%"},
-    stopped: {label: "Agent stopped", dot: "bg-muted-foreground", text: "text-muted-foreground"},
+const AGENT_BADGE: Record<string, { labelKey: string; dot: string; text: string; pulse?: string }> = {
+    connected: {labelKey: "forwardings.agent.connected", dot: "bg-green-500", text: "text-green-600 dark:text-green-400"},
+    connecting: {labelKey: "forwardings.agent.connecting", dot: "bg-yellow-500", text: "text-yellow-600 dark:text-yellow-400", pulse: "45 93% 47%"},
+    error: {labelKey: "forwardings.agent.error", dot: "bg-red-500", text: "text-red-600 dark:text-red-400", pulse: "0 84% 60%"},
+    stopped: {labelKey: "forwardings.agent.stopped", dot: "bg-muted-foreground", text: "text-muted-foreground"},
 };
 
 const AgentBadge = ({status}: { status: PlayitStatus }) => {
     const meta = AGENT_BADGE[status.agentState] || AGENT_BADGE.stopped;
     return (
         <div className="flex items-center gap-1.5 rounded-full border border-border/60 bg-muted/30 px-2.5 py-1 text-xs font-medium"
-             title={status.agentRestarts ? `${status.agentRestarts} restart${status.agentRestarts === 1 ? "" : "s"}` : undefined}>
+             title={status.agentRestarts ? t("forwardings.restarts", {count: status.agentRestarts}) : undefined}>
             <span className={`size-2 rounded-full ${meta.dot} ${meta.pulse ? "vd-pulse" : ""}`}
                   style={meta.pulse ? {"--vd-pulse-color": `hsl(${meta.pulse} / 0.55)`} as React.CSSProperties : undefined}/>
-            <span className={meta.text}>{meta.label}</span>
+            <span className={meta.text}>{t(meta.labelKey)}</span>
         </div>
     );
 };
 
 const copy = (text: string) => {
     navigator.clipboard.writeText(text).then(
-        () => toast({description: "Copied to clipboard"}),
-        () => toast({description: "Couldn't copy", variant: "destructive"})
+        () => toast({description: t("forwardings.copied")}),
+        () => toast({description: t("forwardings.copy_failed"), variant: "destructive"})
     );
 };
 
@@ -74,7 +75,7 @@ const LinkPanel = ({onLinked}: { onLinked: () => void }) => {
         try {
             const res = await masterRequest("playit/claim", "POST");
             const data = await res.json();
-            if (!res.ok) throw new Error(data.error || "Failed to start linking");
+            if (!res.ok) throw new Error(data.error || t("forwardings.link_start_failed"));
             setClaimUrl(data.url);
             window.open(data.url, "_blank", "noopener");
             pollRef.current = setInterval(async () => {
@@ -82,7 +83,7 @@ const LinkPanel = ({onLinked}: { onLinked: () => void }) => {
                     const poll = await masterJson("playit/claim");
                     if (poll.linked) {
                         clearInterval(pollRef.current);
-                        toast({description: "playit.gg linked"});
+                        toast({description: t("forwardings.linked")});
                         onLinked();
                     }
                 } catch { /* keep polling */ }
@@ -98,26 +99,25 @@ const LinkPanel = ({onLinked}: { onLinked: () => void }) => {
             <div className="mb-5 flex size-16 items-center justify-center rounded-2xl bg-muted">
                 <GlobeSimpleIcon className="size-8 text-muted-foreground"/>
             </div>
-            <h3 className="font-display text-xl font-bold">Connect playit.gg</h3>
+            <h3 className="font-display text-xl font-bold">{t("forwardings.connect_title")}</h3>
             <p className="mb-6 mt-1 max-w-md text-sm text-muted-foreground">
-                Link a playit.gg account to give your servers public addresses without port forwarding.
-                One-click forwarding then appears on every server.
+                {t("forwardings.connect_description")}
             </p>
             {claimUrl ? (
                 <div className="flex flex-col items-center gap-3">
                     <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                        <SpinnerGapIcon className="size-4 animate-spin"/> Waiting for you to approve the link…
+                        <SpinnerGapIcon className="size-4 animate-spin"/> {t("forwardings.waiting_approval")}
                     </div>
                     <a href={claimUrl} target="_blank" rel="noopener noreferrer"
                        className="inline-flex items-center gap-1.5 text-sm font-medium text-primary hover:underline">
-                        Open the approval page <ArrowSquareOutIcon className="size-4"/>
+                        {t("forwardings.open_approval")} <ArrowSquareOutIcon className="size-4"/>
                     </a>
                 </div>
             ) : (
                 <Button size="lg" disabled={busy} onClick={startClaim}>
                     {busy ? <SpinnerGapIcon className="mr-1.5 size-4 animate-spin"/> :
                         <LinkIcon weight="bold" className="mr-1.5 size-4"/>}
-                    Link account
+                    {t("forwardings.link_account")}
                 </Button>
             )}
         </div>
@@ -133,9 +133,9 @@ const TunnelRow = ({tunnel, index, onRemove}: { tunnel: PlayitTunnel; index: num
         <div className="min-w-0 flex-1">
             <div className="flex items-center gap-2">
                 <h3 className="truncate font-display font-semibold leading-tight">
-                    {tunnel.serverName || tunnel.name || "Tunnel"}
+                    {tunnel.serverName || tunnel.name || t("forwardings.tunnel")}
                 </h3>
-                {tunnel.disabled && <span className="rounded bg-yellow-500/15 px-1.5 py-0.5 text-[11px] text-yellow-600 dark:text-yellow-400">disabled</span>}
+                {tunnel.disabled && <span className="rounded bg-yellow-500/15 px-1.5 py-0.5 text-[11px] text-yellow-600 dark:text-yellow-400">{t("forwardings.disabled")}</span>}
             </div>
             {tunnel.assignedDomain ? (
                 <button onClick={() => copy(tunnel.assignedDomain!)}
@@ -145,7 +145,7 @@ const TunnelRow = ({tunnel, index, onRemove}: { tunnel: PlayitTunnel; index: num
                 </button>
             ) : (
                 <span className="flex items-center gap-1.5 text-sm text-muted-foreground">
-                    <SpinnerGapIcon className="size-3.5 animate-spin"/> assigning address…
+                    <SpinnerGapIcon className="size-3.5 animate-spin"/> {t("forwardings.assigning_address")}
                 </span>
             )}
         </div>
@@ -191,7 +191,7 @@ const Forwardings = () => {
         await masterRequest("playit/disconnect", "POST");
         setTunnels([]);
         await load();
-        toast({description: "playit.gg disconnected"});
+        toast({description: t("forwardings.disconnected")});
     };
 
     const remove = async () => {
@@ -202,7 +202,7 @@ const Forwardings = () => {
             await masterDelete(`playit/tunnels/${target.tunnelId}`);
             setTunnels((prev) => prev.filter((t) => t.tunnelId !== target.tunnelId));
         } catch {
-            toast({description: "Failed to remove forwarding", variant: "destructive"});
+            toast({description: t("forwardings.remove_failed"), variant: "destructive"});
         }
     };
 
@@ -213,14 +213,14 @@ const Forwardings = () => {
         <>
             <AgentBadge status={status}/>
             <Button variant="outline" size="sm" onClick={disconnect}>
-                <PlugsIcon className="mr-1.5 size-4"/> Disconnect
+                <PlugsIcon className="mr-1.5 size-4"/> {t("forwardings.disconnect")}
             </Button>
         </>
     ) : undefined;
 
     return (
-        <MasterLayout active="forwardings" title="Forwardings"
-                      subtitle={status?.linked ? `${tunnels.length} active` : undefined}
+        <MasterLayout active="forwardings" title={t("forwardings.title")}
+                      subtitle={status?.linked ? t("forwardings.active_count", {count: tunnels.length}) : undefined}
                       actions={headerActions}>
             {loading ? (
                 <div className="space-y-2.5">{[0, 1, 2].map((i) => <Skeleton key={i} className="h-[76px] rounded-2xl"/>)}</div>
@@ -231,9 +231,9 @@ const Forwardings = () => {
                     <div className="mb-5 flex size-16 items-center justify-center rounded-2xl bg-muted">
                         <GlobeSimpleIcon className="size-8 text-muted-foreground"/>
                     </div>
-                    <h3 className="font-display text-xl font-bold">No forwardings yet</h3>
+                    <h3 className="font-display text-xl font-bold">{t("forwardings.empty.title")}</h3>
                     <p className="mt-1 max-w-sm text-sm text-muted-foreground">
-                        Open the Servers page and hit "Forward" on a server to give it a public playit.gg address.
+                        {t("forwardings.empty.description")}
                     </p>
                 </div>
             ) : (
@@ -247,16 +247,16 @@ const Forwardings = () => {
             <AlertDialog open={!!removeTarget} onOpenChange={(o) => !o && setRemoveTarget(null)}>
                 <AlertDialogContent>
                     <AlertDialogHeader>
-                        <AlertDialogTitle className="font-display">Remove forwarding?</AlertDialogTitle>
+                        <AlertDialogTitle className="font-display">{t("forwardings.remove.title")}</AlertDialogTitle>
                         <AlertDialogDescription>
-                            Players will no longer be able to reach this server through{" "}
-                            <span className="font-mono">{removeTarget?.assignedDomain || "this tunnel"}</span>.
+                            {t("forwardings.remove.description_prefix")}{" "}
+                            <span className="font-mono">{removeTarget?.assignedDomain || t("forwardings.this_tunnel")}</span>.
                         </AlertDialogDescription>
                     </AlertDialogHeader>
                     <AlertDialogFooter>
-                        <AlertDialogCancel>Cancel</AlertDialogCancel>
+                        <AlertDialogCancel>{t("action.cancel")}</AlertDialogCancel>
                         <AlertDialogAction className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-                                           onClick={remove}>Remove</AlertDialogAction>
+                                           onClick={remove}>{t("action.remove")}</AlertDialogAction>
                     </AlertDialogFooter>
                 </AlertDialogContent>
             </AlertDialog>

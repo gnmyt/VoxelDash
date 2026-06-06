@@ -125,14 +125,14 @@ export default function SSHSettings() {
                                     <FolderIcon className="h-5 w-5 text-muted-foreground"/>
                                 </div>
                                 <div>
-                                    <h4 className="text-base font-medium">SFTP Access</h4>
-                                    <p className="text-sm text-muted-foreground">Allow file transfers via SFTP</p>
+                                    <h4 className="text-base font-medium">{t("ssh.access.sftp_label")}</h4>
+                                    <p className="text-sm text-muted-foreground">{t("ssh.access.sftp_hint")}</p>
                                 </div>
                             </div>
                             <div className="flex items-center gap-3">
                                 <Switch id="sftp-access" checked={sftpEnabled} onCheckedChange={changeSftp} disabled={!serverEnabled}/>
                                 <span className={`text-sm font-medium w-16 ${sftpEnabled ? 'text-primary' : 'text-muted-foreground'}`}>
-                                    {sftpEnabled ? 'Enabled' : 'Disabled'}
+                                    {sftpEnabled ? t("ssh.access.state_enabled") : t("ssh.access.state_disabled")}
                                 </span>
                             </div>
                         </div>
@@ -143,14 +143,14 @@ export default function SSHSettings() {
                                     <TerminalWindowIcon className="h-5 w-5 text-muted-foreground"/>
                                 </div>
                                 <div>
-                                    <h4 className="text-base font-medium">Console Access</h4>
-                                    <p className="text-sm text-muted-foreground">Allow terminal access via SSH</p>
+                                    <h4 className="text-base font-medium">{t("ssh.access.console_label")}</h4>
+                                    <p className="text-sm text-muted-foreground">{t("ssh.access.console_hint")}</p>
                                 </div>
                             </div>
                             <div className="flex items-center gap-3">
                                 <Switch id="console-access" checked={consoleEnabled} onCheckedChange={changeConsole} disabled={!serverEnabled}/>
                                 <span className={`text-sm font-medium w-16 ${consoleEnabled ? 'text-primary' : 'text-muted-foreground'}`}>
-                                    {consoleEnabled ? 'Enabled' : 'Disabled'}
+                                    {consoleEnabled ? t("ssh.access.state_enabled") : t("ssh.access.state_disabled")}
                                 </span>
                             </div>
                         </div>
@@ -169,7 +169,7 @@ export default function SSHSettings() {
                         
                         {activeSessions.length === 0 ? (
                             <div className="p-8 text-center text-muted-foreground">
-                                No active sessions
+                                {t("ssh.sessions.none")}
                             </div>
                         ) : (
                             <Table className="text-base">

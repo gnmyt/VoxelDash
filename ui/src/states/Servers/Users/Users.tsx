@@ -1,5 +1,6 @@
 import {useEffect, useState} from "react";
 import {Navigate} from "react-router-dom";
+import {t} from "i18next";
 import {
     KeyIcon, LockKeyIcon, PencilIcon, PlusIcon, ShieldCheckIcon, TrashIcon
 } from "@phosphor-icons/react";
@@ -37,9 +38,9 @@ interface MasterUser {
 }
 
 const FEATURE_LABELS: Record<string, string> = {
-    Servers: "Servers",
-    Forwardings: "Forwardings",
-    UserManagement: "User management",
+    Servers: "master_users.feature.servers",
+    Forwardings: "master_users.feature.forwardings",
+    UserManagement: "master_users.feature.user_management",
 };
 
 const err = (e: unknown) => toast({variant: "destructive", description: (e as Error).message});
@@ -57,15 +58,15 @@ const CreateUserDialog = ({open, onOpenChange, onCreated}: {
     }, [open]);
 
     const submit = async () => {
-        if (username.length < 3) return err(new Error("Username must be at least 3 characters"));
-        if (password.length < 4) return err(new Error("Password must be at least 4 characters"));
-        if (password !== confirm) return err(new Error("Passwords don't match"));
+        if (username.length < 3) return err(new Error(t("master_users.error.username_length")));
+        if (password.length < 4) return err(new Error(t("master_users.error.password_length")));
+        if (password !== confirm) return err(new Error(t("master_users.error.passwords_mismatch")));
         setBusy(true);
         try {
             const res = await masterRequest("users", "POST", {username, password});
             const data = await res.json();
-            if (!res.ok) throw new Error(data.error || "Failed to create user");
-            toast({description: "User created"});
+            if (!res.ok) throw new Error(data.error || t("master_users.create_failed"));
+            toast({description: t("master_users.created")});
             onCreated();
             onOpenChange(false);
         } catch (e) {
@@ -79,26 +80,26 @@ const CreateUserDialog = ({open, onOpenChange, onCreated}: {
         <Dialog open={open} onOpenChange={onOpenChange}>
             <DialogContent className="max-w-md">
                 <DialogHeader>
-                    <DialogTitle className="font-display">Create user</DialogTitle>
-                    <DialogDescription>New users start with no access until you grant permissions.</DialogDescription>
+                    <DialogTitle className="font-display">{t("master_users.create_title")}</DialogTitle>
+                    <DialogDescription>{t("master_users.create_description")}</DialogDescription>
                 </DialogHeader>
                 <div className="space-y-3">
                     <div className="space-y-1.5">
-                        <Label>Username</Label>
+                        <Label>{t("master_users.username")}</Label>
                         <Input value={username} onChange={(e) => setUsername(e.target.value)} autoFocus/>
                     </div>
                     <div className="space-y-1.5">
-                        <Label>Password</Label>
+                        <Label>{t("master_users.password")}</Label>
                         <Input type="password" value={password} onChange={(e) => setPassword(e.target.value)}/>
                     </div>
                     <div className="space-y-1.5">
-                        <Label>Confirm password</Label>
+                        <Label>{t("master_users.confirm_password")}</Label>
                         <Input type="password" value={confirm} onChange={(e) => setConfirm(e.target.value)}/>
                     </div>
                 </div>
                 <DialogFooter>
-                    <Button variant="outline" onClick={() => onOpenChange(false)}>Cancel</Button>
-                    <Button disabled={busy} onClick={submit}>Create</Button>
+                    <Button variant="outline" onClick={() => onOpenChange(false)}>{t("action.cancel")}</Button>
+                    <Button disabled={busy} onClick={submit}>{t("action.create")}</Button>
                 </DialogFooter>
             </DialogContent>
         </Dialog>
@@ -134,8 +135,8 @@ const FieldDialog = ({open, onOpenChange, title, label, type, initial, onSave}: 
                     <Input type={type || "text"} value={value} onChange={(e) => setValue(e.target.value)} autoFocus/>
                 </div>
                 <DialogFooter>
-                    <Button variant="outline" onClick={() => onOpenChange(false)}>Cancel</Button>
-                    <Button disabled={busy} onClick={submit}>Save</Button>
+                    <Button variant="outline" onClick={() => onOpenChange(false)}>{t("action.cancel")}</Button>
+                    <Button disabled={busy} onClick={submit}>{t("action.save")}</Button>
                 </DialogFooter>
             </DialogContent>
         </Dialog>
@@ -169,8 +170,8 @@ const PermissionsDialog = ({user, features, servers, onOpenChange, onSaved}: {
             const res = await masterRequest(`users/${user.id}/permissions`, "PUT",
                 {permissions: perms, allServers, serverIds});
             const data = await res.json();
-            if (!res.ok) throw new Error(data.error || "Failed to update permissions");
-            toast({description: "Permissions updated"});
+            if (!res.ok) throw new Error(data.error || t("master_users.permissions_update_failed"));
+            toast({description: t("master_users.permissions_updated")});
             onSaved();
             onOpenChange(false);
         } catch (e) {
@@ -184,15 +185,15 @@ const PermissionsDialog = ({user, features, servers, onOpenChange, onSaved}: {
         <Dialog open={!!user} onOpenChange={onOpenChange}>
             <DialogContent className="flex max-h-[85vh] max-w-md flex-col overflow-hidden">
                 <DialogHeader>
-                    <DialogTitle className="font-display">Permissions · {user?.username}</DialogTitle>
-                    <DialogDescription>Control what this user can do across the servers.</DialogDescription>
+                    <DialogTitle className="font-display">{t("master_users.permissions_title", {username: user?.username})}</DialogTitle>
+                    <DialogDescription>{t("master_users.permissions_description")}</DialogDescription>
                 </DialogHeader>
 
                 <div className="-mx-6 flex-1 overflow-y-auto px-6">
                     <div className="space-y-1 py-1">
                         {features.map((feature) => (
                             <div key={feature} className="flex items-center justify-between rounded-lg px-3 py-2.5 hover:bg-muted/50">
-                                <span className="text-sm font-medium">{FEATURE_LABELS[feature] || feature}</span>
+                                <span className="text-sm font-medium">{FEATURE_LABELS[feature] ? t(FEATURE_LABELS[feature]) : feature}</span>
                                 <PermissionToggle value={(perms[feature] || 0) as Level}
                                                   onChange={(level) => setPerms((p) => ({...p, [feature]: level as Level}))}/>
                             </div>
@@ -202,14 +203,14 @@ const PermissionsDialog = ({user, features, servers, onOpenChange, onSaved}: {
                     <div className="mt-4 border-t pt-4">
                         <div className="flex items-center justify-between">
                             <div>
-                                <p className="text-sm font-medium">Access all servers</p>
-                                <p className="text-xs text-muted-foreground">Off lets you pick specific servers.</p>
+                                <p className="text-sm font-medium">{t("master_users.access_all")}</p>
+                                <p className="text-xs text-muted-foreground">{t("master_users.access_all_hint")}</p>
                             </div>
                             <Switch checked={allServers} onCheckedChange={setAllServers}/>
                         </div>
                         {!allServers && (
                             <div className="mt-3 space-y-1">
-                                {servers.length === 0 && <p className="text-xs text-muted-foreground">No servers exist yet.</p>}
+                                {servers.length === 0 && <p className="text-xs text-muted-foreground">{t("master_users.no_servers_exist")}</p>}
                                 {servers.map((server) => (
                                     <label key={server.id}
                                            className="flex cursor-pointer items-center gap-2.5 rounded-lg px-3 py-2 hover:bg-muted/50">
@@ -225,8 +226,8 @@ const PermissionsDialog = ({user, features, servers, onOpenChange, onSaved}: {
                 </div>
 
                 <DialogFooter>
-                    <Button variant="outline" onClick={() => onOpenChange(false)}>Cancel</Button>
-                    <Button disabled={busy} onClick={save}>Save</Button>
+                    <Button variant="outline" onClick={() => onOpenChange(false)}>{t("action.cancel")}</Button>
+                    <Button disabled={busy} onClick={save}>{t("action.save")}</Button>
                 </DialogFooter>
             </DialogContent>
         </Dialog>
@@ -234,17 +235,17 @@ const PermissionsDialog = ({user, features, servers, onOpenChange, onSaved}: {
 };
 
 const accessSummary = (user: MasterUser) => {
-    if (user.isAdmin || user.allServers) return "All servers";
+    if (user.isAdmin || user.allServers) return t("master_users.access.all_servers");
     const n = user.serverIds?.length || 0;
-    return n === 0 ? "No servers" : `${n} server${n === 1 ? "" : "s"}`;
+    return n === 0 ? t("master_users.access.no_servers") : t("master_users.access.server_count", {count: n});
 };
 
 const permSummary = (user: MasterUser, features: string[]) => {
-    if (user.isAdmin) return "Full access";
+    if (user.isAdmin) return t("master_users.perm.full_access");
     const full = features.filter((f) => (user.permissions[f] || 0) === 2).length;
     const read = features.filter((f) => (user.permissions[f] || 0) === 1).length;
-    if (!full && !read) return "No access";
-    return [full && `${full} full`, read && `${read} read`].filter(Boolean).join(", ");
+    if (!full && !read) return t("master_users.perm.no_access");
+    return [full && t("master_users.perm.full", {count: full}), read && t("master_users.perm.read", {count: read})].filter(Boolean).join(", ");
 };
 
 const Users = () => {
@@ -286,8 +287,8 @@ const Users = () => {
         try {
             const res = await masterDelete(`users/${target.id}`);
             const data = await res.json();
-            if (!res.ok) throw new Error(data.error || "Failed to delete user");
-            toast({description: "User deleted"});
+            if (!res.ok) throw new Error(data.error || t("master_users.delete_failed"));
+            toast({description: t("master_users.deleted")});
             load();
         } catch (e) {
             err(e);
@@ -298,9 +299,9 @@ const Users = () => {
     if (!authLoading && authenticated && !can("UserManagement", 2)) return <Navigate to="/servers" replace/>;
 
     return (
-        <MasterLayout active="users" title="Users" subtitle={`${users.length}`}
+        <MasterLayout active="users" title={t("master_users.title")} subtitle={`${users.length}`}
                       actions={<Button onClick={() => setCreateOpen(true)}>
-                          <PlusIcon weight="bold" className="mr-1.5 size-4"/> New user
+                          <PlusIcon weight="bold" className="mr-1.5 size-4"/> {t("master_users.new_user")}
                       </Button>}>
             {loading ? (
                 <div className="space-y-2.5">{[0, 1, 2].map((i) => <Skeleton key={i} className="h-14 rounded-xl"/>)}</div>
@@ -309,10 +310,10 @@ const Users = () => {
                     <Table>
                         <TableHeader>
                             <TableRow>
-                                <TableHead>User</TableHead>
-                                <TableHead>Permissions</TableHead>
-                                <TableHead>Access</TableHead>
-                                <TableHead className="w-[150px] text-right">Actions</TableHead>
+                                <TableHead>{t("master_users.col.user")}</TableHead>
+                                <TableHead>{t("master_users.col.permissions")}</TableHead>
+                                <TableHead>{t("master_users.col.access")}</TableHead>
+                                <TableHead className="w-[150px] text-right">{t("master_users.col.actions")}</TableHead>
                             </TableRow>
                         </TableHeader>
                         <TableBody>
@@ -327,7 +328,7 @@ const Users = () => {
                                                 <span className="font-medium">{user.username}</span>
                                                 {user.isAdmin && (
                                                     <Badge className="gap-1 bg-primary/20 py-0 text-xs text-primary hover:bg-primary/30">
-                                                        <ShieldCheckIcon className="size-3" weight="fill"/> Admin
+                                                        <ShieldCheckIcon className="size-3" weight="fill"/> {t("master_users.admin")}
                                                     </Badge>
                                                 )}
                                             </div>
@@ -338,21 +339,21 @@ const Users = () => {
                                     <TableCell>
                                         <div className="flex items-center justify-end gap-0.5">
                                             <Button variant="ghost" size="icon" className="size-8" disabled={user.isAdmin}
-                                                    title={user.isAdmin ? "The admin always has full access" : "Edit permissions"}
+                                                    title={user.isAdmin ? t("master_users.action.admin_full") : t("master_users.action.edit_permissions")}
                                                     onClick={() => setPermsUser(user)}>
                                                 <LockKeyIcon className="size-4"/>
                                             </Button>
-                                            <Button variant="ghost" size="icon" className="size-8" title="Rename"
+                                            <Button variant="ghost" size="icon" className="size-8" title={t("master_users.action.rename")}
                                                     onClick={() => setUsernameUser(user)}>
                                                 <PencilIcon className="size-4"/>
                                             </Button>
-                                            <Button variant="ghost" size="icon" className="size-8" title="Change password"
+                                            <Button variant="ghost" size="icon" className="size-8" title={t("master_users.action.change_password")}
                                                     onClick={() => setPasswordUser(user)}>
                                                 <KeyIcon className="size-4"/>
                                             </Button>
                                             <Button variant="ghost" size="icon"
                                                     className="size-8 text-destructive hover:text-destructive"
-                                                    disabled={user.isAdmin || user.id === me?.id} title="Delete"
+                                                    disabled={user.isAdmin || user.id === me?.id} title={t("master_users.action.delete")}
                                                     onClick={() => setDeleteUser(user)}>
                                                 <TrashIcon className="size-4"/>
                                             </Button>
@@ -369,33 +370,33 @@ const Users = () => {
             <PermissionsDialog user={permsUser} features={features} servers={servers}
                                onOpenChange={(o) => !o && setPermsUser(null)} onSaved={load}/>
             <FieldDialog open={!!usernameUser} onOpenChange={(o) => !o && setUsernameUser(null)}
-                         title="Rename user" label="Username" initial={usernameUser?.username}
+                         title={t("master_users.rename_title")} label={t("master_users.username")} initial={usernameUser?.username}
                          onSave={async (value) => {
                              const res = await masterRequest(`users/${usernameUser!.id}/username`, "PUT", {username: value});
                              const data = await res.json();
-                             if (!res.ok) throw new Error(data.error || "Failed to rename");
-                             toast({description: "Username updated"});
+                             if (!res.ok) throw new Error(data.error || t("master_users.rename_failed"));
+                             toast({description: t("master_users.username_updated")});
                              load();
                          }}/>
             <FieldDialog open={!!passwordUser} onOpenChange={(o) => !o && setPasswordUser(null)}
-                         title="Change password" label="New password" type="password"
+                         title={t("master_users.change_password_title")} label={t("master_users.new_password")} type="password"
                          onSave={async (value) => {
                              const res = await masterRequest(`users/${passwordUser!.id}/password`, "PUT", {password: value});
                              const data = await res.json();
-                             if (!res.ok) throw new Error(data.error || "Failed to change password");
-                             toast({description: "Password updated"});
+                             if (!res.ok) throw new Error(data.error || t("master_users.change_password_failed"));
+                             toast({description: t("master_users.password_updated")});
                          }}/>
 
             <AlertDialog open={!!deleteUser} onOpenChange={(o) => !o && setDeleteUser(null)}>
                 <AlertDialogContent>
                     <AlertDialogHeader>
-                        <AlertDialogTitle className="font-display">Delete {deleteUser?.username}?</AlertDialogTitle>
-                        <AlertDialogDescription>This removes the user and their access. This can't be undone.</AlertDialogDescription>
+                        <AlertDialogTitle className="font-display">{t("master_users.delete.title", {username: deleteUser?.username})}</AlertDialogTitle>
+                        <AlertDialogDescription>{t("master_users.delete.description")}</AlertDialogDescription>
                     </AlertDialogHeader>
                     <AlertDialogFooter>
-                        <AlertDialogCancel>Cancel</AlertDialogCancel>
+                        <AlertDialogCancel>{t("action.cancel")}</AlertDialogCancel>
                         <AlertDialogAction className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-                                           onClick={confirmDelete}>Delete</AlertDialogAction>
+                                           onClick={confirmDelete}>{t("action.delete")}</AlertDialogAction>
                     </AlertDialogFooter>
                 </AlertDialogContent>
             </AlertDialog>

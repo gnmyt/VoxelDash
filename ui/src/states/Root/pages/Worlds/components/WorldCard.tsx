@@ -96,7 +96,7 @@ const WorldCard = ({
                     <div className="flex items-center gap-2">
                         <h3 className="font-semibold truncate">{world.name}</h3>
                         {world.hardcore && (
-                            <span title="Hardcore">
+                            <span title={t("worlds.hardcore")}>
                                 <SkullIcon className="h-4 w-4 text-red-500 shrink-0" weight="fill" />
                             </span>
                         )}

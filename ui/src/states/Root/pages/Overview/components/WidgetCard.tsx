@@ -68,7 +68,7 @@ const WidgetCard = ({ widget }: WidgetCardProps) => {
             case 'INFO_CARD':
                 return <InfoCardWidget widget={widget} />;
             default:
-                return <div className="text-muted-foreground text-center">Unknown widget type</div>;
+                return <div className="text-muted-foreground text-center">{t("overview.unknown_widget")}</div>;
         }
     };
 

@@ -415,7 +415,7 @@ const FileView = ({
                                                         variant="ghost"
                                                         className="h-8 w-8 p-0 rounded-lg"
                                                         onClick={(event) => event.stopPropagation()}>
-                                                        <span className="sr-only">Open</span>
+                                                        <span className="sr-only">{t("files.open_menu")}</span>
                                                         <DotsThreeVerticalIcon className="h-4 w-4"/>
                                                     </Button>
                                                 </DropdownMenuTrigger>

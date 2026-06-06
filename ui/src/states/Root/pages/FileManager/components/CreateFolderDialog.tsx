@@ -34,7 +34,7 @@ const CreateFolderDialog = ({path, updateFiles}: CreateFolderDialogProps) => {
                     <FolderPlusIcon className="mr-2 h-5 w-5" /> {t("files.new_folder")}
                 </Button>
             </DialogTrigger>
-            <DialogContent className="sm:max-w-[425px] rounded-xl" aria-label="Create New Folder">
+            <DialogContent className="sm:max-w-[425px] rounded-xl" aria-label={t("files.create_folder.title")}>
                 <DialogHeader>
                     <DialogTitle>{t("files.create_folder.title")}</DialogTitle>
                 </DialogHeader>

@@ -362,7 +362,7 @@ const ConfigValueEditor = ({value, path, onChange, keyName, isRoot}: ConfigValue
                         onCheckedChange={(checked) => onChange(path, checked)}
                     />
                     <span className={cn("text-xs font-medium", value ? "text-green-500" : "text-muted-foreground")}>
-                        {value ? "Enabled" : "Disabled"}
+                        {value ? t("resources.config.enabled") : t("resources.config.disabled")}
                     </span>
                 </div>
             </div>
@@ -446,7 +446,7 @@ const ConfigValueEditor = ({value, path, onChange, keyName, isRoot}: ConfigValue
                         </Tooltip>
                     )}
                     <Badge variant="secondary" className="text-xs font-normal">
-                        {value.length} {value.length === 1 ? "item" : "items"}
+                        {value.length} {value.length === 1 ? t("resources.config.item") : t("resources.config.items")}
                     </Badge>
                 </button>
                 {!collapsed && (
@@ -495,7 +495,7 @@ const ConfigValueEditor = ({value, path, onChange, keyName, isRoot}: ConfigValue
                             </TooltipContent>
                         </Tooltip>
                         <Badge variant="secondary" className="text-xs font-normal">
-                            {entries.length} {entries.length === 1 ? "property" : "properties"}
+                            {entries.length} {entries.length === 1 ? t("resources.config.property") : t("resources.config.properties")}
                         </Badge>
                     </button>
                 )}

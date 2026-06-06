@@ -34,7 +34,20 @@
     "name": "Ingame-name",
     "password": "Password",
     "forgot_password": "Forgot your password?",
-    "forgot_password_description": "If you've forgotten your password, you can reset it by using the /account command in-game."
+    "forgot_password_description": "If you've forgotten your password, you can reset it by using the /account command in-game.",
+    "auth_failed": "Authentication failed",
+    "master": {
+      "tagline": "All your Minecraft servers in one place.",
+      "description": "Create Paper, Fabric, Vanilla or proxy servers from here. VoxelDash One downloads the server jar and a matching Java version, then starts it for you. No manual setup, no SSH.",
+      "setup_title": "Set up your admin account",
+      "welcome_title": "Welcome back",
+      "setup_subtitle": "This is the first run. Create the admin account for this instance.",
+      "welcome_subtitle": "Sign in to manage your servers.",
+      "username": "Username",
+      "password": "Password",
+      "create_account": "Create admin account",
+      "sign_in": "Sign in"
+    }
   },
   "nav": {
     "overview": "Overview",
@@ -54,7 +67,10 @@
       "users": "Users",
       "gamerules": "Game Rules"
     },
-    "profiling": "Profiling"
+    "profiling": "Profiling",
+    "select_server": "Select a server",
+    "manage_servers": "Manage servers",
+    "toggle": "Toggle"
   },
   "motd": {
     "title": "Message of the Day",
@@ -146,7 +162,8 @@
         "spawn_protection": "Spawn Protection",
         "view_distance": "View Distance"
       }
-    }
+    },
+    "unknown_widget": "Unknown widget type"
   },
   "resources": {
     "subtitle": "{{count}} resources installed",
@@ -194,7 +211,13 @@
       "saved": "Configuration saved successfully",
       "save_failed": "Failed to save configuration",
       "load_failed": "Failed to load configuration",
-      "open_in_files": "Open in File Manager"
+      "open_in_files": "Open in File Manager",
+      "enabled": "Enabled",
+      "disabled": "Disabled",
+      "item": "item",
+      "items": "items",
+      "property": "property",
+      "properties": "properties"
     }
   },
   "store": {
@@ -381,7 +404,8 @@
     "remove_from_whitelist": "Remove from Whitelist",
     "remove_whitelist_description": "This will remove {{count}} player(s) from the whitelist.",
     "no_reason": "No reason provided",
-    "permanent": "Permanent"
+    "permanent": "Permanent",
+    "food": "Food"
   },
   "files": {
     "table": {
@@ -428,6 +452,7 @@
     "delete": "Delete",
     "delete_description": "This action cannot be undone. This will permanently delete the item.",
     "search_placeholder": "Search files...",
+    "open_menu": "Open menu",
     "no_results": "No files found matching your search.",
     "empty": {
       "title": "This folder is empty",
@@ -463,6 +488,7 @@
     "set_weather": "Weather",
     "set_difficulty": "Difficulty",
     "save": "Save",
+    "hardcore": "Hardcore",
     "environment": {
       "normal": "Overworld",
       "nether": "Nether",
@@ -526,6 +552,7 @@
     "restore": "Restore",
     "download": "Download",
     "none_found": "No backups found",
+    "none_found_hint": "Create a backup to get started",
     "description": "What do you want to backup?",
     "include": "Include in backup",
     "select_all": "Select all",
@@ -569,7 +596,13 @@
       "sftp_enabled": "SFTP Access Enabled",
       "sftp_disabled": "SFTP Access Disabled",
       "console_enabled": "Console Access Enabled",
-      "console_disabled": "Console Access Disabled"
+      "console_disabled": "Console Access Disabled",
+      "sftp_label": "SFTP Access",
+      "sftp_hint": "Allow file transfers via SFTP",
+      "console_label": "Console Access",
+      "console_hint": "Allow terminal access via SSH",
+      "state_enabled": "Enabled",
+      "state_disabled": "Disabled"
     },
     "sessions": {
       "title": "Active Sessions",
@@ -578,7 +611,8 @@
       "ip": "IP Address",
       "sftp": "Is SFTP",
       "actions": "Actions",
-      "disconnect": "Disconnect"
+      "disconnect": "Disconnect",
+      "none": "No active sessions"
     }
   },
   "schedules": {
@@ -681,6 +715,54 @@
     "warning": "Changing these settings can have a significant impact on your server. Please proceed with caution.",
     "updated_title": "Properties updated",
     "updated_description": "Restart your server to apply the changes.",
+    "enabled": "Enabled",
+    "disabled": "Disabled",
+    "category": {
+      "gameplay": {
+        "label": "Gameplay",
+        "description": "Game modes, PvP, and gameplay mechanics"
+      },
+      "world": {
+        "label": "World",
+        "description": "World generation and level settings"
+      },
+      "spawning": {
+        "label": "Mob Spawning",
+        "description": "Control creature spawning behavior"
+      },
+      "players": {
+        "label": "Players",
+        "description": "Player limits and permissions"
+      },
+      "network": {
+        "label": "Network",
+        "description": "Connection and network settings"
+      },
+      "performance": {
+        "label": "Performance",
+        "description": "Server performance tuning"
+      },
+      "security": {
+        "label": "Security",
+        "description": "Whitelist and security options"
+      },
+      "rcon": {
+        "label": "RCON & Query",
+        "description": "Remote console and query settings"
+      },
+      "resourcepack": {
+        "label": "Resource Pack",
+        "description": "Server resource pack settings"
+      },
+      "info": {
+        "label": "Server Info",
+        "description": "MOTD and server status"
+      },
+      "advanced": {
+        "label": "Advanced",
+        "description": "Advanced debugging options"
+      }
+    },
     "enable-jmx-monitoring": "Enable JMX monitoring for server metrics and performance data",
     "level-seed": "Seed for world generation. Leave empty for random seed",
     "rcon.port": "Port for Remote Console (RCON) access",
@@ -791,6 +873,246 @@
       "title": "Where the time goes",
       "hint": "Each row is a method; expand to drill in. Click a plugin above to highlight where it spends time.",
       "more": "+ {{count}} smaller calls"
+    }
+  },
+  "servers": {
+    "title": "Servers",
+    "count_one": "{{count}} server",
+    "count_other": "{{count}} servers",
+    "new_server": "New server",
+    "create_server": "Create a server",
+    "start": "Start",
+    "installing": "Installing",
+    "view_log": "View log",
+    "remove_forwarding": "Remove forwarding",
+    "forward_with_playit": "Forward with playit",
+    "set_up_forwarding": "Set up forwarding",
+    "copied": "Copied to clipboard",
+    "copy_failed": "Couldn't copy",
+    "log_title": "{{name}} · log",
+    "waiting_for_output": "Waiting for output…",
+    "forward_create_failed": "Failed to create forwarding",
+    "forward_created": "Forwarding created",
+    "forward_removed": "Forwarding removed",
+    "delete": {
+      "title": "Delete \"{{name}}\"?",
+      "description": "This permanently removes the server and all of its files. This can't be undone."
+    },
+    "empty": {
+      "title": "No servers yet",
+      "can_create": "Create your first server. VoxelDash One downloads the software and a matching Java runtime, then starts it for you.",
+      "no_access": "You don't have access to any servers yet. Ask an administrator to grant you access."
+    },
+    "stat": {
+      "port": "Port",
+      "ram": "RAM",
+      "build": "Build"
+    }
+  },
+  "create_server": {
+    "title": "New server",
+    "server_name": "Server name",
+    "server_name_placeholder": "Survival, Lobby, Creative…",
+    "minecraft_version": "Minecraft version",
+    "loading_versions": "Loading versions…",
+    "choose_version": "Choose a version",
+    "load_versions_failed": "Could not load versions",
+    "memory": "Memory",
+    "memory_low": "Low",
+    "memory_medium": "Medium",
+    "memory_high": "High",
+    "back": "Back",
+    "create_and_start": "Create & start",
+    "step_software": "Software",
+    "step_details": "Details",
+    "step_provision": "Provision",
+    "provision_failed": "Provisioning failed",
+    "server_online": "Server is online",
+    "setting_up": "Setting things up…",
+    "starting": "Starting…",
+    "close": "Close",
+    "open_dashboard": "Open dashboard"
+  },
+  "master": {
+    "server_manager": "Server manager",
+    "nav": {
+      "servers": "Servers",
+      "forwardings": "Forwardings",
+      "users": "Users",
+      "updates": "Updates"
+    }
+  },
+  "forwardings": {
+    "title": "Forwardings",
+    "active_count": "{{count}} active",
+    "disconnect": "Disconnect",
+    "tunnel": "Tunnel",
+    "disabled": "disabled",
+    "assigning_address": "assigning address…",
+    "copied": "Copied to clipboard",
+    "copy_failed": "Couldn't copy",
+    "restarts_one": "{{count}} restart",
+    "restarts_other": "{{count}} restarts",
+    "linked": "playit.gg linked",
+    "disconnected": "playit.gg disconnected",
+    "link_start_failed": "Failed to start linking",
+    "remove_failed": "Failed to remove forwarding",
+    "this_tunnel": "this tunnel",
+    "agent": {
+      "connected": "Agent online",
+      "connecting": "Connecting…",
+      "error": "Agent error, reconnecting",
+      "stopped": "Agent stopped"
+    },
+    "connect_title": "Connect playit.gg",
+    "connect_description": "Link a playit.gg account to give your servers public addresses without port forwarding. One-click forwarding then appears on every server.",
+    "waiting_approval": "Waiting for you to approve the link…",
+    "open_approval": "Open the approval page",
+    "link_account": "Link account",
+    "empty": {
+      "title": "No forwardings yet",
+      "description": "Open the Servers page and hit \"Forward\" on a server to give it a public playit.gg address."
+    },
+    "remove": {
+      "title": "Remove forwarding?",
+      "description_prefix": "Players will no longer be able to reach this server through"
+    }
+  },
+  "updates": {
+    "title": "Updates",
+    "beta_channel": "Beta channel",
+    "release_channel": "Release channel",
+    "release_channel_description": "Choose which builds servers and the dashboard update to.",
+    "auto_updates": "Automatic updates",
+    "auto_updates_description": "When on, servers and the dashboard update themselves in the background.",
+    "update": "Update",
+    "up_to_date": "Up to date",
+    "save_failed": "Failed to save",
+    "update_failed": "Update failed",
+    "server_updated": "{{name}} updated to {{version}}",
+    "node_updating": "Updating to {{version}}. The dashboard will restart…",
+    "node_subtitle": "VoxelDash One dashboard",
+    "load_failed": "Couldn't load update information.",
+    "auto_on": "Automatic updates are on. VoxelDash keeps your servers and dashboard up to date on the {{channel}} channel.",
+    "everything_up_to_date": "Everything is up to date",
+    "latest_build": "Your servers and the VoxelDash One dashboard are running the latest {{channel}} build.",
+    "channel": {
+      "release": "Release",
+      "release_hint": "Stable builds only",
+      "release_lower": "release",
+      "beta": "Beta",
+      "beta_hint": "Includes pre-releases",
+      "beta_lower": "beta"
+    }
+  },
+  "master_users": {
+    "title": "Users",
+    "new_user": "New user",
+    "admin": "Admin",
+    "username": "Username",
+    "password": "Password",
+    "confirm_password": "Confirm password",
+    "new_password": "New password",
+    "create_title": "Create user",
+    "create_description": "New users start with no access until you grant permissions.",
+    "create_failed": "Failed to create user",
+    "created": "User created",
+    "rename_title": "Rename user",
+    "rename_failed": "Failed to rename",
+    "username_updated": "Username updated",
+    "change_password_title": "Change password",
+    "change_password_failed": "Failed to change password",
+    "password_updated": "Password updated",
+    "delete_failed": "Failed to delete user",
+    "deleted": "User deleted",
+    "permissions_title": "Permissions · {{username}}",
+    "permissions_description": "Control what this user can do across the servers.",
+    "permissions_update_failed": "Failed to update permissions",
+    "permissions_updated": "Permissions updated",
+    "access_all": "Access all servers",
+    "access_all_hint": "Off lets you pick specific servers.",
+    "no_servers_exist": "No servers exist yet.",
+    "error": {
+      "username_length": "Username must be at least 3 characters",
+      "password_length": "Password must be at least 4 characters",
+      "passwords_mismatch": "Passwords don't match"
+    },
+    "feature": {
+      "servers": "Servers",
+      "forwardings": "Forwardings",
+      "user_management": "User management"
+    },
+    "access": {
+      "all_servers": "All servers",
+      "no_servers": "No servers",
+      "server_count_one": "{{count}} server",
+      "server_count_other": "{{count}} servers"
+    },
+    "perm": {
+      "full_access": "Full access",
+      "no_access": "No access",
+      "full": "{{count}} full",
+      "read": "{{count}} read"
+    },
+    "col": {
+      "user": "User",
+      "permissions": "Permissions",
+      "access": "Access",
+      "actions": "Actions"
+    },
+    "action": {
+      "admin_full": "The admin always has full access",
+      "edit_permissions": "Edit permissions",
+      "rename": "Rename",
+      "change_password": "Change password",
+      "delete": "Delete"
+    },
+    "delete": {
+      "title": "Delete {{username}}?",
+      "description": "This removes the user and their access. This can't be undone."
+    }
+  },
+  "console": {
+    "empty": "No console output yet. Server logs will appear here.",
+    "placeholder": "Enter command...",
+    "send": "Send"
+  },
+  "root": {
+    "home": "Home",
+    "loading": "Loading VoxelDash…",
+    "connecting": "Connecting to {{name}}…",
+    "server_fallback": "server",
+    "server_fallback_cap": "Server",
+    "offline": "{{name}} is offline",
+    "offline_hint": "Start it from the server list, then open it again.",
+    "back_to_servers": "Back to servers",
+    "retry": "Retry",
+    "starting": "Starting {{name}}…",
+    "booting_hint": "Booting up. Give it a sec...",
+    "file_management_hint": "File management is available. Start the server for console, players and worlds.",
+    "starting_short": "Starting…",
+    "start_server": "Start server"
+  },
+  "titlebar": {
+    "minimize": "Minimize",
+    "maximize": "Maximize",
+    "restore": "Restore",
+    "close": "Close"
+  },
+  "context": {
+    "request_failed": "Request failed",
+    "create_failed": "Failed to create server",
+    "delete_failed": "Failed to delete server",
+    "action_failed": {
+      "start": "Failed to start server",
+      "stop": "Failed to stop server"
+    }
+  },
+  "errors": {
+    "notFound": {
+      "title": "Page Not Found",
+      "description": "The page you're looking for doesn't exist or has been moved.",
+      "backHome": "Back to Home"
     }
   }
 }

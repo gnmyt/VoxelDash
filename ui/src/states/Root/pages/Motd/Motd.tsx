@@ -316,7 +316,7 @@ const Motd = () => {
                                             }}
                                         >
                                             {iconSrc ? (
-                                                <img src={iconSrc} alt="server icon" className="h-16 w-16"
+                                                <img src={iconSrc} alt={t("motd.icon.title")} className="h-16 w-16"
                                                      style={{imageRendering: "pixelated"}}/>
                                             ) : (
                                                 <ImageIcon className="h-6 w-6 text-white/40"/>
@@ -350,7 +350,7 @@ const Motd = () => {
                                         style={{imageRendering: "pixelated"}}
                                     >
                                         {iconSrc ? (
-                                            <img src={iconSrc} alt="server icon" className="h-16 w-16"
+                                            <img src={iconSrc} alt={t("motd.icon.title")} className="h-16 w-16"
                                                  style={{imageRendering: "pixelated"}}/>
                                         ) : (
                                             <ImageIcon className="h-7 w-7 text-muted-foreground"/>

@@ -85,7 +85,7 @@ const Backups = () => {
                                     <ArchiveIcon className="h-8 w-8 text-muted-foreground"/>
                                 </div>
                                 <p className="text-lg font-medium text-muted-foreground">{t("backup.none_found")}</p>
-                                <p className="text-sm text-muted-foreground mt-1">Create a backup to get started</p>
+                                <p className="text-sm text-muted-foreground mt-1">{t("backup.none_found_hint")}</p>
                             </div>
                         )}
                         {backups.map((backup) => (

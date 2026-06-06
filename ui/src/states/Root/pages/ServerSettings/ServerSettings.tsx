@@ -12,17 +12,17 @@ import {toast} from "@/hooks/use-toast.ts";
 import {ScrollArea} from "@/components/ui/scroll-area.tsx";
 
 const categoryConfig: Record<PropertyCategory, { label: string; icon: typeof GameControllerIcon; description: string }> = {
-    gameplay: { label: "Gameplay", icon: GameControllerIcon, description: "Game modes, PvP, and gameplay mechanics" },
-    world: { label: "World", icon: GlobeHemisphereWestIcon, description: "World generation and level settings" },
-    spawning: { label: "Mob Spawning", icon: PawPrintIcon, description: "Control creature spawning behavior" },
-    players: { label: "Players", icon: UsersIcon, description: "Player limits and permissions" },
-    network: { label: "Network", icon: WifiHighIcon, description: "Connection and network settings" },
-    performance: { label: "Performance", icon: GaugeIcon, description: "Server performance tuning" },
-    security: { label: "Security", icon: ShieldCheckIcon, description: "Whitelist and security options" },
-    rcon: { label: "RCON & Query", icon: TerminalIcon, description: "Remote console and query settings" },
-    resourcepack: { label: "Resource Pack", icon: PackageIcon, description: "Server resource pack settings" },
-    info: { label: "Server Info", icon: InfoIcon, description: "MOTD and server status" },
-    advanced: { label: "Advanced", icon: WrenchIcon, description: "Advanced debugging options" },
+    gameplay: { label: "properties.category.gameplay.label", icon: GameControllerIcon, description: "properties.category.gameplay.description" },
+    world: { label: "properties.category.world.label", icon: GlobeHemisphereWestIcon, description: "properties.category.world.description" },
+    spawning: { label: "properties.category.spawning.label", icon: PawPrintIcon, description: "properties.category.spawning.description" },
+    players: { label: "properties.category.players.label", icon: UsersIcon, description: "properties.category.players.description" },
+    network: { label: "properties.category.network.label", icon: WifiHighIcon, description: "properties.category.network.description" },
+    performance: { label: "properties.category.performance.label", icon: GaugeIcon, description: "properties.category.performance.description" },
+    security: { label: "properties.category.security.label", icon: ShieldCheckIcon, description: "properties.category.security.description" },
+    rcon: { label: "properties.category.rcon.label", icon: TerminalIcon, description: "properties.category.rcon.description" },
+    resourcepack: { label: "properties.category.resourcepack.label", icon: PackageIcon, description: "properties.category.resourcepack.description" },
+    info: { label: "properties.category.info.label", icon: InfoIcon, description: "properties.category.info.description" },
+    advanced: { label: "properties.category.advanced.label", icon: WrenchIcon, description: "properties.category.advanced.description" },
 };
 
 const ServerSettings = () => {
@@ -100,7 +100,7 @@ const ServerSettings = () => {
                                             className={`w-full flex items-center justify-start gap-3 px-4 py-3 h-12 rounded-xl text-left ${isActive ? 'bg-accent font-semibold' : ''}`}
                                         >
                                             <Icon className="h-5 w-5 shrink-0" weight={isActive ? "fill" : "regular"} />
-                                            <span className="text-base truncate">{config.label}</span>
+                                            <span className="text-base truncate">{t(config.label)}</span>
                                             <span className="ml-auto text-sm text-muted-foreground">
                                                 {count}
                                             </span>
@@ -120,8 +120,8 @@ const ServerSettings = () => {
                                     <CurrentCategoryIcon className="h-6 w-6 text-primary" weight="fill" />
                                 </div>
                                 <div>
-                                    <h2 className="text-xl font-semibold">{categoryConfig[activeCategory].label}</h2>
-                                    <p className="text-sm text-muted-foreground">{categoryConfig[activeCategory].description}</p>
+                                    <h2 className="text-xl font-semibold">{t(categoryConfig[activeCategory].label)}</h2>
+                                    <p className="text-sm text-muted-foreground">{t(categoryConfig[activeCategory].description)}</p>
                                 </div>
                             </div>
                         </div>

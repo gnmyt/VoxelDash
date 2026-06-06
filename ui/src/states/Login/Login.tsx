@@ -66,7 +66,7 @@ const MasterLogin = () => {
             else await login(username, password);
             navigate("/servers");
         } catch (err) {
-            toast({description: (err as Error).message || "Authentication failed", variant: "destructive"});
+            toast({description: (err as Error).message || t("login.auth_failed"), variant: "destructive"});
         } finally {
             setBusy(false);
         }
@@ -84,12 +84,10 @@ const MasterLogin = () => {
 
                 <div className="relative max-w-lg space-y-6">
                     <h1 className="font-display text-[2.9rem] font-bold leading-[1.04] tracking-tight">
-                        All your Minecraft<br/>servers in one place.
+                        {t("login.master.tagline")}
                     </h1>
                     <p className="max-w-md text-[15px] leading-relaxed text-muted-foreground">
-                        Create Paper, Fabric, Vanilla or proxy servers from here. VoxelDash One downloads
-                        the server jar and a matching Java version, then starts it for you. No manual
-                        setup, no SSH.
+                        {t("login.master.description")}
                     </p>
                 </div>
 
@@ -104,22 +102,22 @@ const MasterLogin = () => {
                     </div>
 
                     <h2 className="font-display text-[1.75rem] font-bold leading-tight">
-                        {setupRequired ? "Set up your admin account" : "Welcome back"}
+                        {setupRequired ? t("login.master.setup_title") : t("login.master.welcome_title")}
                     </h2>
                     <p className="mb-8 mt-2 text-sm leading-relaxed text-muted-foreground">
                         {setupRequired
-                            ? "This is the first run. Create the admin account for this instance."
-                            : "Sign in to manage your servers."}
+                            ? t("login.master.setup_subtitle")
+                            : t("login.master.welcome_subtitle")}
                     </p>
 
                     <form onSubmit={submit} className="space-y-4">
                         <div className="space-y-2">
-                            <Label htmlFor="username">Username</Label>
+                            <Label htmlFor="username">{t("login.master.username")}</Label>
                             <Input id="username" value={username} autoFocus autoComplete="username"
                                    onChange={(e) => setUsername(e.target.value)} placeholder="admin"/>
                         </div>
                         <div className="space-y-2">
-                            <Label htmlFor="password">Password</Label>
+                            <Label htmlFor="password">{t("login.master.password")}</Label>
                             <Input id="password" type="password" value={password}
                                    autoComplete={setupRequired ? "new-password" : "current-password"}
                                    onChange={(e) => setPassword(e.target.value)} placeholder="••••••••"/>
@@ -128,7 +126,7 @@ const MasterLogin = () => {
                                 disabled={busy || loading || !username || !password}>
                             {busy ? <SpinnerGapIcon className="size-4 animate-spin"/> : (
                                 <>
-                                    {setupRequired ? "Create admin account" : "Sign in"}
+                                    {setupRequired ? t("login.master.create_account") : t("login.master.sign_in")}
                                     <ArrowRightIcon weight="bold" className="ml-1.5 size-4"/>
                                 </>
                             )}

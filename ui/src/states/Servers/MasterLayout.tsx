@@ -1,5 +1,6 @@
 import {ReactNode} from "react";
 import {useNavigate} from "react-router-dom";
+import {t} from "i18next";
 import {ArrowsClockwiseIcon, GlobeSimpleIcon, HardDrivesIcon, UsersThreeIcon} from "@phosphor-icons/react";
 import {useMasterAuth} from "@/contexts/MasterAuthContext.tsx";
 import {UserProfile} from "@/components/UserProfile.tsx";
@@ -18,10 +19,10 @@ const MasterSidebar = ({active}: { active: MasterSection }) => {
     const navigate = useNavigate();
 
     const items: { key: MasterSection; label: string; icon: typeof HardDrivesIcon; path: string; show: boolean }[] = [
-        {key: "servers", label: "Servers", icon: HardDrivesIcon, path: "/servers", show: true},
-        {key: "forwardings", label: "Forwardings", icon: GlobeSimpleIcon, path: "/forwardings", show: can("Forwardings", 1)},
-        {key: "users", label: "Users", icon: UsersThreeIcon, path: "/users", show: can("UserManagement", 2)},
-        {key: "updates", label: "Updates", icon: ArrowsClockwiseIcon, path: "/updates", show: !!user?.isAdmin},
+        {key: "servers", label: t("master.nav.servers"), icon: HardDrivesIcon, path: "/servers", show: true},
+        {key: "forwardings", label: t("master.nav.forwardings"), icon: GlobeSimpleIcon, path: "/forwardings", show: can("Forwardings", 1)},
+        {key: "users", label: t("master.nav.users"), icon: UsersThreeIcon, path: "/users", show: can("UserManagement", 2)},
+        {key: "updates", label: t("master.nav.updates"), icon: ArrowsClockwiseIcon, path: "/updates", show: !!user?.isAdmin},
     ];
 
     return (
@@ -33,7 +34,7 @@ const MasterSidebar = ({active}: { active: MasterSection }) => {
                             <img src={logo} alt="VoxelDash" className="size-9 shrink-0 rounded-lg"/>
                             <div className="grid flex-1 text-left leading-tight">
                                 <span className="truncate font-display font-semibold">VoxelDash One</span>
-                                <span className="truncate text-xs text-muted-foreground">Server manager</span>
+                                <span className="truncate text-xs text-muted-foreground">{t("master.server_manager")}</span>
                             </div>
                         </SidebarMenuButton>
                     </SidebarMenuItem>

@@ -6,6 +6,7 @@ import {SocketContext} from "@/contexts/SocketContext";
 import {postRequest} from "@/lib/RequestUtil";
 import {parseAnsi, stripAnsi} from "@/lib/AnsiUtil";
 import {PaperPlaneRightIcon, TerminalWindowIcon} from "@phosphor-icons/react";
+import {t} from "i18next";
 
 interface LogEntry {
     text: string;
@@ -120,7 +121,7 @@ const Console = () => {
                     <div className="pr-4 text-sm leading-relaxed">
                         {log.length === 0 && (
                             <div className="text-muted-foreground text-center py-8">
-                                No console output yet. Server logs will appear here.
+                                {t("console.empty")}
                             </div>
                         )}
                         {log.map((entry, index) => renderLogEntry(entry, index))}
@@ -138,7 +139,7 @@ const Console = () => {
                             onChange={(e) => setInput(e.target.value)}
                             onKeyDown={handleKeyDown}
                             className="h-14 pl-12 pr-4 text-base rounded-xl border bg-card font-mono"
-                            placeholder="Enter command..."
+                            placeholder={t("console.placeholder")}
                             autoFocus
                         />
                     </div>
@@ -149,7 +150,7 @@ const Console = () => {
                         disabled={!input.trim()}
                     >
                         <PaperPlaneRightIcon className="h-5 w-5 mr-2" weight="fill" />
-                        Send
+                        {t("console.send")}
                     </Button>
                 </div>
             </form>

@@ -1,5 +1,6 @@
 import {useCallback, useEffect, useState} from "react";
 import {Navigate, useNavigate} from "react-router-dom";
+import {t} from "i18next";
 import {useMasterAuth} from "@/contexts/MasterAuthContext.tsx";
 import {ManagedServer, useServerSelection} from "@/contexts/ServerSelectionContext.tsx";
 import {masterDelete, masterJson, masterRequest} from "@/lib/RequestUtil.ts";
@@ -61,8 +62,8 @@ const Stat = ({label, value}: { label: string; value: string }) => (
 );
 
 const copy = (text: string) => navigator.clipboard.writeText(text).then(
-    () => toast({description: "Copied to clipboard"}),
-    () => toast({description: "Couldn't copy", variant: "destructive"})
+    () => toast({description: t("servers.copied")}),
+    () => toast({description: t("servers.copy_failed"), variant: "destructive"})
 );
 
 const ServerRow = ({server, index, onLog, tunnel, playitLinked, canForward, onForward, onRemoveForward}: {
@@ -130,17 +131,17 @@ const ServerRow = ({server, index, onLog, tunnel, playitLinked, canForward, onFo
             </div>
 
             <div className="hidden items-center gap-3 rounded-xl border border-border/50 bg-muted/30 px-4 py-2 text-xs lg:flex">
-                <Stat label="Port" value={server.gamePort ? String(server.gamePort) : "-"}/>
+                <Stat label={t("servers.stat.port")} value={server.gamePort ? String(server.gamePort) : "-"}/>
                 <span className="h-3.5 w-px bg-border"/>
-                <Stat label="RAM" value={server.memoryMb ? `${server.memoryMb / 1024} GB` : "-"}/>
+                <Stat label={t("servers.stat.ram")} value={server.memoryMb ? `${server.memoryMb / 1024} GB` : "-"}/>
                 <span className="h-3.5 w-px bg-border"/>
-                <Stat label="Build" value={server.build || "-"}/>
+                <Stat label={t("servers.stat.build")} value={server.build || "-"}/>
             </div>
 
             <div className="flex shrink-0 items-center gap-1.5" onClick={(e) => e.stopPropagation()}>
                 {canStart && (
                     <Button size="sm" disabled={busy} onClick={() => run(() => startServer(server.id))}>
-                        {busy ? <SpinnerGapIcon className="size-4 animate-spin"/> : <><PlayIcon weight="fill" className="mr-1.5 size-4"/> Start</>}
+                        {busy ? <SpinnerGapIcon className="size-4 animate-spin"/> : <><PlayIcon weight="fill" className="mr-1.5 size-4"/> {t("servers.start")}</>}
                     </Button>
                 )}
                 {(isOnline || server.status === "starting") && (
@@ -150,7 +151,7 @@ const ServerRow = ({server, index, onLog, tunnel, playitLinked, canForward, onFo
                 )}
                 {server.status === "installing" && (
                     <Button size="sm" variant="secondary" onClick={() => onLog(server)}>
-                        <SpinnerGapIcon className="mr-1.5 size-4 animate-spin"/> Installing
+                        <SpinnerGapIcon className="mr-1.5 size-4 animate-spin"/> {t("servers.installing")}
                     </Button>
                 )}
 
@@ -162,20 +163,20 @@ const ServerRow = ({server, index, onLog, tunnel, playitLinked, canForward, onFo
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end">
                         <DropdownMenuItem onClick={() => onLog(server)}>
-                            <TerminalWindowIcon className="mr-2 size-4"/> View log
+                            <TerminalWindowIcon className="mr-2 size-4"/> {t("servers.view_log")}
                         </DropdownMenuItem>
                         {canForward && (tunnel ? (
                             <DropdownMenuItem disabled={busy} onClick={() => run(() => onRemoveForward(tunnel.tunnelId))}>
-                                <LinkBreakIcon className="mr-2 size-4"/> Remove forwarding
+                                <LinkBreakIcon className="mr-2 size-4"/> {t("servers.remove_forwarding")}
                             </DropdownMenuItem>
                         ) : playitLinked ? (
                             <DropdownMenuItem disabled={busy || !server.gamePort}
                                               onClick={() => run(() => onForward(server.id))}>
-                                <GlobeSimpleIcon className="mr-2 size-4"/> Forward with playit
+                                <GlobeSimpleIcon className="mr-2 size-4"/> {t("servers.forward_with_playit")}
                             </DropdownMenuItem>
                         ) : (
                             <DropdownMenuItem onClick={() => navigate("/forwardings")}>
-                                <GlobeSimpleIcon className="mr-2 size-4"/> Set up forwarding
+                                <GlobeSimpleIcon className="mr-2 size-4"/> {t("servers.set_up_forwarding")}
                             </DropdownMenuItem>
                         ))}
                         <DropdownMenuSeparator/>
@@ -185,7 +186,7 @@ const ServerRow = ({server, index, onLog, tunnel, playitLinked, canForward, onFo
                                               e.preventDefault();
                                               setConfirmDelete(true);
                                           }}>
-                            <TrashIcon className="mr-2 size-4"/> Delete
+                            <TrashIcon className="mr-2 size-4"/> {t("action.delete")}
                         </DropdownMenuItem>
                     </DropdownMenuContent>
                 </DropdownMenu>
@@ -194,17 +195,17 @@ const ServerRow = ({server, index, onLog, tunnel, playitLinked, canForward, onFo
             <AlertDialog open={confirmDelete} onOpenChange={setConfirmDelete}>
                 <AlertDialogContent>
                     <AlertDialogHeader>
-                        <AlertDialogTitle className="font-display">Delete "{server.name}"?</AlertDialogTitle>
+                        <AlertDialogTitle className="font-display">{t("servers.delete.title", {name: server.name})}</AlertDialogTitle>
                         <AlertDialogDescription>
-                            This permanently removes the server and all of its files. This can't be undone.
+                            {t("servers.delete.description")}
                         </AlertDialogDescription>
                     </AlertDialogHeader>
                     <AlertDialogFooter>
-                        <AlertDialogCancel>Cancel</AlertDialogCancel>
+                        <AlertDialogCancel>{t("action.cancel")}</AlertDialogCancel>
                         <AlertDialogAction
                             className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
                             onClick={() => run(() => deleteServer(server.id))}>
-                            Delete
+                            {t("action.delete")}
                         </AlertDialogAction>
                     </AlertDialogFooter>
                 </AlertDialogContent>
@@ -237,10 +238,10 @@ const LogDialog = ({server, onClose}: { server: ManagedServer | null; onClose: (
         <Dialog open={!!server} onOpenChange={(o) => !o && onClose()}>
             <DialogContent className="max-w-2xl">
                 <DialogHeader>
-                    <DialogTitle className="font-display">{server?.name} · log</DialogTitle>
+                    <DialogTitle className="font-display">{t("servers.log_title", {name: server?.name})}</DialogTitle>
                 </DialogHeader>
                 <div className="h-80 overflow-auto rounded-lg bg-zinc-950 p-3 font-mono text-xs leading-relaxed text-zinc-300">
-                    {log.length === 0 ? <span className="text-zinc-500">Waiting for output…</span> :
+                    {log.length === 0 ? <span className="text-zinc-500">{t("servers.waiting_for_output")}</span> :
                         log.map((line, i) => <div key={i} className="whitespace-pre-wrap break-all">{line}</div>)}
                 </div>
             </DialogContent>
@@ -282,9 +283,9 @@ const Servers = () => {
     const onForward = async (serverId: string) => {
         const res = await masterRequest("playit/tunnels", "POST", {serverId});
         const data = await res.json();
-        if (!res.ok) throw new Error(data.error || "Failed to create forwarding");
+        if (!res.ok) throw new Error(data.error || t("servers.forward_create_failed"));
         if (data.tunnel) setTunnelsByServer((prev) => ({...prev, [serverId]: data.tunnel}));
-        toast({description: "Forwarding created"});
+        toast({description: t("servers.forward_created")});
         loadPlayit();
     };
 
@@ -295,17 +296,17 @@ const Servers = () => {
             for (const k of Object.keys(next)) if (next[k].tunnelId === tunnelId) delete next[k];
             return next;
         });
-        toast({description: "Forwarding removed"});
+        toast({description: t("servers.forward_removed")});
     };
 
     if (!authLoading && !authenticated) return <Navigate to="/login" replace/>;
 
     return (
-        <MasterLayout active="servers" title="Servers"
-                      subtitle={`${servers.length} ${servers.length === 1 ? "server" : "servers"}`}
+        <MasterLayout active="servers" title={t("servers.title")}
+                      subtitle={t("servers.count", {count: servers.length})}
                       actions={can("Servers", 2) ? (
                           <Button onClick={() => setCreateOpen(true)}>
-                              <PlusIcon weight="bold" className="mr-1.5 size-4"/> New server
+                              <PlusIcon weight="bold" className="mr-1.5 size-4"/> {t("servers.new_server")}
                           </Button>
                       ) : undefined}>
             {loading && servers.length === 0 ? (
@@ -335,15 +336,15 @@ const EmptyState = ({onCreate, canCreate}: { onCreate: () => void; canCreate: bo
         <div className="mb-5 flex size-16 items-center justify-center rounded-2xl bg-muted">
             <HardDrivesIcon className="size-8 text-muted-foreground"/>
         </div>
-        <h3 className="font-display text-xl font-bold">No servers yet</h3>
+        <h3 className="font-display text-xl font-bold">{t("servers.empty.title")}</h3>
         <p className="mb-6 mt-1 max-w-sm text-sm text-muted-foreground">
             {canCreate
-                ? "Create your first server. VoxelDash One downloads the software and a matching Java runtime, then starts it for you."
-                : "You don't have access to any servers yet. Ask an administrator to grant you access."}
+                ? t("servers.empty.can_create")
+                : t("servers.empty.no_access")}
         </p>
         {canCreate && (
             <Button size="lg" onClick={onCreate}>
-                <PlusIcon weight="bold" className="mr-1.5 size-4"/> Create a server
+                <PlusIcon weight="bold" className="mr-1.5 size-4"/> {t("servers.create_server")}
             </Button>
         )}
     </div>

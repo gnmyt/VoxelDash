@@ -1,5 +1,6 @@
 import {useCallback, useEffect, useState} from "react";
 import {Navigate} from "react-router-dom";
+import {t} from "i18next";
 import {
     ArrowsClockwiseIcon, CheckCircleIcon, CubeIcon, DownloadSimpleIcon, SpinnerGapIcon,
 } from "@phosphor-icons/react";
@@ -58,8 +59,8 @@ const ChannelToggle = ({value, onChange, disabled}: {
     value: Channel; onChange: (c: Channel) => void; disabled: boolean;
 }) => {
     const options: { key: Channel; label: string; hint: string }[] = [
-        {key: "release", label: "Release", hint: "Stable builds only"},
-        {key: "beta", label: "Beta", hint: "Includes pre-releases"},
+        {key: "release", label: t("updates.channel.release"), hint: t("updates.channel.release_hint")},
+        {key: "beta", label: t("updates.channel.beta"), hint: t("updates.channel.beta_hint")},
     ];
     return (
         <div className="inline-flex rounded-xl border border-border/60 bg-muted/30 p-1">
@@ -103,11 +104,11 @@ const Row = ({icon, title, subtitle, current, latest, updatable, busy, disabled,
                     title={disabled ? disabledReason || undefined : undefined}>
                 {busy
                     ? <SpinnerGapIcon className="size-4 animate-spin"/>
-                    : <><DownloadSimpleIcon weight="bold" className="mr-1.5 size-4"/> Update</>}
+                    : <><DownloadSimpleIcon weight="bold" className="mr-1.5 size-4"/> {t("updates.update")}</>}
             </Button>
         ) : (
             <span className="flex items-center gap-1.5 text-xs font-medium text-emerald-500">
-                <CheckCircleIcon weight="fill" className="size-4"/> Up to date
+                <CheckCircleIcon weight="fill" className="size-4"/> {t("updates.up_to_date")}
             </span>
         )}
     </div>
@@ -147,7 +148,7 @@ const Updates = () => {
         try {
             const res = await masterRequest("updates/settings", "POST", body);
             const data = await res.json();
-            if (!res.ok) throw new Error(data.error || "Failed to save");
+            if (!res.ok) throw new Error(data.error || t("updates.save_failed"));
             await load();
         } catch (err) {
             toast({description: (err as Error).message, variant: "destructive"});
@@ -161,8 +162,8 @@ const Updates = () => {
         try {
             const res = await masterRequest(`updates/servers/${server.id}`, "POST");
             const data = await res.json();
-            if (!res.ok) throw new Error(data.error || "Update failed");
-            toast({description: `${server.name} updated to ${data.version || status?.node.latest}`});
+            if (!res.ok) throw new Error(data.error || t("updates.update_failed"));
+            toast({description: t("updates.server_updated", {name: server.name, version: data.version || status?.node.latest})});
             await load();
         } catch (err) {
             toast({description: (err as Error).message, variant: "destructive"});
@@ -176,8 +177,8 @@ const Updates = () => {
         try {
             const res = await masterRequest("updates/node", "POST");
             const data = await res.json();
-            if (!res.ok) throw new Error(data.error || "Update failed");
-            toast({description: `Updating to ${data.version}. The dashboard will restart…`});
+            if (!res.ok) throw new Error(data.error || t("updates.update_failed"));
+            toast({description: t("updates.node_updating", {version: data.version})});
             setRestarting(true);
             const poll = setInterval(async () => {
                 try {
@@ -199,14 +200,14 @@ const Updates = () => {
 
     const node = status?.node;
     const nodeSubtitle = node?.selfUpdate.supported
-        ? "VoxelDash One dashboard"
-        : node?.selfUpdate.reason || "VoxelDash One dashboard";
+        ? t("updates.node_subtitle")
+        : node?.selfUpdate.reason || t("updates.node_subtitle");
     const updatableServers = servers.filter((s) => s.updatable);
     const nothingToUpdate = !!node && !node.updatable && updatableServers.length === 0;
 
     return (
-        <MasterLayout active="updates" title="Updates"
-                      subtitle={status ? (status.channel === "beta" ? "Beta channel" : "Release channel") : undefined}>
+        <MasterLayout active="updates" title={t("updates.title")}
+                      subtitle={status ? (status.channel === "beta" ? t("updates.beta_channel") : t("updates.release_channel")) : undefined}>
             {loading && !status ? (
                 <div className="space-y-4">
                     <Skeleton className="h-40 rounded-2xl"/>
@@ -214,16 +215,16 @@ const Updates = () => {
                 </div>
             ) : !status ? (
                 <div className="rounded-2xl border border-border/60 bg-card/40 px-5 py-10 text-center text-sm text-muted-foreground">
-                    Couldn't load update information.
+                    {t("updates.load_failed")}
                 </div>
             ) : (
                 <div className="space-y-6">
                     <div className="rounded-2xl border border-border/60 bg-card/40 p-5">
                         <div className="flex flex-wrap items-center justify-between gap-4">
                             <div>
-                                <h2 className="font-display text-base font-semibold">Release channel</h2>
+                                <h2 className="font-display text-base font-semibold">{t("updates.release_channel")}</h2>
                                 <p className="text-sm text-muted-foreground">
-                                    Choose which builds servers and the dashboard update to.
+                                    {t("updates.release_channel_description")}
                                 </p>
                             </div>
                             <ChannelToggle value={status.channel} disabled={savingSettings}
@@ -231,9 +232,9 @@ const Updates = () => {
                         </div>
                         <div className="mt-5 flex items-center justify-between gap-4 border-t border-border/50 pt-5">
                             <div>
-                                <h2 className="font-display text-base font-semibold">Automatic updates</h2>
+                                <h2 className="font-display text-base font-semibold">{t("updates.auto_updates")}</h2>
                                 <p className="text-sm text-muted-foreground">
-                                    When on, servers and the dashboard update themselves in the background.
+                                    {t("updates.auto_updates_description")}
                                 </p>
                             </div>
                             <Switch checked={status.autoUpdate} disabled={savingSettings}
@@ -244,18 +245,16 @@ const Updates = () => {
                     {status.autoUpdate ? (
                         <div className="flex items-center gap-3 rounded-2xl border border-border/60 bg-muted/20 px-5 py-4 text-sm text-muted-foreground">
                             <ArrowsClockwiseIcon className="size-5 shrink-0 text-primary"/>
-                            Automatic updates are on. VoxelDash keeps your servers and dashboard up to date on the
-                            {" "}{status.channel === "beta" ? "Beta" : "Release"} channel.
+                            {t("updates.auto_on", {channel: status.channel === "beta" ? t("updates.channel.beta") : t("updates.channel.release")})}
                         </div>
                     ) : nothingToUpdate ? (
                         <div className="vd-rise flex flex-col items-center justify-center rounded-3xl border border-dashed border-border/70 bg-card/30 px-6 py-16 text-center">
                             <div className="mb-4 flex size-14 items-center justify-center rounded-2xl bg-muted">
                                 <CheckCircleIcon weight="fill" className="size-7 text-emerald-500"/>
                             </div>
-                            <h3 className="font-display text-lg font-bold">Everything is up to date</h3>
+                            <h3 className="font-display text-lg font-bold">{t("updates.everything_up_to_date")}</h3>
                             <p className="mt-1 max-w-sm text-sm text-muted-foreground">
-                                Your servers and the VoxelDash One dashboard are running the latest
-                                {" "}{status.channel === "beta" ? "beta" : "release"} build.
+                                {t("updates.latest_build", {channel: status.channel === "beta" ? t("updates.channel.beta_lower") : t("updates.channel.release_lower")})}
                             </p>
                         </div>
                     ) : (

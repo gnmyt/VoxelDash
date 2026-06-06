@@ -239,10 +239,10 @@ const OnlinePlayersTab = ({ players, onRefresh, onBanComplete }: OnlinePlayersTa
                                 </TableCell>
                                 <TableCell>
                                     <div className="flex items-center gap-2">
-                                        <img src="/assets/images/health.webp" alt="Health" className="h-4 w-4" />
+                                        <img src="/assets/images/health.webp" alt={t("players.table.health")} className="h-4 w-4" />
                                         <span>{Math.round(player.health)}/20</span>
                                         <span className="text-muted-foreground">•</span>
-                                        <img src="/assets/images/food.webp" alt="Food" className="h-4 w-4" />
+                                        <img src="/assets/images/food.webp" alt={t("players.food")} className="h-4 w-4" />
                                         <span>{player.hunger}/20</span>
                                     </div>
                                 </TableCell>

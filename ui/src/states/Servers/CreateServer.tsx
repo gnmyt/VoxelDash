@@ -1,5 +1,6 @@
 import {useEffect, useState} from "react";
 import {useNavigate} from "react-router-dom";
+import {t} from "i18next";
 import {useServerSelection} from "@/contexts/ServerSelectionContext.tsx";
 import {masterJson} from "@/lib/RequestUtil.ts";
 import {softwareMeta, statusMeta} from "@/lib/servers.ts";
@@ -31,9 +32,9 @@ const formatGb = (mb: number) => `${Number.isInteger(mb / 1024) ? mb / 1024 : (m
 const snapToStep = (mb: number) => Math.max(MEMORY_MIN, Math.round(mb / MEMORY_STEP) * MEMORY_STEP);
 
 const memoryMarks = (max: number) => [
-    {mb: snapToStep(MEMORY_MIN + (max - MEMORY_MIN) * 0.25), label: "Low"},
-    {mb: snapToStep(MEMORY_MIN + (max - MEMORY_MIN) * 0.5), label: "Medium"},
-    {mb: snapToStep(MEMORY_MIN + (max - MEMORY_MIN) * 0.75), label: "High"},
+    {mb: snapToStep(MEMORY_MIN + (max - MEMORY_MIN) * 0.25), label: t("create_server.memory_low")},
+    {mb: snapToStep(MEMORY_MIN + (max - MEMORY_MIN) * 0.5), label: t("create_server.memory_medium")},
+    {mb: snapToStep(MEMORY_MIN + (max - MEMORY_MIN) * 0.75), label: t("create_server.memory_high")},
 ];
 
 const CreateServerDialog = ({open, onOpenChange}: { open: boolean; onOpenChange: (open: boolean) => void }) => {
@@ -85,7 +86,7 @@ const CreateServerDialog = ({open, onOpenChange}: { open: boolean; onOpenChange:
             setVersions(stable);
             setMcVersion(stable[0] || "");
         } catch {
-            toast({description: "Could not load versions", variant: "destructive"});
+            toast({description: t("create_server.load_versions_failed"), variant: "destructive"});
         } finally {
             setVersionsLoading(false);
         }
@@ -114,7 +115,7 @@ const CreateServerDialog = ({open, onOpenChange}: { open: boolean; onOpenChange:
         <Dialog open={open} onOpenChange={handleOpenChange}>
             <DialogContent className="max-w-xl">
                 <DialogHeader>
-                    <DialogTitle className="font-display text-xl">New server</DialogTitle>
+                    <DialogTitle className="font-display text-xl">{t("create_server.title")}</DialogTitle>
                 </DialogHeader>
 
                 <Steps step={step}/>
@@ -150,16 +151,16 @@ const CreateServerDialog = ({open, onOpenChange}: { open: boolean; onOpenChange:
                 {step === "details" && (
                     <div className="space-y-5">
                         <div className="space-y-2">
-                            <Label htmlFor="name">Server name</Label>
-                            <Input id="name" autoFocus value={name} placeholder="Survival, Lobby, Creative…"
+                            <Label htmlFor="name">{t("create_server.server_name")}</Label>
+                            <Input id="name" autoFocus value={name} placeholder={t("create_server.server_name_placeholder")}
                                    onChange={(e) => setName(e.target.value)}/>
                         </div>
 
                         <div className="space-y-2">
-                            <Label>Minecraft version</Label>
+                            <Label>{t("create_server.minecraft_version")}</Label>
                             <Select value={mcVersion} onValueChange={setMcVersion} disabled={versionsLoading}>
                                 <SelectTrigger>
-                                    <SelectValue placeholder={versionsLoading ? "Loading versions…" : "Choose a version"}/>
+                                    <SelectValue placeholder={versionsLoading ? t("create_server.loading_versions") : t("create_server.choose_version")}/>
                                 </SelectTrigger>
                                 <SelectContent className="max-h-72">
                                     {versions.map((v) => <SelectItem key={v} value={v}>{v}</SelectItem>)}
@@ -169,13 +170,13 @@ const CreateServerDialog = ({open, onOpenChange}: { open: boolean; onOpenChange:
 
                         <div className="space-y-2">
                             <div className="flex items-center justify-between">
-                                <Label>Memory</Label>
+                                <Label>{t("create_server.memory")}</Label>
                                 <span className="rounded-md bg-primary/10 px-2 py-0.5 font-mono text-sm font-semibold text-primary">
                                     {formatGb(memoryMb)}
                                 </span>
                             </div>
                             <Slider value={[memoryMb]} min={MEMORY_MIN} max={memoryMax} step={MEMORY_STEP}
-                                    onValueChange={([v]) => setMemoryMb(v)} aria-label="Memory"/>
+                                    onValueChange={([v]) => setMemoryMb(v)} aria-label={t("create_server.memory")}/>
                             <div className="relative h-7">
                                 {memoryMarks(memoryMax).map((mark) => {
                                     const pct = ((mark.mb - MEMORY_MIN) / (memoryMax - MEMORY_MIN)) * 100;
@@ -196,11 +197,11 @@ const CreateServerDialog = ({open, onOpenChange}: { open: boolean; onOpenChange:
 
                         <div className="flex justify-between pt-1">
                             <Button variant="ghost" onClick={() => setStep("software")}>
-                                <ArrowLeftIcon className="mr-1.5 size-4"/> Back
+                                <ArrowLeftIcon className="mr-1.5 size-4"/> {t("create_server.back")}
                             </Button>
                             <Button disabled={!name || !mcVersion || creating} onClick={submit}>
                                 {creating ? <SpinnerGapIcon className="size-4 animate-spin"/> : (
-                                    <>Create &amp; start <ArrowRightIcon className="ml-1.5 size-4"/></>
+                                    <>{t("create_server.create_and_start")} <ArrowRightIcon className="ml-1.5 size-4"/></>
                                 )}
                             </Button>
                         </div>
@@ -220,7 +221,7 @@ const CreateServerDialog = ({open, onOpenChange}: { open: boolean; onOpenChange:
 
 const Steps = ({step}: { step: string }) => {
     const order = ["software", "details", "provisioning"];
-    const labels = {software: "Software", details: "Details", provisioning: "Provision"};
+    const labels = {software: t("create_server.step_software"), details: t("create_server.step_details"), provisioning: t("create_server.step_provision")};
     const currentIndex = order.indexOf(step);
     return (
         <div className="flex items-center gap-3">
@@ -274,21 +275,21 @@ const Provisioning = ({serverId, onOpen, onClose}: { serverId: string; onOpen: (
                         : <SpinnerGapIcon className="size-6 animate-spin text-primary"/>}
                 <div>
                     <h3 className="font-display text-lg font-semibold">
-                        {failed ? "Provisioning failed" : online ? "Server is online" : "Setting things up…"}
+                        {failed ? t("create_server.provision_failed") : online ? t("create_server.server_online") : t("create_server.setting_up")}
                     </h3>
                     <p className={`text-sm ${meta.text}`}>{meta.label}</p>
                 </div>
             </div>
 
             <div className="h-64 overflow-auto rounded-lg bg-zinc-950 p-3 font-mono text-xs leading-relaxed text-zinc-300">
-                {log.length === 0 ? <span className="text-zinc-500">Starting…</span> :
+                {log.length === 0 ? <span className="text-zinc-500">{t("create_server.starting")}</span> :
                     log.map((line, i) => <div key={i} className="whitespace-pre-wrap break-all">{line}</div>)}
             </div>
 
             <div className="flex justify-between">
-                <Button variant="ghost" onClick={onClose}>Close</Button>
+                <Button variant="ghost" onClick={onClose}>{t("create_server.close")}</Button>
                 <Button disabled={!online} onClick={onOpen}>
-                    <ArrowSquareOutIcon className="mr-1.5 size-4"/> Open dashboard
+                    <ArrowSquareOutIcon className="mr-1.5 size-4"/> {t("create_server.open_dashboard")}
                 </Button>
             </div>
         </div>

@@ -77,7 +77,7 @@ function MasterServerSwitcher() {
                                 {meta.short}
                             </div>
                             <div className="grid flex-1 text-left leading-tight">
-                                <span className="truncate font-display font-semibold">{activeServer?.name || "Select a server"}</span>
+                                <span className="truncate font-display font-semibold">{activeServer?.name || t("nav.select_server")}</span>
                                 <span className="truncate text-xs text-muted-foreground">
                                     {meta.name}{activeServer?.mcVersion ? ` · ${activeServer.mcVersion}` : ""}
                                 </span>
@@ -104,7 +104,7 @@ function MasterServerSwitcher() {
                         })}
                         <DropdownMenuSeparator/>
                         <DropdownMenuItem onClick={() => navigate("/servers")}>
-                            <SquaresFourIcon className="mr-2 size-4"/> Manage servers
+                            <SquaresFourIcon className="mr-2 size-4"/> {t("nav.manage_servers")}
                         </DropdownMenuItem>
                     </DropdownMenuContent>
                 </DropdownMenu>
@@ -224,7 +224,7 @@ export function Sidebar() {
                                                         className={`transition-transform duration-200 ${isOpen ? "rotate-90" : ""}`}
                                                         onClick={() => toggleCollapsible(item.path)}>
                                                         <CaretRightIcon/>
-                                                        <span className="sr-only">Toggle</span>
+                                                        <span className="sr-only">{t("nav.toggle")}</span>
                                                     </SidebarMenuAction>
                                                 </CollapsibleTrigger>
                                                 <CollapsibleContent>

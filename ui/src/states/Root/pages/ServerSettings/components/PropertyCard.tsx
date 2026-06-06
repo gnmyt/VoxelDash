@@ -31,7 +31,7 @@ export function PropertyCard({property, onValueChange}: PropertyCardProps) {
                             className="data-[state=checked]:bg-primary"
                         />
                         <span className={`text-sm font-medium ${(property.parsedValue as boolean) ? 'text-primary' : 'text-muted-foreground'}`}>
-                            {(property.parsedValue as boolean) ? 'Enabled' : 'Disabled'}
+                            {(property.parsedValue as boolean) ? t("properties.enabled") : t("properties.disabled")}
                         </span>
                     </div>
                 )

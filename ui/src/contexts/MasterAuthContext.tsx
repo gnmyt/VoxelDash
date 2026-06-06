@@ -1,5 +1,6 @@
 import {createContext, ReactNode, useContext, useEffect, useState} from "react";
 import {getMasterToken, masterJson, masterRequest, setActiveServerId, setMasterToken} from "@/lib/RequestUtil.ts";
+import {t} from "i18next";
 
 export type MasterPermissionLevel = 0 | 1 | 2;
 
@@ -67,7 +68,7 @@ export const MasterAuthProvider = ({children}: { children: ReactNode }) => {
 
     const handleAuthResponse = async (res: Response) => {
         const data = await res.json();
-        if (!res.ok) throw new Error(data.error || "Request failed");
+        if (!res.ok) throw new Error(data.error || t("context.request_failed"));
         setMasterToken(data.token);
         setUser(data.user);
         setAuthenticated(true);

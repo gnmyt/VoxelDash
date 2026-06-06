@@ -1,6 +1,7 @@
 import {createContext, ReactNode, useContext, useEffect, useState} from "react";
 import {getActiveServerId, masterDelete, masterJson, masterPost, setActiveServerId} from "@/lib/RequestUtil.ts";
 import {useMasterAuth} from "@/contexts/MasterAuthContext.tsx";
+import {t} from "i18next";
 
 export interface ManagedServer {
     id: string;
@@ -61,7 +62,7 @@ export const ServerSelectionProvider = ({children}: { children: ReactNode }) => 
     const createServer = async (payload: CreatePayload): Promise<ManagedServer> => {
         const res = await masterPost("servers", payload);
         const data = await res.json();
-        if (!res.ok) throw new Error(data.error || "Failed to create server");
+        if (!res.ok) throw new Error(data.error || t("context.create_failed"));
         await refresh();
         return data.server;
     };
@@ -70,7 +71,7 @@ export const ServerSelectionProvider = ({children}: { children: ReactNode }) => 
         const res = await masterPost(`servers/${id}/${verb}`);
         if (!res.ok) {
             const data = await res.json().catch(() => ({}));
-            throw new Error(data.error || `Failed to ${verb} server`);
+            throw new Error(data.error || t(`context.action_failed.${verb}`));
         }
         await refresh();
     };
@@ -79,7 +80,7 @@ export const ServerSelectionProvider = ({children}: { children: ReactNode }) => 
     const stopServer = (id: string) => action("stop", id);
     const deleteServer = async (id: string) => {
         const res = await masterDelete(`servers/${id}`);
-        if (!res.ok) throw new Error("Failed to delete server");
+        if (!res.ok) throw new Error(t("context.delete_failed"));
         if (getActiveServerId() === id) selectServer(null);
         await refresh();
     };

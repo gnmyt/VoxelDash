@@ -28,6 +28,7 @@ import {useState} from "react";
 import {toast} from "@/hooks/use-toast.ts";
 import {AuroraBackground} from "@/components/AuroraBackground.tsx";
 import {AnimatePresence, motion} from "motion/react";
+import {t} from "i18next";
 
 const Loader = ({label}: { label: string }) => (
     <div className="flex min-h-screen flex-col items-center justify-center gap-3 bg-background text-muted-foreground">
@@ -45,7 +46,7 @@ const ServerStatePanel = () => {
         return (
             <div className="flex flex-1 flex-col items-center justify-center gap-3 text-muted-foreground">
                 <SpinnerGapIcon className="size-8 animate-spin text-primary"/>
-                <p className="text-sm">Connecting to {activeServer?.name || "server"}…</p>
+                <p className="text-sm">{t("root.connecting", {name: activeServer?.name || t("root.server_fallback")})}</p>
             </div>
         );
     }
@@ -56,17 +57,17 @@ const ServerStatePanel = () => {
                 <PlugsIcon className="size-8 text-muted-foreground"/>
             </div>
             <div className="space-y-1">
-                <h2 className="text-xl font-semibold">{activeServer?.name || "Server"} is offline</h2>
+                <h2 className="text-xl font-semibold">{t("root.offline", {name: activeServer?.name || t("root.server_fallback_cap")})}</h2>
                 <p className="max-w-sm text-sm text-muted-foreground">
-                    Start it from the server list, then open it again.
+                    {t("root.offline_hint")}
                 </p>
             </div>
             <div className="flex gap-2">
                 <Button variant="outline" onClick={() => navigate("/servers")}>
-                    <ArrowLeftIcon className="mr-1.5 size-4"/> Back to servers
+                    <ArrowLeftIcon className="mr-1.5 size-4"/> {t("root.back_to_servers")}
                 </Button>
                 <Button onClick={() => checkToken()}>
-                    <ArrowsClockwiseIcon className="mr-1.5 size-4"/> Retry
+                    <ArrowsClockwiseIcon className="mr-1.5 size-4"/> {t("root.retry")}
                 </Button>
             </div>
         </div>
@@ -107,18 +108,20 @@ const OfflineBanner = () => {
                 : <PlugsIcon className="size-5 shrink-0 text-muted-foreground"/>}
             <div className="min-w-0 flex-1">
                 <p className="text-sm font-medium">
-                    {starting ? `Starting ${activeServer?.name || "server"}…` : `${activeServer?.name || "Server"} is offline`}
+                    {starting
+                        ? t("root.starting", {name: activeServer?.name || t("root.server_fallback")})
+                        : t("root.offline", {name: activeServer?.name || t("root.server_fallback_cap")})}
                 </p>
                 <p className="truncate text-xs text-muted-foreground">
                     {starting
-                        ? "Booting up. Give it a sec..."
-                        : "File management is available. Start the server for console, players and worlds."}
+                        ? t("root.booting_hint")
+                        : t("root.file_management_hint")}
                 </p>
             </div>
             <Button size="sm" className="vd-press" disabled={starting} onClick={start}>
                 {starting
-                    ? <><SpinnerGapIcon className="mr-1.5 size-4 animate-spin"/> Starting…</>
-                    : <><PlayIcon weight="fill" className="mr-1.5 size-4"/> Start server</>}
+                    ? <><SpinnerGapIcon className="mr-1.5 size-4 animate-spin"/> {t("root.starting_short")}</>
+                    : <><PlayIcon weight="fill" className="mr-1.5 size-4"/> {t("root.start_server")}</>}
             </Button>
             {starting && (
                 <span className="absolute inset-x-0 bottom-0 h-0.5 overflow-hidden">
@@ -146,7 +149,7 @@ const RootLayout = () => {
                         <Breadcrumb>
                             <BreadcrumbList>
                                 <BreadcrumbItem className="hidden md:block">
-                                    <BreadcrumbLink className="cursor-pointer" onClick={() => navigate("/")}>Home</BreadcrumbLink>
+                                    <BreadcrumbLink className="cursor-pointer" onClick={() => navigate("/")}>{t("root.home")}</BreadcrumbLink>
                                 </BreadcrumbItem>
                                 <BreadcrumbSeparator className="hidden md:block"/>
                                 <BreadcrumbItem>
@@ -175,7 +178,7 @@ const MasterRoot = () => {
     const {loading, authenticated} = useMasterAuth();
     const {activeServerId} = useServerSelection();
 
-    if (loading) return <Loader label="Loading VoxelDash…"/>;
+    if (loading) return <Loader label={t("root.loading")}/>;
     if (!authenticated) return <Navigate to="/login" replace/>;
     if (!activeServerId) return <Navigate to="/servers" replace/>;
 
@@ -193,7 +196,7 @@ const MasterRoot = () => {
 const StandaloneRoot = () => {
     const {tokenValid} = useContext(ServerInfoContext)!;
 
-    if (tokenValid === null) return <Loader label="Loading VoxelDash…"/>;
+    if (tokenValid === null) return <Loader label={t("root.loading")}/>;
     if (!tokenValid) return <Navigate to="/login" replace/>;
 
     return (
