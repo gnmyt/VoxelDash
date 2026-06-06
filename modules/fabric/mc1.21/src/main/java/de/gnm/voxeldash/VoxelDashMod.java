@@ -15,6 +15,12 @@ import de.gnm.voxeldash.api.pipes.players.BanPipe;
 import de.gnm.voxeldash.api.pipes.players.OnlinePlayerPipe;
 import de.gnm.voxeldash.api.pipes.players.OperatorPipe;
 import de.gnm.voxeldash.api.pipes.players.WhitelistPipe;
+import de.gnm.voxeldash.api.controller.PlayerDataController;
+import de.gnm.voxeldash.api.pipes.players.InventoryPipe;
+import de.gnm.voxeldash.api.pipes.players.MessagePipe;
+import de.gnm.voxeldash.api.pipes.players.ProfilePipe;
+import de.gnm.voxeldash.api.pipes.players.PunishmentPipe;
+import de.gnm.voxeldash.api.pipes.players.TeleportPipe;
 import de.gnm.voxeldash.api.pipes.resources.ResourcePipe;
 import de.gnm.voxeldash.api.pipes.worlds.WorldPipe;
 import de.gnm.voxeldash.command.PasswordCommand;
@@ -108,6 +114,19 @@ public class VoxelDashMod implements DedicatedServerModInitializer {
         loader.registerPipe(MotdPipe.class, new MotdPipeImpl());
         loader.registerPipe(ProfilingPipe.class, new ProfilingPipeImpl());
         loader.registerPipe(GameRulePipe.class, new GameRulePipeImpl());
+
+        loader.registerPipe(InventoryPipe.class, new InventoryPipeImpl());
+        loader.registerPipe(TeleportPipe.class, new TeleportPipeImpl());
+        loader.registerPipe(MessagePipe.class, new MessagePipeImpl());
+        loader.registerPipe(ProfilePipe.class, new ProfilePipeImpl());
+        loader.registerPipe(PunishmentPipe.class, new PunishmentPipeImpl());
+        FabricUtil.compat().registerMuteCheck(uuid -> {
+            try {
+                return loader.getController(PlayerDataController.class).isMuted(uuid);
+            } catch (Throwable t) {
+                return false;
+            }
+        });
     }
 
     private void registerActions() {
@@ -132,15 +151,7 @@ public class VoxelDashMod implements DedicatedServerModInitializer {
                 ActionInputType.NUMBER, "schedules.actions.backup_input",
                 metadata -> {
                     try {
-                        int backupMode = 0;
-                        if (metadata != null && !metadata.isEmpty()) {
-                            try {
-                                backupMode = Integer.parseInt(metadata);
-                            } catch (NumberFormatException ignored) {
-                            }
-                        }
-                        backupHelper.createBackup(String.valueOf(backupMode),
-                                backupHelper.getBackupDirectories(backupMode).toArray(new File[0]));
+                        backupHelper.createScheduledBackup(metadata);
                     } catch (Exception e) {
                         logger.log(Level.SEVERE, "Failed to create backup", e);
                     }

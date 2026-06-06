@@ -29,6 +29,7 @@ java {
 
 repositories {
     mavenLocal()
+    maven { url 'https://jitpack.io' }
     maven {
         name = 'Legacy Fabric'
         url = 'https://maven.legacyfabric.net/'
@@ -58,6 +59,7 @@ dependencies {
 
     implementation "de.gnm:voxeldash-api:${project.voxeldash_version}"
     shadow "de.gnm:voxeldash-api:${project.voxeldash_version}"
+    shadow "com.github.Querz:NBT:6.1"
 }
 
 tasks.register('buildWebUI', Exec) {
@@ -126,6 +128,7 @@ tasks.named("shadowJar") {
     relocate 'org.reflections', 'de.gnm.voxeldash.libs.reflections'
     relocate 'org.mindrot', 'de.gnm.voxeldash.libs.mindrot'
     relocate 'org.yaml.snakeyaml', 'de.gnm.voxeldash.libs.snakeyaml'
+    relocate 'net.querz', 'de.gnm.voxeldash.libs.querz'
 }
 
 tasks.named("remapJar") {
