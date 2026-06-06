@@ -22,9 +22,13 @@ jobs:
     outputs:
       version: ${{ steps.meta.outputs.version }}
       prerelease: ${{ steps.meta.outputs.prerelease }}
+      version_type: ${{ steps.meta.outputs.version_type }}
+      has_modrinth: ${{ steps.meta.outputs.has_modrinth }}
     steps:
       - name: Resolve version & channel
         id: meta
+        env:
+          MODRINTH_TOKEN: ${{ secrets.MODRINTH_TOKEN }}
         run: |
           TAG="${GITHUB_REF_NAME}"
           VERSION="${TAG#v}"
@@ -33,9 +37,21 @@ jobs:
           else
             PRERELEASE=false
           fi
-          echo "version=$VERSION"       >> "$GITHUB_OUTPUT"
-          echo "prerelease=$PRERELEASE" >> "$GITHUB_OUTPUT"
-          echo "Tag $TAG -> version=$VERSION prerelease=$PRERELEASE"
+          if [[ "$VERSION" == *-alpha* ]]; then
+            VERSION_TYPE=alpha
+          elif [[ "$VERSION" == *-* ]]; then
+            VERSION_TYPE=beta
+          else
+            VERSION_TYPE=release
+          fi
+          if [[ -n "$MODRINTH_TOKEN" ]]; then HAS_MODRINTH=true; else HAS_MODRINTH=false; fi
+          {
+            echo "version=$VERSION"
+            echo "prerelease=$PRERELEASE"
+            echo "version_type=$VERSION_TYPE"
+            echo "has_modrinth=$HAS_MODRINTH"
+          } >> "$GITHUB_OUTPUT"
+          echo "Tag $TAG -> version=$VERSION prerelease=$PRERELEASE type=$VERSION_TYPE modrinth=$HAS_MODRINTH"
 
   build:
     name: Build ${{ matrix.module }}
@@ -444,6 +460,8 @@ jobs:
     name: Publish Release
     needs: [setup, build, one, desktop]
     runs-on: ubuntu-latest
+    outputs:
+      changelog: ${{ steps.notes.outputs.changelog }}
     steps:
       - name: Checkout default branch
         uses: actions/checkout@v4
@@ -488,6 +506,68 @@ jobs:
             dist/*.deb
             dist/*.msi
             dist/*-setup.exe
+
+      - name: Capture changelog
+        id: notes
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          BODY="$(gh release view "${{ github.ref_name }}" --json body -q .body 2>/dev/null)"
+          [[ -n "$BODY" ]] || BODY="Release ${{ needs.setup.outputs.version }}"
+          {
+            echo "changelog<<__EOF__"
+            echo "$BODY"
+            echo "__EOF__"
+          } >> "$GITHUB_OUTPUT"
+
+  modrinth:
+    name: Publish ${{ matrix.module }} to Modrinth
+    needs: [setup, release]
+    if: needs.setup.outputs.has_modrinth == 'true'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - { module: fabric8,    loaders: "fabric", game_versions: "1.8.9",  label: "Fabric 1.8.9",  suffix: "fabric-1.8.9" }
+          - { module: fabric12,   loaders: "fabric", game_versions: "1.12.2", label: "Fabric 1.12.2", suffix: "fabric-1.12.2" }
+          - { module: fabric14,   loaders: "fabric", game_versions: "1.14.4", label: "Fabric 1.14.4", suffix: "fabric-1.14.4" }
+          - { module: fabric16,   loaders: "fabric", game_versions: "1.16.5", label: "Fabric 1.16.5", suffix: "fabric-1.16.5" }
+          - { module: fabric20,   loaders: "fabric", game_versions: "1.20 1.20.1", label: "Fabric 1.20.1", suffix: "fabric-1.20.1" }
+          - { module: fabric,     loaders: "fabric", game_versions: "1.21 1.21.1 1.21.2 1.21.3 1.21.4", label: "Fabric 1.21", suffix: "fabric-1.21" }
+          - { module: forge8,     loaders: "forge", game_versions: "1.8.9",  label: "Forge 1.8.9",  suffix: "forge-1.8.9" }
+          - { module: forge12,    loaders: "forge", game_versions: "1.12.2", label: "Forge 1.12.2", suffix: "forge-1.12.2" }
+          - { module: forge16,    loaders: "forge", game_versions: "1.16.5", label: "Forge 1.16.5", suffix: "forge-1.16.5" }
+          - { module: forge20,    loaders: "forge", game_versions: "1.20.1", label: "Forge 1.20.1", suffix: "forge-1.20.1" }
+          - { module: forge,      loaders: "forge", game_versions: "1.21 1.21.1", label: "Forge 1.21", suffix: "forge-1.21" }
+          - { module: forge26,    loaders: "forge", game_versions: "26.1.2", label: "Forge 26", suffix: "forge-26", optional: true }
+          - { module: spigot,     loaders: "bukkit spigot paper purpur folia", game_versions: "1.8.9 1.9.4 1.10.2 1.11.2 1.12.2 1.13.2 1.14.4 1.15.2 1.16.5 1.17.1 1.18.2 1.19.4 1.20.1 1.20.4 1.20.6 1.21 1.21.1 1.21.2 1.21.3 1.21.4", label: "Bukkit / Spigot / Paper", suffix: "paper" }
+          - { module: bungeecord, loaders: "bungeecord waterfall", game_versions: "1.8.9 1.12.2 1.16.5 1.18.2 1.19.4 1.20.1 1.21 1.21.4", label: "BungeeCord / Waterfall", suffix: "bungeecord" }
+    steps:
+      - name: Download ${{ matrix.module }} artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: dist-${{ matrix.module }}
+          path: dist
+
+      - name: Publish to Modrinth
+        uses: Kira-NT/mc-publish@v3.3
+        continue-on-error: ${{ matrix.optional || false }}
+        with:
+          modrinth-id: voxeldash
+          modrinth-token: ${{ secrets.MODRINTH_TOKEN }}
+          files: dist/voxeldash-${{ matrix.module }}-${{ needs.setup.outputs.version }}.jar
+          name: VoxelDash ${{ needs.setup.outputs.version }} (${{ matrix.label }})
+          version: ${{ needs.setup.outputs.version }}+${{ matrix.suffix }}
+          version-type: ${{ needs.setup.outputs.version_type }}
+          loaders: ${{ matrix.loaders }}
+          game-versions: ${{ matrix.game_versions }}
+          changelog: ${{ needs.release.outputs.changelog }}
+          modrinth-unfeature-mode: subset
+          retry-attempts: 3
+          retry-delay: 10000
 
   cleanup-on-failure:
     name: Cleanup on Failure
