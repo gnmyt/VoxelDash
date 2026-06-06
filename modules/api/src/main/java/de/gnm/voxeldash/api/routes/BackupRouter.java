@@ -66,6 +66,7 @@ public class BackupRouter extends BaseRoute {
 
                 backupNode.put("id", Long.parseLong(nameParts[0]));
                 backupNode.put("size", backup.length());
+                backupNode.put("name", nameParts.length > 2 ? BackupHelper.decodeName(nameParts[2]) : "");
 
                 ArrayNode partNames = getMapper().createArrayNode();
                 for (BackupPart part : BackupPart.fromBackupBit(Integer.parseInt(nameParts[1]))) {
@@ -98,9 +99,12 @@ public class BackupRouter extends BaseRoute {
 
         try {
             BufferedInputStream in = new BufferedInputStream(Files.newInputStream(backupFile.toPath()));
+            String[] nameParts = backupFile.getName().replace(".zip", "").split("-");
+            String decodedName = nameParts.length > 2 ? BackupHelper.decodeName(nameParts[2]) : "";
+            String downloadName = (decodedName.isEmpty() ? backupName : decodedName) + ".zip";
             return new Response()
                     .header("Content-Type", "application/octet-stream")
-                    .header("Content-Disposition", "attachment; filename=\"" + backupFile.getName() + "\"")
+                    .header("Content-Disposition", "attachment; filename=\"" + downloadName + "\"")
                     .header("Content-Length", String.valueOf(backupFile.length()))
                     .stream(in);
         } catch (Exception e) {
@@ -148,6 +152,7 @@ public class BackupRouter extends BaseRoute {
 
     @ApiDoc(summary = "Create a backup", description = "Creates a new backup using the given backup mode bitmask, which selects the directories to include.", tag = "Backups")
     @ApiField(name = "backupMode", description = "Backup mode bitmask (as a string) selecting which parts to include")
+    @ApiField(name = "backupName", required = false, description = "Optional name for the backup; may contain placeholders such as {date}/{time}")
     @AuthenticatedRoute
     @RequiresFeatures(value = Feature.Backups, level = PermissionLevel.FULL)
     @Path("/backups/create")
@@ -168,7 +173,9 @@ public class BackupRouter extends BaseRoute {
                 return new JSONResponse().error("Invalid backup mode");
             }
 
-            backupHelper.createBackup(backupModeRaw, backupHelper.getBackupDirectories(backupBit).toArray(new File[0]));
+            String backupName = request.has("backupName") ? request.get("backupName") : null;
+
+            backupHelper.createBackup(backupModeRaw, backupName, backupHelper.getBackupDirectories(backupBit).toArray(new File[0]));
             return new JSONResponse().message("Backup created");
         } catch (Exception e) {
             return new JSONResponse().error("Error creating backup: " + e.getMessage());

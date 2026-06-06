@@ -43,7 +43,7 @@ const BackupCard = ({backup, onRestore, onDelete, onDownload}: BackupCardProps) 
                 </div>
                 <div className="min-w-0 flex-1">
                     <div className="flex items-center gap-3">
-                        <h3 className="text-base font-semibold">{t("backup.name")}</h3>
+                        <h3 className="text-base font-semibold truncate">{backup.name || new Date(backup.id).toLocaleString()}</h3>
                         <span className="text-sm text-muted-foreground bg-muted px-2 py-0.5 rounded-lg">
                             {convertSize(backup.size)}
                         </span>

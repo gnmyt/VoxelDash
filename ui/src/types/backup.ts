@@ -3,6 +3,7 @@ export type BackupType = "ROOT" | "WORLDS" | "PLUGINS" | "CONFIGS" | "LOGS" | "M
 export interface Backup {
   id: number
   size: number
+  name: string
   modes: BackupType[]
 }
 

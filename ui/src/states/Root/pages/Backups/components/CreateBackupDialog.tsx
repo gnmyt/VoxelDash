@@ -1,5 +1,5 @@
 import * as React from "react";
-import { CheckIcon, PlusIcon } from "@phosphor-icons/react";
+import { PlusIcon } from "@phosphor-icons/react";
 
 import { Button } from "@/components/ui/button.tsx";
 import {
@@ -11,43 +11,30 @@ import {
     DialogTitle,
     DialogTrigger,
 } from "@/components/ui/dialog.tsx";
+import { Input } from "@/components/ui/input.tsx";
 import { Label } from "@/components/ui/label.tsx";
 import { BackupOption } from "@/types/backup.ts";
+import BackupPartsSelector, { toBackupBit } from "@/states/Root/pages/Backups/components/BackupPartsSelector.tsx";
 import {t} from "i18next";
 
 interface CreateBackupDialogProps {
     options: BackupOption[];
-    onBackup: (data: number) => Promise<void>;
+    onBackup: (backupMode: number, name: string) => Promise<void>;
     disabled?: boolean;
 }
 
 const CreateBackupDialog = ({ options, onBackup, disabled }: CreateBackupDialogProps) => {
     const [open, setOpen] = React.useState(false);
     const [selected, setSelected] = React.useState<number[]>([]);
-
-    const granular = options.filter(o => o.bit !== 0);
+    const [name, setName] = React.useState("");
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setOpen(false);
 
-        const backupBit = selected.includes(0) ? 0 : selected.reduce((acc, bit) => acc | bit, 0);
-
-        await onBackup(backupBit);
+        await onBackup(toBackupBit(selected), name.trim());
         setSelected([]);
-    }
-
-    const toggle = (bit: number) => {
-        setSelected(prev => {
-            if (prev.includes(bit)) return prev.filter(b => b !== bit);
-
-            if (bit === 0) return [0];
-            return [...prev.filter(b => b !== 0), bit];
-        });
-    }
-
-    const selectAll = () => {
-        setSelected(granular.map(o => o.bit));
+        setName("");
     }
 
     return (
@@ -67,38 +54,17 @@ const CreateBackupDialog = ({ options, onBackup, disabled }: CreateBackupDialogP
                         </DialogDescription>
                     </DialogHeader>
                     <div className="grid gap-4 py-6">
-                        <div className="grid gap-3">
-                            <div className="flex items-center justify-between">
-                                <Label className="text-base">{t("backup.include")}</Label>
-                                <Button type="button" variant="ghost" size="sm" onClick={selectAll} className="rounded-xl">
-                                    {t("backup.select_all")}
-                                </Button>
-                            </div>
-                            <div className="grid grid-cols-1 gap-2">
-                                {options.map((option) => (
-                                    <Button
-                                        key={option.id}
-                                        type="button"
-                                        variant="outline"
-                                        onClick={() => toggle(option.bit)}
-                                        className={`flex items-center justify-start gap-3 h-14 px-4 rounded-xl text-left ${selected.includes(option.bit) ? 'border-primary bg-primary/10' : ''}`}
-                                    >
-                                        <div className={`flex h-5 w-5 items-center justify-center rounded-md border-2 transition-colors ${
-                                            selected.includes(option.bit)
-                                                ? "bg-primary border-primary"
-                                                : "border-muted-foreground"}`}
-                                        >
-                                            {selected.includes(option.bit) && (
-                                                <CheckIcon className="h-3 w-3 text-primary-foreground" weight="bold" />
-                                            )}
-                                        </div>
-                                        <span className="text-base font-medium">
-                                            {t("backup.mapping." + option.id)}
-                                        </span>
-                                    </Button>
-                                ))}
-                            </div>
+                        <div className="grid gap-2">
+                            <Label className="text-base">{t("backup.name_label")}</Label>
+                            <Input
+                                value={name}
+                                onChange={(e) => setName(e.target.value)}
+                                placeholder={t("backup.name_placeholder")}
+                                className="rounded-xl"
+                            />
+                            <p className="text-xs text-muted-foreground">{t("backup.name_hint")}</p>
                         </div>
+                        <BackupPartsSelector options={options} selected={selected} onSelectedChange={setSelected} />
                     </div>
                     <DialogFooter>
                         <Button type="submit" disabled={selected.length === 0} size="lg" className="w-full h-12 rounded-xl text-base">

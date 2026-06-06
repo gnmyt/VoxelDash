@@ -4,10 +4,13 @@ import de.gnm.voxeldash.api.entities.BackupPart;
 import org.apache.commons.io.FileUtils;
 
 import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.Objects;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
@@ -132,14 +135,20 @@ public class BackupHelper {
      * Creates a new backup
      *
      * @param modeSuffix The modes of the backup
+     * @param name       An optional user-provided name (may contain placeholders such as {date}/{time});
+     *                   may be <code>null</code> or empty for an unnamed backup
      * @param paths      The paths to back up
      * @throws IOException An exception that will be thrown if the backup could not be created
      */
-    public void createBackup(String modeSuffix, File... paths) throws IOException {
+    public void createBackup(String modeSuffix, String name, File... paths) throws IOException {
         if (isTempBackupCreated()) return;
 
-        String tempFileName = System.currentTimeMillis() + "-" + modeSuffix + "_tmp.zip";
-        File tempBackupFile = new File(backupFolder, tempFileName);
+        long timestamp = System.currentTimeMillis();
+        String resolvedName = resolvePlaceholders(name, timestamp);
+        String nameSuffix = resolvedName.isEmpty() ? "" : "-" + encodeName(resolvedName);
+        String baseName = timestamp + "-" + modeSuffix + nameSuffix;
+
+        File tempBackupFile = new File(backupFolder, baseName + "_tmp.zip");
 
         try (ZipOutputStream zipOutputStream = new ZipOutputStream(Files.newOutputStream(tempBackupFile.toPath()))) {
             for (File path : paths) {
@@ -153,8 +162,92 @@ public class BackupHelper {
             }
         }
 
-        File finalBackupFile = new File(backupFolder, System.currentTimeMillis() + "-" + modeSuffix + ".zip");
+        File finalBackupFile = new File(backupFolder, baseName + ".zip");
         Files.move(tempBackupFile.toPath(), finalBackupFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
+    }
+
+    /**
+     * Creates a backup from a schedule action's metadata.
+     * <p>
+     * The metadata format is <code>bit</code> or <code>bit|namePattern</code>, where the optional name
+     * pattern may contain placeholders (e.g. <code>{date}</code>, <code>{time}</code>) that are resolved
+     * at creation time.
+     *
+     * @param metadata The schedule action metadata
+     * @throws IOException An exception that will be thrown if the backup could not be created
+     */
+    public void createScheduledBackup(String metadata) throws IOException {
+        int backupBit = 0;
+        String namePattern = null;
+
+        if (metadata != null && !metadata.isEmpty()) {
+            String[] parts = metadata.split("\\|", 2);
+            try {
+                backupBit = Integer.parseInt(parts[0].trim());
+            } catch (NumberFormatException ignored) {
+            }
+            if (parts.length > 1) {
+                namePattern = parts[1];
+            }
+        }
+
+        createBackup(String.valueOf(backupBit), namePattern, getBackupDirectories(backupBit).toArray(new File[0]));
+    }
+
+    /**
+     * Resolves date/time placeholders in a backup name.
+     *
+     * @param name      The raw name (may be <code>null</code>)
+     * @param timestamp The reference timestamp used to resolve the placeholders
+     * @return the resolved name, or an empty string if no name was provided
+     */
+    private String resolvePlaceholders(String name, long timestamp) {
+        if (name == null || name.isEmpty()) return "";
+
+        Date date = new Date(timestamp);
+        name = name.replace("{datetime}", new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss").format(date));
+        name = name.replace("{date}", new SimpleDateFormat("yyyy-MM-dd").format(date));
+        name = name.replace("{time}", new SimpleDateFormat("HH-mm-ss").format(date));
+        name = name.replace("{year}", new SimpleDateFormat("yyyy").format(date));
+        name = name.replace("{month}", new SimpleDateFormat("MM").format(date));
+        name = name.replace("{day}", new SimpleDateFormat("dd").format(date));
+        name = name.replace("{hour}", new SimpleDateFormat("HH").format(date));
+        name = name.replace("{minute}", new SimpleDateFormat("mm").format(date));
+        return name.trim();
+    }
+
+    /**
+     * Encodes a backup name as a hex string so it can be stored safely in the file name
+     * (independent of the <code>-</code> separator and any OS-illegal characters).
+     *
+     * @param name The name to encode
+     * @return the hex-encoded name
+     */
+    public static String encodeName(String name) {
+        StringBuilder builder = new StringBuilder();
+        for (byte b : name.getBytes(StandardCharsets.UTF_8)) {
+            builder.append(String.format("%02x", b));
+        }
+        return builder.toString();
+    }
+
+    /**
+     * Decodes a hex-encoded backup name produced by {@link #encodeName(String)}.
+     *
+     * @param hex The hex-encoded name
+     * @return the decoded name, or an empty string if the input is not valid hex
+     */
+    public static String decodeName(String hex) {
+        if (hex == null || hex.isEmpty() || hex.length() % 2 != 0) return "";
+        try {
+            byte[] bytes = new byte[hex.length() / 2];
+            for (int i = 0; i < hex.length(); i += 2) {
+                bytes[i / 2] = (byte) Integer.parseInt(hex.substring(i, i + 2), 16);
+            }
+            return new String(bytes, StandardCharsets.UTF_8);
+        } catch (NumberFormatException e) {
+            return "";
+        }
     }
 
     /**

@@ -14,10 +14,10 @@ const Backups = () => {
     const [options, setOptions] = React.useState<BackupOption[]>([]);
     const [isCreating, setIsCreating] = React.useState(false);
 
-    const handleCreateBackup = async (backupMode: number) => {
+    const handleCreateBackup = async (backupMode: number, name: string) => {
         setIsCreating(true);
 
-        await postRequest("backups/create", {backupMode});
+        await postRequest("backups/create", {backupMode, backupName: name});
 
         await fetchBackups();
         setIsCreating(false);

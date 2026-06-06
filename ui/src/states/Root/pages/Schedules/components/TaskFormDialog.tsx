@@ -20,8 +20,10 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select";
-import { postRequest, putRequest } from "@/lib/RequestUtil";
+import { jsonRequest, postRequest, putRequest } from "@/lib/RequestUtil";
 import { toast } from "@/hooks/use-toast";
+import { BackupOption } from "@/types/backup";
+import BackupPartsSelector, { fromBackupBit, toBackupBit } from "@/states/Root/pages/Backups/components/BackupPartsSelector";
 
 interface TaskFormDialogProps {
     open: boolean;
@@ -39,26 +41,51 @@ const TaskFormDialog = ({ open, onOpenChange, scheduleId, actions, onSuccess, ta
     const [metadata, setMetadata] = React.useState(task?.metadata ?? "");
     const [isSubmitting, setIsSubmitting] = React.useState(false);
 
+    const [backupOptions, setBackupOptions] = React.useState<BackupOption[]>([]);
+    const [backupSelected, setBackupSelected] = React.useState<number[]>([]);
+    const [backupName, setBackupName] = React.useState("");
+
     const selectedAction = actions.find(a => a.id === selectedActionId);
+    const isBackup = selectedActionId === "backup";
+
+    const applyBackupMetadata = (raw: string) => {
+        const [bitPart, ...nameParts] = (raw || "").split("|");
+        const bit = parseInt(bitPart, 10);
+        setBackupSelected(isNaN(bit) ? [] : fromBackupBit(bit));
+        setBackupName(nameParts.join("|"));
+    };
 
     React.useEffect(() => {
         if (task) {
             setSelectedActionId(task.actionId);
             setMetadata(task.metadata || "");
+            if (task.actionId === "backup") applyBackupMetadata(task.metadata || "");
         } else if (actions.length > 0 && !selectedActionId) {
             setSelectedActionId(actions[0].id);
             setMetadata("");
         }
     }, [task, actions, open]);
 
+    React.useEffect(() => {
+        if (isBackup && backupOptions.length === 0) {
+            jsonRequest("backups/options").then((data) => setBackupOptions(data.options ?? []));
+        }
+    }, [isBackup]);
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setIsSubmitting(true);
         
         try {
+            let finalMetadata = selectedAction?.inputType !== "NONE" ? metadata : "";
+            if (isBackup) {
+                const trimmedName = backupName.trim();
+                finalMetadata = trimmedName ? `${toBackupBit(backupSelected)}|${trimmedName}` : `${toBackupBit(backupSelected)}`;
+            }
+
             const data = {
                 actionId: selectedActionId,
-                metadata: selectedAction?.inputType !== "NONE" ? metadata : "",
+                metadata: finalMetadata,
                 ...(isEdit && task ? { executionOrder: task.executionOrder } : {})
             };
             
@@ -72,10 +99,12 @@ const TaskFormDialog = ({ open, onOpenChange, scheduleId, actions, onSuccess, ta
             
             await onSuccess();
             onOpenChange(false);
-            
+
             if (!isEdit && actions.length > 0) {
                 setSelectedActionId(actions[0].id);
                 setMetadata("");
+                setBackupSelected([]);
+                setBackupName("");
             }
         } catch {
             toast({ 
@@ -93,9 +122,13 @@ const TaskFormDialog = ({ open, onOpenChange, scheduleId, actions, onSuccess, ta
         if (newAction?.inputType === "NONE") {
             setMetadata("");
         }
+        if (value === "backup") {
+            setBackupSelected([]);
+            setBackupName("");
+        }
     };
 
-    const needsInput = selectedAction && selectedAction.inputType !== "NONE";
+    const needsInput = selectedAction && selectedAction.inputType !== "NONE" && !isBackup;
     const isTextarea = selectedAction?.inputType === "TEXTAREA";
     const isNumber = selectedAction?.inputType === "NUMBER";
 
@@ -128,6 +161,26 @@ const TaskFormDialog = ({ open, onOpenChange, scheduleId, actions, onSuccess, ta
                             </Select>
                         </div>
                         
+                        {isBackup && (
+                            <>
+                                <div className="grid gap-2">
+                                    <Label>{t("backup.name_label")}</Label>
+                                    <Input
+                                        value={backupName}
+                                        onChange={(e) => setBackupName(e.target.value)}
+                                        placeholder={t("backup.name_placeholder")}
+                                        className="rounded-xl"
+                                    />
+                                    <p className="text-xs text-muted-foreground">{t("backup.name_hint")}</p>
+                                </div>
+                                <BackupPartsSelector
+                                    options={backupOptions}
+                                    selected={backupSelected}
+                                    onSelectedChange={setBackupSelected}
+                                />
+                            </>
+                        )}
+
                         {needsInput && selectedAction.inputTranslationKey && (
                             <div className="grid gap-2">
                                 <Label>{t(selectedAction.inputTranslationKey)}</Label>
@@ -154,7 +207,7 @@ const TaskFormDialog = ({ open, onOpenChange, scheduleId, actions, onSuccess, ta
                     <DialogFooter>
                         <Button 
                             type="submit" 
-                            disabled={isSubmitting || !selectedActionId} 
+                            disabled={isSubmitting || !selectedActionId || (isBackup && backupSelected.length === 0)}
                             size="lg" 
                             className="w-full h-12 rounded-xl text-base"
                         >
