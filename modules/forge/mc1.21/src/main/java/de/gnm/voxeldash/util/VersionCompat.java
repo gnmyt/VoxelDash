@@ -17,6 +17,14 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.players.UserBanList;
 import net.minecraft.server.players.UserBanListEntry;
 import net.minecraft.server.players.UserWhiteListEntry;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.inventory.PlayerEnderChestContainer;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import de.gnm.voxeldash.api.entities.players.InventoryItem;
+import de.gnm.voxeldash.api.entities.players.InventoryView;
 import net.minecraft.stats.Stats;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.level.GameType;
@@ -33,6 +41,9 @@ import java.util.Optional;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.jar.JarFile;
+import java.util.UUID;
+import java.util.function.Predicate;
+import java.util.Date;
 
 /**
  * {@link ForgeCompat} for the 1.20.2–1.21.x line (Mojang mappings, EventBus 5).
@@ -556,5 +567,188 @@ public class VersionCompat implements ForgeCompat {
         MinecraftServer s = server();
         if (s != null) return s.getWorldPath(LevelResource.DATAPACK_DIR).toFile();
         return new File(System.getProperty("user.dir"), "world/datapacks");
+    }
+
+    // ---------------------------------------------------------------- player deep-management (live)
+
+    @Override
+    public boolean inventorySupported() {
+        return true;
+    }
+
+    @Override
+    public boolean muteSupported() {
+        return true;
+    }
+
+    @Override
+    public void registerMuteCheck(Predicate<UUID> mutedCheck) {
+        net.minecraftforge.common.MinecraftForge.EVENT_BUS.addListener(
+                (net.minecraftforge.event.ServerChatEvent event) -> {
+                    if (event.getPlayer() != null && mutedCheck.test(event.getPlayer().getUUID())) {
+                        event.setCanceled(true);
+                    }
+                });
+    }
+
+    @Override
+    public InventoryView readInventory(UUID uuid) {
+        InventoryView view = new InventoryView("inventory", true);
+        runOnMainThread(() -> {
+            ServerPlayer p = playerByUuid(uuid);
+            if (p == null) return;
+            Inventory inv = p.getInventory();
+            for (int i = 0; i < inv.items.size(); i++) addItem(view, inv.items.get(i), i);
+            for (int i = 0; i < inv.armor.size(); i++) addItem(view, inv.armor.get(i), 100 + i);
+            for (int i = 0; i < inv.offhand.size(); i++) addItem(view, inv.offhand.get(i), -106);
+        });
+        return view;
+    }
+
+    @Override
+    public InventoryView readEnderChest(UUID uuid) {
+        InventoryView view = new InventoryView("enderchest", true);
+        runOnMainThread(() -> {
+            ServerPlayer p = playerByUuid(uuid);
+            if (p == null) return;
+            PlayerEnderChestContainer ender = p.getEnderChestInventory();
+            for (int i = 0; i < ender.getContainerSize(); i++) addItem(view, ender.getItem(i), i);
+        });
+        return view;
+    }
+
+    @Override
+    public void setSlot(UUID uuid, boolean enderChest, int slot, InventoryItem item) {
+        runOnMainThread(() -> {
+            ServerPlayer p = playerByUuid(uuid);
+            if (p == null) return;
+            ItemStack stack = fromDto(item);
+            if (enderChest) {
+                PlayerEnderChestContainer ender = p.getEnderChestInventory();
+                if (slot >= 0 && slot < ender.getContainerSize()) ender.setItem(slot, stack);
+            } else {
+                Inventory inv = p.getInventory();
+                if (slot >= 0 && slot < inv.items.size()) inv.items.set(slot, stack);
+                else if (slot >= 100 && slot <= 103) inv.armor.set(slot - 100, stack);
+                else if (slot == -106) inv.offhand.set(0, stack);
+            }
+            p.inventoryMenu.broadcastChanges();
+        });
+    }
+
+    @Override
+    public void giveItem(UUID uuid, String id, int count) {
+        runOnMainThread(() -> {
+            ServerPlayer p = playerByUuid(uuid);
+            if (p == null) return;
+            ItemStack stack = fromDto(makeDto(id, count));
+            if (!stack.isEmpty()) {
+                p.getInventory().add(stack);
+                p.inventoryMenu.broadcastChanges();
+            }
+        });
+    }
+
+    @Override
+    public void clearInventory(UUID uuid, boolean enderChest) {
+        runOnMainThread(() -> {
+            ServerPlayer p = playerByUuid(uuid);
+            if (p == null) return;
+            if (enderChest) p.getEnderChestInventory().clearContent();
+            else p.getInventory().clearContent();
+            p.inventoryMenu.broadcastChanges();
+        });
+    }
+
+    @Override
+    public void moveSlot(UUID uuid, boolean enderChest, int fromSlot, int toSlot) {
+        if (fromSlot == toSlot) return;
+        runOnMainThread(() -> {
+            ServerPlayer p = playerByUuid(uuid);
+            if (p == null) return;
+            if (enderChest) {
+                PlayerEnderChestContainer ender = p.getEnderChestInventory();
+                if (fromSlot < 0 || fromSlot >= ender.getContainerSize() || toSlot < 0 || toSlot >= ender.getContainerSize())
+                    return;
+                ItemStack from = ender.getItem(fromSlot).copy();
+                ItemStack to = ender.getItem(toSlot).copy();
+                ender.setItem(toSlot, from);
+                ender.setItem(fromSlot, to);
+            } else {
+                ItemStack from = readMainStack(p, fromSlot);
+                ItemStack to = readMainStack(p, toSlot);
+                writeMainStack(p, toSlot, from);
+                writeMainStack(p, fromSlot, to);
+            }
+            p.inventoryMenu.broadcastChanges();
+        });
+    }
+
+    private ItemStack readMainStack(ServerPlayer p, int slot) {
+        Inventory inv = p.getInventory();
+        if (slot >= 0 && slot < inv.items.size()) return inv.items.get(slot).copy();
+        if (slot >= 100 && slot <= 103) return inv.armor.get(slot - 100).copy();
+        if (slot == -106) return inv.offhand.get(0).copy();
+        return ItemStack.EMPTY;
+    }
+
+    private void writeMainStack(ServerPlayer p, int slot, ItemStack stack) {
+        Inventory inv = p.getInventory();
+        if (slot >= 0 && slot < inv.items.size()) inv.items.set(slot, stack);
+        else if (slot >= 100 && slot <= 103) inv.armor.set(slot - 100, stack);
+        else if (slot == -106) inv.offhand.set(0, stack);
+    }
+
+    @Override
+    public void tempBan(String playerName, String reason, long expiryMillis) {
+        runOnMainThread(() -> {
+            MinecraftServer s = server();
+            if (s == null) return;
+            GameProfile profile = s.getProfileCache().get(playerName).orElseGet(() -> new GameProfile(null, playerName));
+            s.getPlayerList().getBans().add(
+                    new UserBanListEntry(profile, null, "VoxelDash", new Date(expiryMillis), reason));
+            ServerPlayer player = s.getPlayerList().getPlayerByName(playerName);
+            if (player != null) player.connection.disconnect(Component.literal("You have been banned: " + reason));
+        });
+    }
+
+    private ServerPlayer playerByUuid(UUID uuid) {
+        MinecraftServer s = server();
+        return s != null ? s.getPlayerList().getPlayer(uuid) : null;
+    }
+
+    private void addItem(InventoryView view, ItemStack stack, int slot) {
+        InventoryItem item = toItem(stack, slot);
+        if (item != null) view.items.add(item);
+    }
+
+    private InventoryItem toItem(ItemStack stack, int slot) {
+        if (stack == null || stack.isEmpty()) return null;
+        InventoryItem item = new InventoryItem();
+        item.slot = slot;
+        item.id = BuiltInRegistries.ITEM.getKey(stack.getItem()).toString();
+        item.count = stack.getCount();
+        item.damage = stack.getDamageValue();
+        item.maxDamage = stack.getMaxDamage();
+        item.enchanted = stack.isEnchanted();
+        return item;
+    }
+
+    private InventoryItem makeDto(String id, int count) {
+        InventoryItem dto = new InventoryItem();
+        dto.id = id;
+        dto.count = count;
+        return dto;
+    }
+
+    private ItemStack fromDto(InventoryItem dto) {
+        if (dto == null || dto.id == null) return ItemStack.EMPTY;
+        ResourceLocation rl = ResourceLocation.tryParse(dto.id);
+        if (rl == null) return ItemStack.EMPTY;
+        Item item = BuiltInRegistries.ITEM.get(rl);
+        if (item == null) return ItemStack.EMPTY;
+        ItemStack stack = new ItemStack(item, Math.max(1, dto.count));
+        if (dto.damage > 0) stack.setDamageValue(dto.damage);
+        return stack;
     }
 }

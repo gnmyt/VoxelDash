@@ -34,6 +34,7 @@ sourceSets {
 
 repositories {
     mavenLocal()
+    maven { url 'https://jitpack.io' }
     mavenCentral()
 }
 
@@ -49,6 +50,7 @@ configurations {
 }
 
 dependencies {
+    shade "com.github.Querz:NBT:6.1"
     shade('de.gnm:voxeldash-api:' + project.voxeldash_version) {
         exclude group: 'com.google.code.gson'
     }
@@ -107,6 +109,7 @@ shadowJar {
     relocate 'org.reflections', 'de.gnm.voxeldash.libs.reflections'
     relocate 'org.mindrot', 'de.gnm.voxeldash.libs.mindrot'
     relocate 'org.yaml.snakeyaml', 'de.gnm.voxeldash.libs.snakeyaml'
+    relocate 'net.querz', 'de.gnm.voxeldash.libs.querz'
     relocate 'org.slf4j', 'de.gnm.voxeldash.libs.slf4j'
 }
 
