@@ -154,7 +154,7 @@ public class VoxelDashLoader {
      * (see {@link #registerRoutes()}).
      */
     private static final List<Class<? extends BaseRoute>> ROUTES = Arrays.asList(
-            BackupRouter.class, FileRouter.class, FolderRouter.class, InfoRouter.class,
+            BackupRouter.class, FileRouter.class, FolderRouter.class, GameRuleRouter.class, InfoRouter.class,
             MotdRouter.class, PingRouter.class, PlayerRouter.class, ProfilingRouter.class, PropertyRouter.class, QuickActionRouter.class,
             ResourceRouter.class, StoreRouter.class, ScheduleRouter.class, SSHRouter.class,
             SessionRouter.class, UserRouter.class, WidgetRouter.class, WorldRouter.class

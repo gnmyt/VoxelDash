@@ -3,6 +3,7 @@ import {
     CalendarIcon,
     ChatCircleTextIcon,
     FolderOpenIcon,
+    GameControllerIcon,
     GaugeIcon,
     GearSixIcon,
     GlobeHemisphereWestIcon,
@@ -29,6 +30,7 @@ import Schedules from "@/states/Root/pages/Schedules/Schedules.tsx";
 import Worlds from "@/states/Root/pages/Worlds/Worlds.tsx";
 import Motd from "@/states/Root/pages/Motd/Motd.tsx";
 import Profiling from "@/states/Root/pages/Profiling/Profiling.tsx";
+import Gamerules from "@/states/Root/pages/Gamerules/Gamerules.tsx";
 
 export const getResourceIcon = (typeIdentifier: string): Icon => {
     switch (typeIdentifier) {
@@ -120,6 +122,13 @@ export const sidebar = [
                 icon: HardDrivesIcon,
                 requiredFeatures: ["Properties"],
                 element: <ServerSettings />
+            },
+            {
+                path: "/settings/gamerules",
+                name: () => t("nav.settings.gamerules"),
+                icon: GameControllerIcon,
+                requiredFeatures: ["GameRules"],
+                element: <Gamerules />
             },
             {
                 path: "/settings/ssh",

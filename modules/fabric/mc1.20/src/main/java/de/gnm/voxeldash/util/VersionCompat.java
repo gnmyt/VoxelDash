@@ -9,6 +9,7 @@ import de.gnm.voxeldash.api.entities.World;
 import net.minecraft.server.BannedPlayerEntry;
 import net.minecraft.server.BannedPlayerList;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.world.GameRules;
 import net.minecraft.server.OperatorList;
 import net.minecraft.server.Whitelist;
 import net.minecraft.server.WhitelistEntry;
@@ -448,6 +449,29 @@ public class VersionCompat implements FabricCompat {
                 world.getLevelProperties().isHardcore(),
                 "NORMAL"
         );
+    }
+
+    @Override
+    public List<GameRuleEntry> gameRules() {
+        List<GameRuleEntry> out = new ArrayList<>();
+        MinecraftServer s = server();
+        if (s == null) return out;
+        try {
+            final GameRules rules = s.getGameRules();
+            rules.accept(new GameRules.Visitor() {
+                @Override
+                public void visitBoolean(GameRules.Key<GameRules.BooleanRule> key, GameRules.Type<GameRules.BooleanRule> type) {
+                    out.add(new GameRuleEntry(key.getName(), "BOOLEAN", String.valueOf(rules.getBoolean(key))));
+                }
+
+                @Override
+                public void visitInt(GameRules.Key<GameRules.IntRule> key, GameRules.Type<GameRules.IntRule> type) {
+                    out.add(new GameRuleEntry(key.getName(), "INTEGER", String.valueOf(rules.getInt(key))));
+                }
+            });
+        } catch (Throwable ignored) {
+        }
+        return out;
     }
 
     @Override

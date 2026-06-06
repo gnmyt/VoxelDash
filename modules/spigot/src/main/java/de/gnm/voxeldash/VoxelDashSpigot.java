@@ -6,10 +6,7 @@ import de.gnm.voxeldash.api.entities.Feature;
 import de.gnm.voxeldash.api.entities.schedule.ActionInputType;
 import de.gnm.voxeldash.api.entities.schedule.ScheduleAction;
 import de.gnm.voxeldash.api.helper.BackupHelper;
-import de.gnm.voxeldash.api.pipes.MotdPipe;
-import de.gnm.voxeldash.api.pipes.ProfilingPipe;
-import de.gnm.voxeldash.api.pipes.QuickActionPipe;
-import de.gnm.voxeldash.api.pipes.ServerInfoPipe;
+import de.gnm.voxeldash.api.pipes.*;
 import de.gnm.voxeldash.api.pipes.players.BanPipe;
 import de.gnm.voxeldash.api.pipes.players.OnlinePlayerPipe;
 import de.gnm.voxeldash.api.pipes.players.OperatorPipe;
@@ -111,6 +108,7 @@ public class VoxelDashSpigot extends JavaPlugin {
         getServer().getPluginManager().registerEvents(motdPipe, this);
 
         loader.registerPipe(ProfilingPipe.class, new ProfilingPipeImpl(this));
+        loader.registerPipe(GameRulePipe.class, new GameRulePipeImpl());
     }
 
     /**
@@ -207,7 +205,8 @@ public class VoxelDashSpigot extends JavaPlugin {
                 Feature.Worlds,
                 Feature.Resources,
                 Feature.Motd,
-                Feature.Profiling
+                Feature.Profiling,
+                Feature.GameRules
         );
 
         loader.registerBackupParts(BackupPart.WORLDS, BackupPart.PLUGINS, BackupPart.CONFIGS, BackupPart.LOGS);

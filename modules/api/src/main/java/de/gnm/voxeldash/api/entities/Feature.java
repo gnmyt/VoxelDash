@@ -13,7 +13,8 @@ public enum Feature {
     Worlds(256),
     Resources(512),
     Motd(1024),
-    Profiling(2048);
+    Profiling(2048),
+    GameRules(4096);
 
     private final int permissionBit;
 

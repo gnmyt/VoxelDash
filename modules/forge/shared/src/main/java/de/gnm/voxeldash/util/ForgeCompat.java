@@ -60,6 +60,33 @@ public interface ForgeCompat {
         }
     }
 
+    /**
+     * Enumerates the server's game rules with their current values. Implemented
+     * per version using that line's mappings; lines that cannot enumerate them
+     * fall back to this empty default (setting still works through the
+     * {@code /gamerule} command).
+     *
+     * @return the current game rules (never {@code null})
+     */
+    default List<GameRuleEntry> gameRules() {
+        return new ArrayList<>();
+    }
+
+    /**
+     * Version-agnostic game-rule descriptor extracted from the live server.
+     */
+    final class GameRuleEntry {
+        public final String key;
+        public final String type;
+        public final String value;
+
+        public GameRuleEntry(String key, String type, String value) {
+            this.key = key;
+            this.type = type;
+            this.value = value;
+        }
+    }
+
     void runOnMainThread(Runnable runnable);
 
     void runOnMainThreadAsync(Runnable runnable);

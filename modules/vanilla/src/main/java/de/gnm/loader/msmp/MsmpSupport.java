@@ -3,13 +3,7 @@ package de.gnm.loader.msmp;
 import com.fasterxml.jackson.databind.JsonNode;
 
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 public final class MsmpSupport {
 
@@ -27,6 +21,8 @@ public final class MsmpSupport {
     public static final String SERVER_STOP = "minecraft:server/stop";
     public static final String USE_ALLOWLIST = "minecraft:serversettings/use_allowlist";
     public static final String USE_ALLOWLIST_SET = "minecraft:serversettings/use_allowlist/set";
+    public static final String GAMERULES = "minecraft:gamerules";
+    public static final String GAMERULES_UPDATE = "minecraft:gamerules/update";
 
     private MsmpSupport() {
     }

@@ -15,6 +15,7 @@ import de.gnm.voxeldash.api.entities.schedule.ScheduleAction;
 import de.gnm.voxeldash.api.event.console.ConsoleMessageReceivedEvent;
 import de.gnm.voxeldash.api.helper.BackupHelper;
 import de.gnm.voxeldash.api.helper.PropertyHelper;
+import de.gnm.voxeldash.api.pipes.GameRulePipe;
 import de.gnm.voxeldash.api.pipes.MotdPipe;
 import de.gnm.voxeldash.api.pipes.QuickActionPipe;
 import de.gnm.voxeldash.api.pipes.ServerInfoPipe;
@@ -124,6 +125,9 @@ public class VoxelDashVanilla {
         loader.registerPipe(WorldPipe.class, new WorldPipeImpl(outputStream, SERVER_ROOT));
         loader.registerPipe(ResourcePipe.class, new ResourcePipeImpl(outputStream, SERVER_ROOT));
         loader.registerPipe(MotdPipe.class, new MotdPipeImpl());
+
+        GameRulePipeImpl gameRuleFallback = new GameRulePipeImpl(outputStream, SERVER_ROOT);
+        loader.registerPipe(GameRulePipe.class, new MsmpGameRulePipe(msmpClient, gameRuleFallback));
     }
 
     /**
@@ -140,7 +144,8 @@ public class VoxelDashVanilla {
                 Feature.Players,
                 Feature.Worlds,
                 Feature.Resources,
-                Feature.Motd
+                Feature.Motd,
+                Feature.GameRules
         );
 
         loader.registerBackupParts(BackupPart.WORLDS, BackupPart.CONFIGS, BackupPart.LOGS);

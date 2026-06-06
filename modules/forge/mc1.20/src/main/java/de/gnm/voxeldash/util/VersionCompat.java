@@ -11,6 +11,7 @@ import de.gnm.voxeldash.api.entities.World;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.world.level.GameRules;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.players.UserBanList;
@@ -451,6 +452,29 @@ public class VersionCompat implements ForgeCompat {
                 level.getLevelData().isHardcore(),
                 "NORMAL"
         );
+    }
+
+    @Override
+    public List<GameRuleEntry> gameRules() {
+        List<GameRuleEntry> out = new ArrayList<>();
+        MinecraftServer s = server();
+        if (s == null) return out;
+        try {
+            final GameRules rules = s.getGameRules();
+            GameRules.visitGameRuleTypes(new GameRules.GameRuleTypeVisitor() {
+                @Override
+                public void visitBoolean(GameRules.Key<GameRules.BooleanValue> key, GameRules.Type<GameRules.BooleanValue> type) {
+                    out.add(new GameRuleEntry(key.getId(), "BOOLEAN", String.valueOf(rules.getBoolean(key))));
+                }
+
+                @Override
+                public void visitInteger(GameRules.Key<GameRules.IntegerValue> key, GameRules.Type<GameRules.IntegerValue> type) {
+                    out.add(new GameRuleEntry(key.getId(), "INTEGER", String.valueOf(rules.getInt(key))));
+                }
+            });
+        } catch (Throwable ignored) {
+        }
+        return out;
     }
 
     @Override

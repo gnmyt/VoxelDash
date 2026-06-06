@@ -8,6 +8,7 @@ import de.gnm.voxeldash.api.entities.schedule.ScheduleAction;
 import de.gnm.voxeldash.api.helper.BackupHelper;
 import de.gnm.voxeldash.api.pipes.MotdPipe;
 import de.gnm.voxeldash.api.pipes.ProfilingPipe;
+import de.gnm.voxeldash.api.pipes.GameRulePipe;
 import de.gnm.voxeldash.api.pipes.QuickActionPipe;
 import de.gnm.voxeldash.api.pipes.ServerInfoPipe;
 import de.gnm.voxeldash.api.pipes.players.BanPipe;
@@ -113,6 +114,7 @@ public class VoxelDashMod {
         loader.registerPipe(ResourcePipe.class, new ResourcePipeImpl());
         loader.registerPipe(MotdPipe.class, new MotdPipeImpl());
         loader.registerPipe(ProfilingPipe.class, new ProfilingPipeImpl());
+        loader.registerPipe(GameRulePipe.class, new GameRulePipeImpl());
     }
 
     private void registerActions() {
@@ -159,7 +161,7 @@ public class VoxelDashMod {
 
     private void registerFeatures() {
         loader.registerFeatures(Feature.FileManager, Feature.Properties, Feature.SSH, Feature.Backups,
-                Feature.Console, Feature.Players, Feature.Schedules, Feature.Worlds, Feature.Resources, Feature.Motd, Feature.Profiling);
+                Feature.Console, Feature.Players, Feature.Schedules, Feature.Worlds, Feature.Resources, Feature.Motd, Feature.Profiling, Feature.GameRules);
 
         loader.registerBackupParts(BackupPart.WORLDS, BackupPart.MODS, BackupPart.CONFIGS, BackupPart.LOGS);
     }

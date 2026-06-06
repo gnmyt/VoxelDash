@@ -51,7 +51,8 @@
       "base": "Settings",
       "ssh": "SSH/SFTP Access",
       "server": "Server",
-      "users": "Users"
+      "users": "Users",
+      "gamerules": "Game Rules"
     },
     "profiling": "Profiling"
   },
@@ -735,6 +736,22 @@
     "server-ip": "IP address for server to listen on",
     "prevent-proxy-connections": "Prevents connections from proxies",
     "hide-online-players": "Hides the number of online players in the server list"
+  },
+  "gamerules": {
+    "title": "Game Rules",
+    "subtitle": "Tweak the rules of the game. Changes apply to the running server.",
+    "search": "Search game rules...",
+    "enabled": "Enabled",
+    "disabled": "Disabled",
+    "modified": "Changed",
+    "reset_default": "Reset to default",
+    "wiki": "View on the Minecraft Wiki",
+    "wiki_learn": "Wiki",
+    "updated": "{{rule}} updated",
+    "none_found": "No game rules found",
+    "none_found_hint": "This server did not report any game rules. You can still change them through the console.",
+    "no_matches": "No matching game rules",
+    "no_matches_hint": "Try a different search term."
   },
   "profiling": {
     "title": "Profiling",

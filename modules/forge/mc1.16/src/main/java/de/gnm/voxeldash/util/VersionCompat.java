@@ -10,6 +10,7 @@ import de.gnm.voxeldash.api.entities.OnlinePlayer;
 import de.gnm.voxeldash.api.entities.World;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.world.GameRules;
 import net.minecraft.server.management.BanList;
 import net.minecraft.server.management.ProfileBanEntry;
 import net.minecraft.server.management.WhitelistEntry;
@@ -464,6 +465,29 @@ public class VersionCompat implements ForgeCompat {
                 level.getLevelData().isHardcore(),
                 "NORMAL"
         );
+    }
+
+    @Override
+    public List<GameRuleEntry> gameRules() {
+        List<GameRuleEntry> out = new ArrayList<>();
+        MinecraftServer s = server();
+        if (s == null) return out;
+        try {
+            final GameRules rules = s.getGameRules();
+            GameRules.visitGameRuleTypes(new GameRules.IRuleEntryVisitor() {
+                @Override
+                public void visitBoolean(GameRules.RuleKey<GameRules.BooleanValue> key, GameRules.RuleType<GameRules.BooleanValue> type) {
+                    out.add(new GameRuleEntry(key.getId(), "BOOLEAN", String.valueOf(rules.getBoolean(key))));
+                }
+
+                @Override
+                public void visitInteger(GameRules.RuleKey<GameRules.IntegerValue> key, GameRules.RuleType<GameRules.IntegerValue> type) {
+                    out.add(new GameRuleEntry(key.getId(), "INTEGER", String.valueOf(rules.getInt(key))));
+                }
+            });
+        } catch (Throwable ignored) {
+        }
+        return out;
     }
 
     @Override
