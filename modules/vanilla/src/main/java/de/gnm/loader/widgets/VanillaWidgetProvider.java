@@ -32,6 +32,16 @@ public class VanillaWidgetProvider {
         dataCollector.start(10);
 
         widgetRegistry.registerWidget(new Widget(
+                "memory_usage",
+                "overview.widgets.memory_usage",
+                WidgetType.AREA_CHART,
+                dataCollector::getMemoryData,
+                WidgetSize.CHART,
+                "hsl(var(--chart-1))",
+                "MB"
+        ));
+
+        widgetRegistry.registerWidget(new Widget(
                 "server_info",
                 "overview.widgets.server_info",
                 WidgetType.INFO_CARD,
@@ -56,6 +66,22 @@ public class VanillaWidgetProvider {
                     Map<String, Object> stats = new LinkedHashMap<>();
                     stats.put("value", dataCollector.getCurrentPlayerCount());
                     stats.put("max", dataCollector.getMaxPlayers());
+                    return stats;
+                }
+        ));
+
+        widgetRegistry.registerWidget(new Widget(
+                "memory_stat",
+                "overview.widgets.memory_stat",
+                WidgetType.PROGRESS,
+                WidgetSize.INFO,
+                "hsl(var(--muted-foreground))",
+                () -> {
+                    Map<String, Object> stats = new LinkedHashMap<>();
+                    stats.put("used", dataCollector.getCurrentMemoryUsage());
+                    stats.put("max", dataCollector.getMaxMemory());
+                    stats.put("allocated", dataCollector.getAllocatedMemory());
+                    stats.put("percentage", dataCollector.getMemoryPercentage());
                     return stats;
                 }
         ));

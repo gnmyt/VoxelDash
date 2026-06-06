@@ -8,6 +8,7 @@ import net.querz.nbt.tag.CompoundTag;
 
 import java.io.File;
 import java.lang.management.ManagementFactory;
+import java.lang.management.MemoryMXBean;
 import java.lang.management.OperatingSystemMXBean;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -20,6 +21,7 @@ public class VanillaDataCollector {
 
     private final Deque<WidgetDataPoint> playerCountData = new ConcurrentLinkedDeque<>();
     private final Deque<WidgetDataPoint> cpuData = new ConcurrentLinkedDeque<>();
+    private final Deque<WidgetDataPoint> memoryData = new ConcurrentLinkedDeque<>();
 
     private final PlayerTracker playerTracker;
     private final File serverRoot;
@@ -68,6 +70,8 @@ public class VanillaDataCollector {
 
         double cpuUsage = getCpuUsage();
         addDataPoint(cpuData, new WidgetDataPoint(timestamp, timeLabel, cpuUsage));
+
+        addDataPoint(memoryData, new WidgetDataPoint(timestamp, timeLabel, getCurrentMemoryUsage()));
     }
 
     /**
@@ -117,6 +121,47 @@ public class VanillaDataCollector {
      */
     public List<WidgetDataPoint> getCpuData() {
         return new ArrayList<>(cpuData);
+    }
+
+    /**
+     * Gets memory usage data points
+     */
+    public List<WidgetDataPoint> getMemoryData() {
+        return new ArrayList<>(memoryData);
+    }
+
+    /**
+     * Gets current heap memory usage in MB
+     */
+    public long getCurrentMemoryUsage() {
+        MemoryMXBean memoryBean = ManagementFactory.getMemoryMXBean();
+        return memoryBean.getHeapMemoryUsage().getUsed() / (1024 * 1024);
+    }
+
+    /**
+     * Gets maximum heap memory in MB
+     */
+    public long getMaxMemory() {
+        MemoryMXBean memoryBean = ManagementFactory.getMemoryMXBean();
+        return memoryBean.getHeapMemoryUsage().getMax() / (1024 * 1024);
+    }
+
+    /**
+     * Gets allocated (committed) heap memory in MB
+     */
+    public long getAllocatedMemory() {
+        MemoryMXBean memoryBean = ManagementFactory.getMemoryMXBean();
+        return memoryBean.getHeapMemoryUsage().getCommitted() / (1024 * 1024);
+    }
+
+    /**
+     * Gets heap memory usage as a percentage
+     */
+    public double getMemoryPercentage() {
+        MemoryMXBean memoryBean = ManagementFactory.getMemoryMXBean();
+        long used = memoryBean.getHeapMemoryUsage().getUsed();
+        long max = memoryBean.getHeapMemoryUsage().getMax();
+        return (double) used / max * 100;
     }
 
     /**
