@@ -62,8 +62,7 @@ public class SetupHandler {
         try {
             AccountController accounts = loader.getController(AccountController.class);
 
-            boolean firstAccount = !accounts.hasAnyAccounts();
-            if (!firstAccount && !isOperator(playerName)) {
+            if (!isOperator(playerName)) {
                 tell(playerName, "You must be a server operator to set up a VoxelDash account.", "red");
                 return;
             }
