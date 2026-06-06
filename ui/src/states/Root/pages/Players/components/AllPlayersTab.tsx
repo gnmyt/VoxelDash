@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useDeferredValue, useEffect, useMemo, useRef, useState } from "react";
 import { t } from "i18next";
 import { jsonRequest } from "@/lib/RequestUtil";
 import { OfflinePlayer, OnlinePlayer, PlayerCapabilities } from "@/types/player";
@@ -13,18 +13,47 @@ interface AllPlayersTabProps {
     worlds: World[];
 }
 
+const PAGE_SIZE = 60;
+const collator = new Intl.Collator(undefined, { sensitivity: "base" });
+
 const AllPlayersTab = ({ onlinePlayers, capabilities, worlds }: AllPlayersTabProps) => {
     const [players, setPlayers] = useState<OfflinePlayer[]>([]);
     const [query, setQuery] = useState("");
+    const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
+    const sentinelRef = useRef<HTMLDivElement | null>(null);
 
     useEffect(() => {
         jsonRequest("players/all").then((d) => setPlayers(d.players || [])).catch(() => {});
     }, []);
 
-    const onlineUuids = new Set(onlinePlayers.map((p) => p.uuid));
-    const filtered = players
-        .filter((p) => p.name.toLowerCase().includes(query.toLowerCase()))
-        .sort((a, b) => a.name.localeCompare(b.name));
+    const deferredQuery = useDeferredValue(query);
+    const onlineUuids = useMemo(() => new Set(onlinePlayers.map((p) => p.uuid)), [onlinePlayers]);
+    const filtered = useMemo(() => {
+        const q = deferredQuery.toLowerCase();
+        return players
+            .filter((p) => p.name.toLowerCase().includes(q))
+            .sort((a, b) => collator.compare(a.name, b.name));
+    }, [players, deferredQuery]);
+
+    useEffect(() => {
+        setVisibleCount(PAGE_SIZE);
+    }, [deferredQuery, players]);
+
+    const visible = filtered.slice(0, visibleCount);
+    const hasMore = visibleCount < filtered.length;
+
+    useEffect(() => {
+        if (!hasMore) return;
+        const node = sentinelRef.current;
+        if (!node) return;
+        const observer = new IntersectionObserver((entries) => {
+            if (entries.some((e) => e.isIntersecting)) {
+                setVisibleCount((c) => c + PAGE_SIZE);
+            }
+        });
+        observer.observe(node);
+        return () => observer.disconnect();
+    }, [hasMore, filtered.length]);
 
     if (players.length === 0) {
         return (
@@ -46,11 +75,11 @@ const AllPlayersTab = ({ onlinePlayers, capabilities, worlds }: AllPlayersTabPro
             </div>
 
             <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
-                {filtered.map((p) => {
+                {visible.map((p) => {
                     const isOnline = onlineUuids.has(p.uuid);
                     return (
                         <div key={p.uuid} className="flex items-center gap-3 rounded-xl border bg-card p-3">
-                            <img src={`https://mc-heads.net/avatar/${p.uuid}/32`} alt={p.name} className="h-9 w-9 rounded" />
+                            <img src={`https://mc-heads.net/avatar/${p.uuid}/32`} alt={p.name} loading="lazy" decoding="async" className="h-9 w-9 rounded" />
                             <div className="min-w-0 flex-1">
                                 <div className="font-medium truncate flex items-center gap-2">
                                     {p.name}
@@ -67,6 +96,8 @@ const AllPlayersTab = ({ onlinePlayers, capabilities, worlds }: AllPlayersTabPro
                     );
                 })}
             </div>
+
+            {hasMore && <div ref={sentinelRef} className="h-8" aria-hidden="true" />}
         </div>
     );
 };
