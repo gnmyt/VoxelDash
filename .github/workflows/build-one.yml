@@ -1,0 +1,87 @@
+name: Build VoxelDash One
+
+on:
+  workflow_call:
+    inputs:
+      version:
+        description: "Release version to stamp into the build. Empty in CI."
+        type: string
+        required: false
+        default: ""
+      release:
+        description: "When true, stamp the version and package/upload the bundle."
+        type: boolean
+        required: false
+        default: false
+
+jobs:
+  build:
+    name: ${{ inputs.release && 'Build' || 'Compile' }} One (${{ matrix.target.id }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        target:
+          - { id: linux-x64, bun: bun-linux-x64, bin: voxeldash-one, archive: tar.gz }
+          - { id: windows-x64, bun: bun-windows-x64, bin: voxeldash-one.exe, archive: zip }
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: "1.3.13"
+
+      - name: Set up pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+          cache-dependency-path: ui/pnpm-lock.yaml
+
+      - name: Stamp release version
+        if: inputs.release
+        run: bash .github/scripts/set-version.sh "${{ inputs.version }}"
+
+      - name: Build web UI
+        working-directory: ui
+        run: |
+          pnpm install --frozen-lockfile
+          pnpm run build
+
+      - name: Compile single-file executable (${{ matrix.target.id }})
+        working-directory: one
+        run: |
+          bun install --frozen-lockfile
+          bun build src/index.js --compile --minify --target=${{ matrix.target.bun }} --outfile ${{ matrix.target.bin }}
+
+      - name: Package release bundle
+        if: inputs.release
+        run: |
+          set -euo pipefail
+          VERSION="${{ inputs.version }}"
+          PKG="voxeldash-one-${VERSION}-${{ matrix.target.id }}"
+          mkdir -p "stage/${PKG}/ui"
+          cp "one/${{ matrix.target.bin }}" "stage/${PKG}/${{ matrix.target.bin }}"
+          cp -r ui/dist "stage/${PKG}/ui/dist"
+          mkdir -p dist
+          if [ "${{ matrix.target.archive }}" = "zip" ]; then
+            (cd stage && zip -qr "../dist/${PKG}.zip" "${PKG}")
+          else
+            tar -C stage -czf "dist/${PKG}.tar.gz" "${PKG}"
+          fi
+
+      - name: Upload artifact
+        if: inputs.release
+        uses: actions/upload-artifact@v4
+        with:
+          name: dist-one-${{ matrix.target.id }}
+          path: dist/*
+          if-no-files-found: error
+          retention-days: 1

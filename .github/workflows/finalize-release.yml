@@ -1,0 +1,84 @@
+name: Finalize Release
+
+on:
+  workflow_call:
+    inputs:
+      version:
+        description: "Release version."
+        type: string
+        required: true
+      prerelease:
+        description: "Whether this is a prerelease."
+        type: string
+        required: true
+    outputs:
+      changelog:
+        description: "The generated release notes body."
+        value: ${{ jobs.publish.outputs.changelog }}
+
+permissions:
+  contents: write
+
+jobs:
+  publish:
+    name: Publish Release
+    runs-on: ubuntu-latest
+    outputs:
+      changelog: ${{ steps.notes.outputs.changelog }}
+    steps:
+      - name: Checkout default branch
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.repository.default_branch }}
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Stamp release version
+        run: bash .github/scripts/set-version.sh "${{ inputs.version }}"
+
+      - name: Commit & push version bump
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          if git diff-index --quiet HEAD; then
+            echo "No version changes to commit"
+          else
+            git commit -m "chore: bump version to ${{ inputs.version }} [skip ci]"
+            git push origin "HEAD:${{ github.event.repository.default_branch }}"
+          fi
+
+      - name: Download build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: dist
+          pattern: dist-*
+          merge-multiple: true
+
+      - name: Publish GitHub release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ github.ref_name }}
+          name: VoxelDash ${{ inputs.version }}
+          draft: false
+          prerelease: ${{ inputs.prerelease }}
+          generate_release_notes: true
+          files: |
+            dist/*.jar
+            dist/voxeldash-one-*
+            dist/*.deb
+            dist/*.msi
+            dist/*-setup.exe
+
+      - name: Capture changelog
+        id: notes
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          BODY="$(gh release view "${{ github.ref_name }}" --json body -q .body 2>/dev/null)"
+          [[ -n "$BODY" ]] || BODY="Release ${{ inputs.version }}"
+          {
+            echo "changelog<<__EOF__"
+            echo "$BODY"
+            echo "__EOF__"
+          } >> "$GITHUB_OUTPUT"

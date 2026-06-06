@@ -1,0 +1,23 @@
+name: CI
+
+on:
+  push:
+    branches: ["**"]
+  pull_request:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  modules:
+    name: Modules
+    uses: ./.github/workflows/build-modules.yml
+
+  dashboard:
+    name: Dashboard
+    uses: ./.github/workflows/build-ui.yml
+
+  one:
+    name: VoxelDash One
+    uses: ./.github/workflows/build-one.yml

@@ -1,0 +1,221 @@
+name: Build Modules
+
+on:
+  workflow_call:
+    inputs:
+      version:
+        description: "Release version to stamp into the build. Empty in CI."
+        type: string
+        required: false
+        default: ""
+      release:
+        description: "When true, stamp the version and stage/upload the release jars."
+        type: boolean
+        required: false
+        default: false
+
+jobs:
+  build:
+    name: ${{ inputs.release && 'Build' || 'Compile' }} ${{ matrix.module }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - module: spigot
+            path: spigot
+            tool: maven
+            webui: true
+            java: "21"
+          - module: bungeecord
+            path: bungeecord
+            tool: maven
+            webui: true
+            java: "21"
+          - module: vanilla
+            path: vanilla
+            tool: maven
+            webui: true
+            java: "21"
+          - module: fabric26
+            path: fabric/mc26
+            tool: gradle
+            webui: true
+            java: "25"
+            loom: true
+          - module: fabric
+            path: fabric/mc1.21
+            tool: gradle
+            webui: true
+            java: "21"
+            loom: true
+          - module: fabric20
+            path: fabric/mc1.20
+            tool: gradle
+            webui: true
+            java: "17"
+            loom: true
+          - module: fabric16
+            path: fabric/mc1.16
+            tool: gradle
+            webui: true
+            java: "8"
+            loom: true
+          - module: fabric14
+            path: fabric/mc1.14
+            tool: gradle
+            webui: true
+            java: "8"
+            loom: true
+          - module: fabric12
+            path: fabric/mc1.12
+            tool: gradle
+            webui: true
+            java: "8"
+            loom: true
+          - module: fabric8
+            path: fabric/mc1.8
+            tool: gradle
+            webui: true
+            java: "8"
+            loom: true
+          - module: forge8
+            path: forge/mc1.8
+            tool: gradle
+            webui: true
+            java: "8"
+            legacyGradle: true
+          - module: forge12
+            path: forge/mc1.12
+            tool: gradle
+            webui: true
+            java: "8"
+            legacyGradle: true
+          - module: forge16
+            path: forge/mc1.16
+            tool: gradle
+            webui: true
+            java: "8"
+          - module: forge20
+            path: forge/mc1.20
+            tool: gradle
+            webui: true
+            java: "17"
+          - module: forge
+            path: forge/mc1.21
+            tool: gradle
+            webui: true
+            java: "21"
+          - module: forge26
+            path: forge/mc26
+            tool: gradle
+            webui: true
+            java: "25"
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up JDKs
+        uses: actions/setup-java@v4
+        with:
+          java-version: |
+            ${{ matrix.java }}
+            21
+          distribution: temurin
+          cache: maven
+
+      - name: Purge corrupt jars from Maven cache
+        run: |
+          find ~/.m2/repository -name '*.jar' -print0 \
+            | while IFS= read -r -d '' j; do
+                unzip -tqq "$j" >/dev/null 2>&1 \
+                  || { echo "::warning::Removing corrupt jar $j"; rm -f "$j"; }
+              done
+
+      - name: Set up pnpm
+        if: matrix.webui
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
+      - name: Set up Node.js
+        if: matrix.webui
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+          cache-dependency-path: ui/pnpm-lock.yaml
+
+      - name: Set up Gradle
+        if: matrix.tool == 'gradle' && !matrix.legacyGradle
+        uses: gradle/actions/setup-gradle@v4
+
+      - name: Stamp release version
+        if: inputs.release
+        run: bash .github/scripts/set-version.sh "${{ inputs.version }}"
+
+      - name: Install voxeldash-api into local Maven repo
+        run: mvn -B -ntp -C -f modules/api/pom.xml install -DskipTests
+
+      - name: Build module (Maven)
+        if: matrix.tool == 'maven'
+        run: |
+          for attempt in 1 2 3; do
+            if mvn -B -ntp -C -U -f modules/${{ matrix.path }}/pom.xml package -DskipTests; then
+              exit 0
+            fi
+            echo "::warning::Maven build attempt $attempt failed; purging unreadable jars and retrying"
+            find ~/.m2/repository -name '*.jar' -print0 \
+              | while IFS= read -r -d '' j; do
+                  unzip -tqq "$j" >/dev/null 2>&1 || rm -f "$j"
+                done
+          done
+          exit 1
+
+      - name: Build module (Gradle)
+        if: matrix.tool == 'gradle'
+        working-directory: modules/${{ matrix.path }}
+        run: |
+          chmod +x ./gradlew
+          if [ "${{ matrix.loom }}" = "true" ]; then
+            if [ "${{ matrix.java }}" = "25" ]; then
+              export JAVA_HOME="${JAVA_HOME_25_X64}"
+            else
+              export JAVA_HOME="${JAVA_HOME_21_X64}"
+            fi
+            echo "Building ${{ matrix.module }} (Loom) on JDK${{ matrix.java == '25' && '25' || '21' }}, compile toolchain Java ${{ matrix.java }}"
+            ./gradlew build --no-daemon \
+              -Porg.gradle.java.installations.fromEnv=JAVA_HOME_8_X64,JAVA_HOME_17_X64,JAVA_HOME_21_X64,JAVA_HOME_25_X64
+          else
+            JDK_VAR="JAVA_HOME_${{ matrix.java }}_X64"
+            export JAVA_HOME="${!JDK_VAR}"
+            echo "Building ${{ matrix.module }} with JAVA_HOME=$JAVA_HOME"
+            ./gradlew build --no-daemon
+          fi
+
+      - name: Stage release artifact
+        if: inputs.release
+        id: stage
+        run: |
+          set -euo pipefail
+          VERSION="${{ inputs.version }}"
+          MODULE="${{ matrix.module }}"
+          MODULE_PATH="${{ matrix.path }}"
+          mkdir -p dist
+          if [[ "${{ matrix.tool }}" == "maven" ]]; then
+            SRC=$(ls modules/$MODULE_PATH/target/voxeldash-$MODULE-*.jar \
+                  | grep -Ev '\-sources|\-javadoc' | head -n1)
+          else
+            SRC=$(ls modules/$MODULE_PATH/build/libs/voxeldash-*.jar \
+                  | grep -Ev '\-dev|\-sources' | head -n1)
+          fi
+          cp "$SRC" "dist/voxeldash-$MODULE-$VERSION.jar"
+
+      - name: Upload build artifact
+        if: inputs.release
+        uses: actions/upload-artifact@v4
+        with:
+          name: dist-${{ matrix.module }}
+          path: dist/*.jar
+          if-no-files-found: error
+          retention-days: 1

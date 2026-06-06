@@ -11,10 +11,6 @@ concurrency:
   group: release-${{ github.ref_name }}
   cancel-in-progress: false
 
-env:
-  BUILDKITE_ORG: voxeldash
-  BUILDKITE_MAVEN_REGISTRY: maven
-
 jobs:
   setup:
     name: Resolve version
@@ -53,628 +49,63 @@ jobs:
           } >> "$GITHUB_OUTPUT"
           echo "Tag $TAG -> version=$VERSION prerelease=$PRERELEASE type=$VERSION_TYPE modrinth=$HAS_MODRINTH"
 
-  build:
-    name: Build ${{ matrix.module }}
+  modules:
+    name: Modules
     needs: setup
-    runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-          - module: spigot
-            path: spigot
-            tool: maven
-            webui: true
-            java: "21"
-          - module: bungeecord
-            path: bungeecord
-            tool: maven
-            webui: true
-            java: "21"
-          - module: vanilla
-            path: vanilla
-            tool: maven
-            webui: true
-            java: "21"
-          - module: fabric
-            path: fabric/mc1.21
-            tool: gradle
-            webui: true
-            java: "21"
-            loom: true
-          - module: fabric20
-            path: fabric/mc1.20
-            tool: gradle
-            webui: true
-            java: "17"
-            loom: true
-          - module: fabric16
-            path: fabric/mc1.16
-            tool: gradle
-            webui: true
-            java: "8"
-            loom: true
-          - module: fabric14
-            path: fabric/mc1.14
-            tool: gradle
-            webui: true
-            java: "8"
-            loom: true
-          - module: fabric12
-            path: fabric/mc1.12
-            tool: gradle
-            webui: true
-            java: "8"
-            loom: true
-          - module: fabric8
-            path: fabric/mc1.8
-            tool: gradle
-            webui: true
-            java: "8"
-            loom: true
-          - module: forge8
-            path: forge/mc1.8
-            tool: gradle
-            webui: true
-            java: "8"
-            legacyGradle: true
-          - module: forge12
-            path: forge/mc1.12
-            tool: gradle
-            webui: true
-            java: "8"
-            legacyGradle: true
-          - module: forge16
-            path: forge/mc1.16
-            tool: gradle
-            webui: true
-            java: "8"
-          - module: forge20
-            path: forge/mc1.20
-            tool: gradle
-            webui: true
-            java: "17"
-          - module: forge
-            path: forge/mc1.21
-            tool: gradle
-            webui: true
-            java: "21"
-          - module: forge26
-            path: forge/mc26
-            tool: gradle
-            webui: true
-            java: "25"
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Set up JDKs
-        uses: actions/setup-java@v4
-        with:
-          java-version: |
-            ${{ matrix.java }}
-            21
-          distribution: temurin
-          cache: maven
-
-      - name: Purge corrupt jars from Maven cache
-        run: |
-          find ~/.m2/repository -name '*.jar' -print0 \
-            | while IFS= read -r -d '' j; do
-                unzip -tqq "$j" >/dev/null 2>&1 \
-                  || { echo "::warning::Removing corrupt jar $j"; rm -f "$j"; }
-              done
-
-      - name: Set up pnpm
-        if: matrix.webui
-        uses: pnpm/action-setup@v4
-        with:
-          version: 9
-
-      - name: Set up Node.js
-        if: matrix.webui
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
-          cache: pnpm
-          cache-dependency-path: ui/pnpm-lock.yaml
-
-      - name: Set up Gradle
-        if: matrix.tool == 'gradle' && !matrix.legacyGradle
-        uses: gradle/actions/setup-gradle@v4
-
-      - name: Stamp release version
-        run: bash .github/scripts/set-version.sh "${{ needs.setup.outputs.version }}"
-
-      - name: Install voxeldash-api into local Maven repo
-        run: mvn -B -ntp -C -f modules/api/pom.xml install -DskipTests
-
-      - name: Build module (Maven)
-        if: matrix.tool == 'maven'
-        run: |
-          for attempt in 1 2 3; do
-            if mvn -B -ntp -C -U -f modules/${{ matrix.path }}/pom.xml package -DskipTests; then
-              exit 0
-            fi
-            echo "::warning::Maven build attempt $attempt failed; purging unreadable jars and retrying"
-            find ~/.m2/repository -name '*.jar' -print0 \
-              | while IFS= read -r -d '' j; do
-                  unzip -tqq "$j" >/dev/null 2>&1 || rm -f "$j"
-                done
-          done
-          exit 1
-
-      - name: Build module (Gradle)
-        if: matrix.tool == 'gradle'
-        working-directory: modules/${{ matrix.path }}
-        run: |
-          chmod +x ./gradlew
-          if [ "${{ matrix.loom }}" = "true" ]; then
-            export JAVA_HOME="${JAVA_HOME_21_X64}"
-            echo "Building ${{ matrix.module }} (Loom) on JDK21, compile toolchain Java ${{ matrix.java }}"
-            ./gradlew build --no-daemon \
-              -Porg.gradle.java.installations.fromEnv=JAVA_HOME_8_X64,JAVA_HOME_17_X64,JAVA_HOME_21_X64
-          else
-            JDK_VAR="JAVA_HOME_${{ matrix.java }}_X64"
-            export JAVA_HOME="${!JDK_VAR}"
-            echo "Building ${{ matrix.module }} with JAVA_HOME=$JAVA_HOME"
-            ./gradlew build --no-daemon
-          fi
-
-      - name: Stage release artifact
-        id: stage
-        run: |
-          set -euo pipefail
-          VERSION="${{ needs.setup.outputs.version }}"
-          MODULE="${{ matrix.module }}"
-          MODULE_PATH="${{ matrix.path }}"
-          mkdir -p dist
-          if [[ "${{ matrix.tool }}" == "maven" ]]; then
-            SRC=$(ls modules/$MODULE_PATH/target/voxeldash-$MODULE-*.jar \
-                  | grep -Ev '\-sources|\-javadoc' | head -n1)
-          else
-            SRC=$(ls modules/$MODULE_PATH/build/libs/voxeldash-*.jar \
-                  | grep -Ev '\-dev|\-sources' | head -n1)
-          fi
-          cp "$SRC" "dist/voxeldash-$MODULE-$VERSION.jar"
-
-      - name: Upload build artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: dist-${{ matrix.module }}
-          path: dist/*.jar
-          if-no-files-found: error
-          retention-days: 1
+    uses: ./.github/workflows/build-modules.yml
+    with:
+      version: ${{ needs.setup.outputs.version }}
+      release: true
+    secrets: inherit
 
   one:
-    name: Build VoxelDash One (${{ matrix.target.id }})
+    name: VoxelDash One
     needs: setup
-    runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        target:
-          - { id: linux-x64, bun: bun-linux-x64, bin: voxeldash-one, archive: tar.gz }
-          - { id: windows-x64, bun: bun-windows-x64, bin: voxeldash-one.exe, archive: zip }
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Set up Bun
-        uses: oven-sh/setup-bun@v2
-        with:
-          bun-version: "1.3.13"
-
-      - name: Set up pnpm
-        uses: pnpm/action-setup@v4
-        with:
-          version: 9
-
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
-          cache: pnpm
-          cache-dependency-path: ui/pnpm-lock.yaml
-
-      - name: Stamp release version
-        run: bash .github/scripts/set-version.sh "${{ needs.setup.outputs.version }}"
-
-      - name: Build web UI
-        working-directory: ui
-        run: |
-          pnpm install --frozen-lockfile
-          pnpm run build
-
-      - name: Compile single-file executable (${{ matrix.target.id }})
-        working-directory: one
-        run: |
-          bun install --frozen-lockfile
-          bun build src/index.js --compile --minify --target=${{ matrix.target.bun }} --outfile ${{ matrix.target.bin }}
-
-      - name: Package release bundle
-        run: |
-          set -euo pipefail
-          VERSION="${{ needs.setup.outputs.version }}"
-          PKG="voxeldash-one-${VERSION}-${{ matrix.target.id }}"
-          mkdir -p "stage/${PKG}/ui"
-          cp "one/${{ matrix.target.bin }}" "stage/${PKG}/${{ matrix.target.bin }}"
-          cp -r ui/dist "stage/${PKG}/ui/dist"
-          mkdir -p dist
-          if [ "${{ matrix.target.archive }}" = "zip" ]; then
-            (cd stage && zip -qr "../dist/${PKG}.zip" "${PKG}")
-          else
-            tar -C stage -czf "dist/${PKG}.tar.gz" "${PKG}"
-          fi
-
-      - name: Upload artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: dist-one-${{ matrix.target.id }}
-          path: dist/*
-          if-no-files-found: error
-          retention-days: 1
+    uses: ./.github/workflows/build-one.yml
+    with:
+      version: ${{ needs.setup.outputs.version }}
+      release: true
+    secrets: inherit
 
   desktop:
-    name: Build Desktop (${{ matrix.target.id }})
+    name: Desktop
     needs: setup
-    strategy:
-      fail-fast: false
-      matrix:
-        target:
-          - { id: linux-x64, os: ubuntu-22.04 }
-          - { id: windows-x64, os: windows-latest }
-    runs-on: ${{ matrix.target.os }}
-    env:
-      APPIMAGE_EXTRACT_AND_RUN: 1
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+    uses: ./.github/workflows/build-desktop.yml
+    with:
+      version: ${{ needs.setup.outputs.version }}
+    secrets: inherit
 
-      - name: Set up Bun
-        uses: oven-sh/setup-bun@v2
-        with:
-          bun-version: "1.3.13"
-
-      - name: Set up pnpm
-        uses: pnpm/action-setup@v4
-        with:
-          version: 9
-
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
-
-      - name: Set up Rust
-        uses: dtolnay/rust-toolchain@stable
-
-      - name: Cache Rust build
-        uses: Swatinem/rust-cache@v2
-        with:
-          workspaces: desktop/src-tauri
-
-      - name: Install Linux Tauri dependencies
-        if: matrix.target.os == 'ubuntu-22.04'
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y \
-            libwebkit2gtk-4.1-dev \
-            libgtk-3-dev \
-            libayatana-appindicator3-dev \
-            librsvg2-dev \
-            patchelf file
-
-      - name: Stamp release version
-        shell: bash
-        run: bash .github/scripts/set-version.sh "${{ needs.setup.outputs.version }}"
-
-      - name: Build desktop bundles
-        working-directory: desktop
-        run: |
-          npm install
-          npm run build
-
-      - name: Collect installers
-        shell: bash
-        run: |
-          set -euo pipefail
-          mkdir -p dist
-          BUNDLE=desktop/src-tauri/target/release/bundle
-          find "$BUNDLE" -type f \
-            \( -name '*.deb' -o -name '*.msi' -o -name '*-setup.exe' \) \
-            -print0 | while IFS= read -r -d '' f; do
-              base="$(basename "$f")"
-              cp "$f" "dist/${base// /-}"
-            done
-          ls -la dist
-
-      - name: Upload desktop installers
-        uses: actions/upload-artifact@v4
-        with:
-          name: dist-desktop-${{ matrix.target.id }}
-          path: dist/*
-          if-no-files-found: error
-          retention-days: 1
-
-  deploy-maven:
-    name: Publish API to Buildkite
-    needs: [setup, build]
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Set up JDK 21
-        uses: actions/setup-java@v4
-        with:
-          java-version: "21"
-          distribution: temurin
-          cache: maven
-
-      - name: Purge corrupt jars from Maven cache
-        run: |
-          find ~/.m2/repository -name '*.jar' -print0 \
-            | while IFS= read -r -d '' j; do
-                unzip -tqq "$j" >/dev/null 2>&1 \
-                  || { echo "::warning::Removing corrupt jar $j"; rm -f "$j"; }
-              done
-
-      - name: Stamp release version
-        run: bash .github/scripts/set-version.sh "${{ needs.setup.outputs.version }}"
-
-      - name: Configure Maven settings for Buildkite
-        env:
-          BUILDKITE_API_TOKEN: ${{ secrets.BUILDKITE_API_TOKEN }}
-        run: |
-          if [ -z "$BUILDKITE_API_TOKEN" ]; then
-            echo "::error::BUILDKITE_API_TOKEN secret must be set"
-            exit 1
-          fi
-          mkdir -p ~/.m2
-          cat > ~/.m2/settings.xml <<EOF
-          <settings>
-            <servers>
-              <server>
-                <id>buildkite</id>
-                <configuration>
-                  <httpHeaders>
-                    <property>
-                      <name>Authorization</name>
-                      <value>Bearer ${BUILDKITE_API_TOKEN}</value>
-                    </property>
-                  </httpHeaders>
-                </configuration>
-              </server>
-            </servers>
-          </settings>
-          EOF
-
-      - name: Deploy voxeldash-api
-        run: |
-          REPO_URL="https://packages.buildkite.com/${BUILDKITE_ORG}/${BUILDKITE_MAVEN_REGISTRY}/maven2/"
-          mvn -B -ntp -C -f modules/api/pom.xml deploy -DskipTests \
-            -DaltDeploymentRepository="buildkite::${REPO_URL}"
+  publish-maven:
+    name: Publish API
+    needs: [setup, modules]
+    uses: ./.github/workflows/publish-maven.yml
+    with:
+      version: ${{ needs.setup.outputs.version }}
+    secrets: inherit
 
   release:
-    name: Publish Release
-    needs: [setup, build, one, desktop]
-    runs-on: ubuntu-latest
-    outputs:
-      changelog: ${{ steps.notes.outputs.changelog }}
-    steps:
-      - name: Checkout default branch
-        uses: actions/checkout@v4
-        with:
-          ref: ${{ github.event.repository.default_branch }}
-          fetch-depth: 0
-          token: ${{ secrets.GITHUB_TOKEN }}
+    name: Finalize
+    needs: [setup, modules, one, desktop]
+    uses: ./.github/workflows/finalize-release.yml
+    with:
+      version: ${{ needs.setup.outputs.version }}
+      prerelease: ${{ needs.setup.outputs.prerelease }}
+    secrets: inherit
 
-      - name: Stamp release version
-        run: bash .github/scripts/set-version.sh "${{ needs.setup.outputs.version }}"
-
-      - name: Commit & push version bump
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add -A
-          if git diff-index --quiet HEAD; then
-            echo "No version changes to commit"
-          else
-            git commit -m "chore: bump version to ${{ needs.setup.outputs.version }} [skip ci]"
-            git push origin "HEAD:${{ github.event.repository.default_branch }}"
-          fi
-
-      - name: Download build artifacts
-        uses: actions/download-artifact@v4
-        with:
-          path: dist
-          pattern: dist-*
-          merge-multiple: true
-
-      - name: Publish GitHub release
-        uses: softprops/action-gh-release@v2
-        with:
-          tag_name: ${{ github.ref_name }}
-          name: VoxelDash ${{ needs.setup.outputs.version }}
-          draft: false
-          prerelease: ${{ needs.setup.outputs.prerelease }}
-          generate_release_notes: true
-          files: |
-            dist/*.jar
-            dist/voxeldash-one-*
-            dist/*.deb
-            dist/*.msi
-            dist/*-setup.exe
-
-      - name: Capture changelog
-        id: notes
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          BODY="$(gh release view "${{ github.ref_name }}" --json body -q .body 2>/dev/null)"
-          [[ -n "$BODY" ]] || BODY="Release ${{ needs.setup.outputs.version }}"
-          {
-            echo "changelog<<__EOF__"
-            echo "$BODY"
-            echo "__EOF__"
-          } >> "$GITHUB_OUTPUT"
-
-  modrinth-mods:
-    name: Publish ${{ matrix.module }} to Modrinth
+  modrinth:
+    name: Modrinth
     needs: [setup, release]
     if: needs.setup.outputs.has_modrinth == 'true'
-    runs-on: ubuntu-latest
-    permissions:
-      contents: read
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-          - { module: fabric8,  label: "Fabric 1.8.9",  suffix: "fabric-1.8.9",  loaders: fabric, game_versions: "1.8.9" }
-          - { module: fabric12, label: "Fabric 1.12.2", suffix: "fabric-1.12.2", loaders: fabric, game_versions: "1.12.2" }
-          - { module: fabric14, label: "Fabric 1.14.4", suffix: "fabric-1.14.4", loaders: fabric, game_versions: "1.14.4" }
-          - { module: fabric16, label: "Fabric 1.16.5", suffix: "fabric-1.16.5", loaders: fabric, game_versions: "1.16.5" }
-          - { module: fabric20, label: "Fabric 1.20.1", suffix: "fabric-1.20.1", loaders: fabric, game_versions: "1.20.1" }
-          - module: fabric
-            label: "Fabric 1.21"
-            suffix: "fabric-1.21"
-            loaders: fabric
-            game_versions: |
-              1.21
-              1.21.1
-              1.21.2
-              1.21.3
-              1.21.4
-          - { module: forge8,   label: "Forge 1.8.9",  suffix: "forge-1.8.9",  loaders: forge, game_versions: "1.8.9" }
-          - { module: forge12,  label: "Forge 1.12.2", suffix: "forge-1.12.2", loaders: forge, game_versions: "1.12.2" }
-          - { module: forge16,  label: "Forge 1.16.5", suffix: "forge-1.16.5" }
-          - { module: forge20,  label: "Forge 1.20.1", suffix: "forge-1.20.1" }
-          - { module: forge,    label: "Forge 1.21",   suffix: "forge-1.21" }
-          - { module: forge26,  label: "Forge 26",     suffix: "forge-26", optional: true }
-    steps:
-      - name: Download ${{ matrix.module }} artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: dist-${{ matrix.module }}
-          path: dist
-
-      - name: Publish to Modrinth (explicit metadata)
-        if: matrix.loaders != ''
-        uses: Kira-NT/mc-publish@v3.3
-        continue-on-error: ${{ matrix.optional || false }}
-        with:
-          modrinth-id: voxeldash
-          modrinth-token: ${{ secrets.MODRINTH_TOKEN }}
-          files: dist/voxeldash-${{ matrix.module }}-${{ needs.setup.outputs.version }}.jar
-          name: VoxelDash ${{ needs.setup.outputs.version }} (${{ matrix.label }})
-          version: ${{ needs.setup.outputs.version }}+${{ matrix.suffix }}
-          version-type: ${{ needs.setup.outputs.version_type }}
-          loaders: ${{ matrix.loaders }}
-          game-versions: ${{ matrix.game_versions }}
-          changelog: ${{ needs.release.outputs.changelog }}
-          modrinth-unfeature-mode: subset
-          retry-attempts: 3
-          retry-delay: 10000
-
-      - name: Publish to Modrinth (inferred metadata)
-        if: matrix.loaders == ''
-        uses: Kira-NT/mc-publish@v3.3
-        continue-on-error: ${{ matrix.optional || false }}
-        with:
-          modrinth-id: voxeldash
-          modrinth-token: ${{ secrets.MODRINTH_TOKEN }}
-          files: dist/voxeldash-${{ matrix.module }}-${{ needs.setup.outputs.version }}.jar
-          name: VoxelDash ${{ needs.setup.outputs.version }} (${{ matrix.label }})
-          version: ${{ needs.setup.outputs.version }}+${{ matrix.suffix }}
-          version-type: ${{ needs.setup.outputs.version_type }}
-          changelog: ${{ needs.release.outputs.changelog }}
-          modrinth-unfeature-mode: subset
-          retry-attempts: 3
-          retry-delay: 10000
-
-  modrinth-plugins:
-    name: Publish ${{ matrix.module }} to Modrinth
-    needs: [setup, release]
-    if: needs.setup.outputs.has_modrinth == 'true'
-    runs-on: ubuntu-latest
-    permissions:
-      contents: read
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-          - module: spigot
-            label: "Bukkit / Spigot / Paper"
-            suffix: paper
-            loaders: |
-              bukkit
-              spigot
-              paper
-              purpur
-              folia
-            game_versions: |
-              1.8.9
-              1.9.4
-              1.10.2
-              1.11.2
-              1.12.2
-              1.13.2
-              1.14.4
-              1.15.2
-              1.16.5
-              1.17.1
-              1.18.2
-              1.19.4
-              1.20.1
-              1.20.4
-              1.20.6
-              1.21
-              1.21.1
-              1.21.2
-              1.21.3
-              1.21.4
-          - module: bungeecord
-            label: "BungeeCord / Waterfall"
-            suffix: bungeecord
-            loaders: |
-              bungeecord
-              waterfall
-            game_versions: |
-              1.8.9
-              1.12.2
-              1.16.5
-              1.18.2
-              1.19.4
-              1.20.1
-              1.21
-              1.21.4
-    steps:
-      - name: Download ${{ matrix.module }} artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: dist-${{ matrix.module }}
-          path: dist
-
-      - name: Publish to Modrinth
-        uses: Kira-NT/mc-publish@v3.3
-        with:
-          modrinth-id: voxeldash
-          modrinth-token: ${{ secrets.MODRINTH_TOKEN }}
-          files: dist/voxeldash-${{ matrix.module }}-${{ needs.setup.outputs.version }}.jar
-          name: VoxelDash ${{ needs.setup.outputs.version }} (${{ matrix.label }})
-          version: ${{ needs.setup.outputs.version }}+${{ matrix.suffix }}
-          version-type: ${{ needs.setup.outputs.version_type }}
-          loaders: ${{ matrix.loaders }}
-          game-versions: ${{ matrix.game_versions }}
-          changelog: ${{ needs.release.outputs.changelog }}
-          modrinth-unfeature-mode: subset
-          retry-attempts: 3
-          retry-delay: 10000
+    uses: ./.github/workflows/publish-modrinth.yml
+    with:
+      version: ${{ needs.setup.outputs.version }}
+      version_type: ${{ needs.setup.outputs.version_type }}
+      changelog: ${{ needs.release.outputs.changelog }}
+    secrets: inherit
 
   cleanup-on-failure:
     name: Cleanup on Failure
-    needs: [setup, build, one, desktop, release]
+    needs: [setup, modules, one, desktop, release]
     if: failure()
     runs-on: ubuntu-latest
     steps:

@@ -1,0 +1,72 @@
+name: Publish API to Buildkite
+
+on:
+  workflow_call:
+    inputs:
+      version:
+        description: "Release version to stamp before deploying."
+        type: string
+        required: true
+
+env:
+  BUILDKITE_ORG: voxeldash
+  BUILDKITE_MAVEN_REGISTRY: maven
+
+jobs:
+  deploy:
+    name: Publish voxeldash-api
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          java-version: "21"
+          distribution: temurin
+          cache: maven
+
+      - name: Purge corrupt jars from Maven cache
+        run: |
+          find ~/.m2/repository -name '*.jar' -print0 \
+            | while IFS= read -r -d '' j; do
+                unzip -tqq "$j" >/dev/null 2>&1 \
+                  || { echo "::warning::Removing corrupt jar $j"; rm -f "$j"; }
+              done
+
+      - name: Stamp release version
+        run: bash .github/scripts/set-version.sh "${{ inputs.version }}"
+
+      - name: Configure Maven settings for Buildkite
+        env:
+          BUILDKITE_API_TOKEN: ${{ secrets.BUILDKITE_API_TOKEN }}
+        run: |
+          if [ -z "$BUILDKITE_API_TOKEN" ]; then
+            echo "::error::BUILDKITE_API_TOKEN secret must be set"
+            exit 1
+          fi
+          mkdir -p ~/.m2
+          cat > ~/.m2/settings.xml <<EOF
+          <settings>
+            <servers>
+              <server>
+                <id>buildkite</id>
+                <configuration>
+                  <httpHeaders>
+                    <property>
+                      <name>Authorization</name>
+                      <value>Bearer ${BUILDKITE_API_TOKEN}</value>
+                    </property>
+                  </httpHeaders>
+                </configuration>
+              </server>
+            </servers>
+          </settings>
+          EOF
+
+      - name: Deploy voxeldash-api
+        run: |
+          REPO_URL="https://packages.buildkite.com/${BUILDKITE_ORG}/${BUILDKITE_MAVEN_REGISTRY}/maven2/"
+          mvn -B -ntp -C -f modules/api/pom.xml deploy -DskipTests \
+            -DaltDeploymentRepository="buildkite::${REPO_URL}"

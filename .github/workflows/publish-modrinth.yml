@@ -1,0 +1,174 @@
+name: Publish to Modrinth
+
+on:
+  workflow_call:
+    inputs:
+      version:
+        description: "Release version."
+        type: string
+        required: true
+      version_type:
+        description: "Modrinth version channel (alpha / beta / release)."
+        type: string
+        required: true
+      changelog:
+        description: "Release notes to attach to each Modrinth version."
+        type: string
+        required: true
+
+permissions:
+  contents: read
+
+jobs:
+  mods:
+    name: Publish ${{ matrix.module }} to Modrinth
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - { module: fabric8,  label: "Fabric 1.8.9",  suffix: "fabric-1.8.9",  loaders: fabric, game_versions: "1.8.9" }
+          - { module: fabric12, label: "Fabric 1.12.2", suffix: "fabric-1.12.2", loaders: fabric, game_versions: "1.12.2" }
+          - { module: fabric14, label: "Fabric 1.14.4", suffix: "fabric-1.14.4", loaders: fabric, game_versions: "1.14.4" }
+          - { module: fabric16, label: "Fabric 1.16.5", suffix: "fabric-1.16.5", loaders: fabric, game_versions: "1.16.5" }
+          - { module: fabric20, label: "Fabric 1.20.1", suffix: "fabric-1.20.1", loaders: fabric, game_versions: "1.20.1" }
+          - module: fabric
+            label: "Fabric 1.21"
+            suffix: "fabric-1.21"
+            loaders: fabric
+            game_versions: |
+              1.21
+              1.21.1
+              1.21.2
+              1.21.3
+              1.21.4
+          - module: fabric26
+            label: "Fabric 26"
+            suffix: "fabric-26"
+            loaders: fabric
+            optional: true
+            game_versions: |
+              26.1
+              26.1.1
+              26.1.2
+          - { module: forge8,   label: "Forge 1.8.9",  suffix: "forge-1.8.9",  loaders: forge, game_versions: "1.8.9" }
+          - { module: forge12,  label: "Forge 1.12.2", suffix: "forge-1.12.2", loaders: forge, game_versions: "1.12.2" }
+          - { module: forge16,  label: "Forge 1.16.5", suffix: "forge-1.16.5" }
+          - { module: forge20,  label: "Forge 1.20.1", suffix: "forge-1.20.1" }
+          - { module: forge,    label: "Forge 1.21",   suffix: "forge-1.21" }
+          - { module: forge26,  label: "Forge 26",     suffix: "forge-26", optional: true }
+    steps:
+      - name: Download ${{ matrix.module }} artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: dist-${{ matrix.module }}
+          path: dist
+
+      - name: Publish to Modrinth (explicit metadata)
+        if: matrix.loaders != ''
+        uses: Kira-NT/mc-publish@v3.3
+        continue-on-error: ${{ matrix.optional || false }}
+        with:
+          modrinth-id: voxeldash
+          modrinth-token: ${{ secrets.MODRINTH_TOKEN }}
+          files: dist/voxeldash-${{ matrix.module }}-${{ inputs.version }}.jar
+          name: VoxelDash ${{ inputs.version }} (${{ matrix.label }})
+          version: ${{ inputs.version }}+${{ matrix.suffix }}
+          version-type: ${{ inputs.version_type }}
+          loaders: ${{ matrix.loaders }}
+          game-versions: ${{ matrix.game_versions }}
+          changelog: ${{ inputs.changelog }}
+          modrinth-unfeature-mode: subset
+          retry-attempts: 3
+          retry-delay: 10000
+
+      - name: Publish to Modrinth (inferred metadata)
+        if: matrix.loaders == ''
+        uses: Kira-NT/mc-publish@v3.3
+        continue-on-error: ${{ matrix.optional || false }}
+        with:
+          modrinth-id: voxeldash
+          modrinth-token: ${{ secrets.MODRINTH_TOKEN }}
+          files: dist/voxeldash-${{ matrix.module }}-${{ inputs.version }}.jar
+          name: VoxelDash ${{ inputs.version }} (${{ matrix.label }})
+          version: ${{ inputs.version }}+${{ matrix.suffix }}
+          version-type: ${{ inputs.version_type }}
+          changelog: ${{ inputs.changelog }}
+          modrinth-unfeature-mode: subset
+          retry-attempts: 3
+          retry-delay: 10000
+
+  plugins:
+    name: Publish ${{ matrix.module }} to Modrinth
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - module: spigot
+            label: "Bukkit / Spigot / Paper"
+            suffix: paper
+            loaders: |
+              bukkit
+              spigot
+              paper
+              purpur
+              folia
+            game_versions: |
+              1.8.9
+              1.9.4
+              1.10.2
+              1.11.2
+              1.12.2
+              1.13.2
+              1.14.4
+              1.15.2
+              1.16.5
+              1.17.1
+              1.18.2
+              1.19.4
+              1.20.1
+              1.20.4
+              1.20.6
+              1.21
+              1.21.1
+              1.21.2
+              1.21.3
+              1.21.4
+          - module: bungeecord
+            label: "BungeeCord / Waterfall"
+            suffix: bungeecord
+            loaders: |
+              bungeecord
+              waterfall
+            game_versions: |
+              1.8.9
+              1.12.2
+              1.16.5
+              1.18.2
+              1.19.4
+              1.20.1
+              1.21
+              1.21.4
+    steps:
+      - name: Download ${{ matrix.module }} artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: dist-${{ matrix.module }}
+          path: dist
+
+      - name: Publish to Modrinth
+        uses: Kira-NT/mc-publish@v3.3
+        with:
+          modrinth-id: voxeldash
+          modrinth-token: ${{ secrets.MODRINTH_TOKEN }}
+          files: dist/voxeldash-${{ matrix.module }}-${{ inputs.version }}.jar
+          name: VoxelDash ${{ inputs.version }} (${{ matrix.label }})
+          version: ${{ inputs.version }}+${{ matrix.suffix }}
+          version-type: ${{ inputs.version_type }}
+          loaders: ${{ matrix.loaders }}
+          game-versions: ${{ matrix.game_versions }}
+          changelog: ${{ inputs.changelog }}
+          modrinth-unfeature-mode: subset
+          retry-attempts: 3
+          retry-delay: 10000
