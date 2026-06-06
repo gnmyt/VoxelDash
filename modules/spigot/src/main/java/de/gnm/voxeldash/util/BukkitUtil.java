@@ -1,9 +1,11 @@
 package de.gnm.voxeldash.util;
 
 import de.gnm.voxeldash.VoxelDashSpigot;
+import de.gnm.voxeldash.api.helper.OfflinePlayerReader;
 import org.bukkit.Bukkit;
 import org.bukkit.scheduler.BukkitRunnable;
 
+import java.io.File;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
@@ -38,6 +40,14 @@ public class BukkitUtil {
             } catch (InterruptedException ignored) {
             }
         }
+    }
+
+    public static OfflinePlayerReader offlineReader() {
+        File root = new File(System.getProperty("user.dir"));
+        File world = Bukkit.getWorlds().isEmpty()
+                ? new File(Bukkit.getWorldContainer(), "world")
+                : Bukkit.getWorlds().get(0).getWorldFolder();
+        return new OfflinePlayerReader(root).setWorldFolder(world);
     }
 
 }

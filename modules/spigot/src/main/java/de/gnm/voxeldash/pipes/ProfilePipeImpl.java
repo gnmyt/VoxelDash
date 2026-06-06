@@ -1,6 +1,5 @@
 package de.gnm.voxeldash.pipes;
 
-import de.gnm.voxeldash.VoxelDashSpigot;
 import de.gnm.voxeldash.api.entities.OfflinePlayer;
 import de.gnm.voxeldash.api.entities.players.PlayerProfile;
 import de.gnm.voxeldash.api.helper.OfflinePlayerReader;
@@ -10,7 +9,6 @@ import de.gnm.voxeldash.util.VersionCompat;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.UUID;
@@ -21,8 +19,7 @@ public class ProfilePipeImpl implements ProfilePipe {
 
     private OfflinePlayerReader reader() {
         if (reader == null) {
-            File serverRoot = VoxelDashSpigot.getInstance().getServer().getWorldContainer().getAbsoluteFile();
-            reader = new OfflinePlayerReader(serverRoot);
+            reader = BukkitUtil.offlineReader();
         }
         return reader;
     }

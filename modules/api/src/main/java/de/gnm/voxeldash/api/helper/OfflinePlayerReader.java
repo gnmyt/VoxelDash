@@ -22,9 +22,15 @@ public class OfflinePlayerReader {
     private static final ObjectMapper MAPPER = new ObjectMapper();
 
     private final File serverRoot;
+    private File worldFolder;
 
     public OfflinePlayerReader(File serverRoot) {
         this.serverRoot = serverRoot;
+    }
+
+    public OfflinePlayerReader setWorldFolder(File worldFolder) {
+        this.worldFolder = worldFolder;
+        return this;
     }
 
     /**
@@ -175,6 +181,9 @@ public class OfflinePlayerReader {
      * advancements live here.
      */
     public File getWorldFolder() {
+        if (worldFolder != null) {
+            return worldFolder;
+        }
         String levelName = "world";
         File props = new File(serverRoot, "server.properties");
         if (props.exists()) {
@@ -299,6 +308,10 @@ public class OfflinePlayerReader {
         InventoryView view = new InventoryView(type, false);
         CompoundTag data = readPlayerData(uuid);
         if (data == null || !data.containsKey(nbtKey)) {
+            if (data == null) {
+                LOG.warning("No offline player data found for " + uuid + " at "
+                        + playerDataFile(uuid).getAbsolutePath() + " (empty " + type + " returned)");
+            }
             return view;
         }
         try {

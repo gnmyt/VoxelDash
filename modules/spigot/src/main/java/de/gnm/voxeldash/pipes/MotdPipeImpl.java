@@ -3,6 +3,7 @@ package de.gnm.voxeldash.pipes;
 import de.gnm.voxeldash.api.entities.motd.Motd;
 import de.gnm.voxeldash.api.entities.motd.MotdCapabilities;
 import de.gnm.voxeldash.api.helper.MotdHelper;
+import de.gnm.voxeldash.api.helper.PropertyHelper;
 import de.gnm.voxeldash.api.helper.motd.LegacyMotdSerializer;
 import de.gnm.voxeldash.api.pipes.MotdPipe;
 import org.bukkit.Bukkit;
@@ -35,6 +36,7 @@ public class MotdPipeImpl implements MotdPipe, Listener {
     @Override
     public void apply(Motd motd) {
         this.legacy = LegacyMotdSerializer.toLegacy(motd, true);
+        PropertyHelper.setProperty("motd", LegacyMotdSerializer.toLegacy(motd, false));
     }
 
     @Override

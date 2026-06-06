@@ -1,6 +1,5 @@
 package de.gnm.voxeldash.pipes;
 
-import de.gnm.voxeldash.VoxelDashSpigot;
 import de.gnm.voxeldash.api.entities.players.InventoryCapabilities;
 import de.gnm.voxeldash.api.entities.players.InventoryItem;
 import de.gnm.voxeldash.api.entities.players.InventoryView;
@@ -15,7 +14,6 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 
-import java.io.File;
 import java.util.UUID;
 
 public class InventoryPipeImpl implements InventoryPipe {
@@ -27,8 +25,7 @@ public class InventoryPipeImpl implements InventoryPipe {
 
     private OfflinePlayerReader reader() {
         if (reader == null) {
-            File serverRoot = VoxelDashSpigot.getInstance().getServer().getWorldContainer().getAbsoluteFile();
-            reader = new OfflinePlayerReader(serverRoot);
+            reader = BukkitUtil.offlineReader();
         }
         return reader;
     }
