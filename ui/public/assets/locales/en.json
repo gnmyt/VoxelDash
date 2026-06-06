@@ -18,7 +18,9 @@
     "copy": "Copy",
     "move": "Move",
     "yes": "Yes",
-    "no": "No"
+    "no": "No",
+    "close": "Close",
+    "loading": "Loading..."
   },
   "header": {
     "account": "Manage account",
@@ -113,7 +115,18 @@
       "removed_title": "Server icon removed",
       "removed_description": "The custom icon has been deleted.",
       "error_title": "Could not update the icon",
-      "error_description": "The image could not be processed. Please try a different file."
+      "error_description": "The image could not be processed. Please try a different file.",
+      "editor": {
+        "open": "Click to edit the icon",
+        "title": "Edit server icon",
+        "description": "Draw your 64x64 server icon. Pick a colour and paint, or erase to clear pixels.",
+        "pen": "Pen",
+        "eraser": "Eraser",
+        "fill": "Fill",
+        "clear": "Clear",
+        "custom": "Custom",
+        "size": "Size"
+      }
     }
   },
   "overview": {
@@ -346,7 +359,8 @@
     "tabs": {
       "online": "Online",
       "whitelist": "Whitelist",
-      "banned": "Banned"
+      "banned": "Banned",
+      "all": "All Players"
     },
     "table": {
       "player": "Player",
@@ -410,7 +424,70 @@
     "remove_whitelist_description": "This will remove {{count}} player(s) from the whitelist.",
     "no_reason": "No reason provided",
     "permanent": "Permanent",
-    "food": "Food"
+    "food": "Food",
+    "online_badge": "Online",
+    "offline_badge": "Offline",
+    "all": {
+      "empty": "No players found",
+      "empty_description": "No player data has been recorded on this server yet.",
+      "search": "Search players..."
+    },
+    "inventory": {
+      "menu": "Inventory",
+      "title": "{{player}}'s Inventory",
+      "editable": "Editing the live inventory of this online player.",
+      "online_readonly": "Live inventory is not available on this platform.",
+      "offline_readonly": "Read-only view of this offline player (from saved data).",
+      "tab_inventory": "Inventory",
+      "tab_enderchest": "Ender Chest",
+      "armor": "Armor",
+      "offhand": "Off-hand",
+      "give_item": "Give item (id)",
+      "give": "Give",
+      "given": "Item given",
+      "clear": "Clear",
+      "edit_slot": "Edit Slot",
+      "item_id": "Item id",
+      "count": "Count",
+      "clear_slot": "Clear slot"
+    },
+    "profile": {
+      "menu": "Profile",
+      "title": "Player Profile",
+      "first_join": "First join",
+      "last_seen": "Last seen",
+      "dimension": "Dimension",
+      "health": "Health",
+      "banned": "Banned",
+      "uuid": "UUID",
+      "ip_history": "IP history",
+      "no_ips": "No IP addresses recorded yet."
+    },
+    "actions": {
+      "whisper": "Private message",
+      "message_placeholder": "Message to send...",
+      "send": "Send",
+      "message_sent": "Message sent to {{player}}",
+      "teleport": "Teleport",
+      "go": "Go",
+      "target_player": "Target player",
+      "to_player": "To player",
+      "to_spawn": "To spawn",
+      "teleported": "Player teleported",
+      "tempban": "Temp-ban",
+      "tempbanned": "Player temporarily banned",
+      "mute": "Mute",
+      "unmute": "Unmute",
+      "muted": "Player muted",
+      "unmuted": "Player unmuted",
+      "muted_badge": "Muted",
+      "permanent": "Permanent",
+      "default_mute_reason": "Muted by administrator",
+      "offline_note": "These actions are only available while the player is online.",
+      "coordinates": "Coordinates",
+      "to_world": "Send to world",
+      "duration": "Duration"
+    }
   },
   "files": {
     "table": {

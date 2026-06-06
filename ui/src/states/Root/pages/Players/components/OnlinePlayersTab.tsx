@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { t } from "i18next";
-import { OnlinePlayer } from "@/types/player";
+import { OnlinePlayer, PlayerCapabilities } from "@/types/player";
 import { World } from "@/types/world";
 import { postRequest, jsonRequest } from "@/lib/RequestUtil";
 import { toast } from "@/hooks/use-toast";
@@ -36,15 +36,6 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuSub,
-    DropdownMenuSubContent,
-    DropdownMenuSubTrigger,
-    DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import {
     Select,
     SelectContent,
     SelectItem,
@@ -52,7 +43,6 @@ import {
     SelectValue,
 } from "@/components/ui/select";
 import {
-    DotsThreeIcon,
     UserIcon,
     GlobeIcon,
     GameControllerIcon,
@@ -61,13 +51,14 @@ import {
     SignOutIcon,
     ShieldCheckIcon,
     ShieldIcon,
-    NavigationArrowIcon
 } from "@phosphor-icons/react";
+import PlayerActionsMenu from "./PlayerActionsMenu";
 
 interface OnlinePlayersTabProps {
     players: OnlinePlayer[];
     onRefresh: () => Promise<void>;
     onBanComplete: () => Promise<void>;
+    capabilities: PlayerCapabilities | null;
 }
 
 const formatPlaytime = (ms: number): string => {
@@ -79,7 +70,7 @@ const formatPlaytime = (ms: number): string => {
     return `${minutes}m`;
 };
 
-const OnlinePlayersTab = ({ players, onRefresh, onBanComplete }: OnlinePlayersTabProps) => {
+const OnlinePlayersTab = ({ players, onRefresh, onBanComplete, capabilities }: OnlinePlayersTabProps) => {
     const {
         selectedPlayers,
         setTargetPlayer,
@@ -90,7 +81,7 @@ const OnlinePlayersTab = ({ players, onRefresh, onBanComplete }: OnlinePlayersTa
         isAllSelected,
         hasSelection,
     } = usePlayerSelection({ players });
-    
+
     const [kickDialogOpen, setKickDialogOpen] = useState(false);
     const [banDialogOpen, setBanDialogOpen] = useState(false);
     const [kickReason, setKickReason] = useState("");
@@ -140,12 +131,6 @@ const OnlinePlayersTab = ({ players, onRefresh, onBanComplete }: OnlinePlayersTa
     const handleGamemodeChange = async (playerName: string, gamemode: string) => {
         await postRequest("players/gamemode", { playerName, gamemode });
         toast({ description: t("players.gamemode_changed") });
-        await onRefresh();
-    };
-
-    const handleTeleport = async (playerName: string, worldName: string) => {
-        await postRequest("players/teleport", { playerName, worldName });
-        toast({ description: t("players.teleported", { player: playerName, world: worldName }) });
         await onRefresh();
     };
 
@@ -213,14 +198,14 @@ const OnlinePlayersTab = ({ players, onRefresh, onBanComplete }: OnlinePlayersTa
                         {players.map((player) => (
                             <TableRow key={player.uuid}>
                                 <TableCell>
-                                    <Checkbox 
+                                    <Checkbox
                                         checked={selectedPlayers.includes(player.name)}
                                         onCheckedChange={() => togglePlayer(player.name)}
                                     />
                                 </TableCell>
                                 <TableCell>
                                     <div className="flex items-center gap-3">
-                                        <img 
+                                        <img
                                             src={`https://mc-heads.net/avatar/${player.uuid}/32`}
                                             alt={player.name}
                                             className="h-8 w-8 rounded"
@@ -286,51 +271,12 @@ const OnlinePlayersTab = ({ players, onRefresh, onBanComplete }: OnlinePlayersTa
                                     </Button>
                                 </TableCell>
                                 <TableCell>
-                                    <DropdownMenu>
-                                        <DropdownMenuTrigger asChild>
-                                            <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
-                                                <DotsThreeIcon className="h-4 w-4" weight="bold" />
-                                            </Button>
-                                        </DropdownMenuTrigger>
-                                        <DropdownMenuContent align="end">
-                                            {worlds.length > 0 && (
-                                                <DropdownMenuSub>
-                                                    <DropdownMenuSubTrigger>
-                                                        <NavigationArrowIcon className="h-4 w-4 mr-2" />
-                                                        {t("players.teleport")}
-                                                    </DropdownMenuSubTrigger>
-                                                    <DropdownMenuSubContent>
-                                                        {worlds.map((world) => (
-                                                            <DropdownMenuItem 
-                                                                key={world.name}
-                                                                onClick={() => handleTeleport(player.name, world.name)}
-                                                                disabled={player.world === world.name}
-                                                            >
-                                                                <GlobeIcon className="h-4 w-4 mr-2" />
-                                                                {world.name}
-                                                                {player.world === world.name && (
-                                                                    <span className="ml-2 text-xs text-muted-foreground">
-                                                                        ({t("players.current_world")})
-                                                                    </span>
-                                                                )}
-                                                            </DropdownMenuItem>
-                                                        ))}
-                                                    </DropdownMenuSubContent>
-                                                </DropdownMenuSub>
-                                            )}
-                                            <DropdownMenuItem onClick={() => openKickDialog(player.name)}>
-                                                <SignOutIcon className="h-4 w-4 mr-2" />
-                                                {t("players.kick")}
-                                            </DropdownMenuItem>
-                                            <DropdownMenuItem 
-                                                onClick={() => openBanDialog(player.name)}
-                                                className="text-destructive"
-                                            >
-                                                <ProhibitIcon className="h-4 w-4 mr-2" />
-                                                {t("players.ban")}
-                                            </DropdownMenuItem>
-                                        </DropdownMenuContent>
-                                    </DropdownMenu>
+                                    <PlayerActionsMenu
+                                        player={{ name: player.name, uuid: player.uuid, online: true }}
+                                        capabilities={capabilities}
+                                        worlds={worlds}
+                                        onActionComplete={() => { onRefresh(); onBanComplete(); }}
+                                    />
                                 </TableCell>
                             </TableRow>
                         ))}
@@ -387,7 +333,7 @@ const OnlinePlayersTab = ({ players, onRefresh, onBanComplete }: OnlinePlayersTa
                     </div>
                     <AlertDialogFooter>
                         <AlertDialogCancel>{t("action.cancel")}</AlertDialogCancel>
-                        <AlertDialogAction 
+                        <AlertDialogAction
                             onClick={() => handleBan(getPlayersToAction())}
                             className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
                         >

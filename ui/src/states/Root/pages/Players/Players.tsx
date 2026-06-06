@@ -2,17 +2,21 @@ import { useEffect, useState } from "react";
 import { UsersIcon } from "@phosphor-icons/react";
 import { t } from "i18next";
 import { jsonRequest } from "@/lib/RequestUtil";
-import { OnlinePlayer, BannedPlayer, WhitelistData } from "@/types/player";
+import { OnlinePlayer, BannedPlayer, WhitelistData, PlayerCapabilities } from "@/types/player";
+import { World } from "@/types/world";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import OnlinePlayersTab from "./components/OnlinePlayersTab";
 import WhitelistTab from "./components/WhitelistTab";
 import BannedPlayersTab from "./components/BannedPlayersTab";
+import AllPlayersTab from "./components/AllPlayersTab";
 
 const Players = () => {
     const [onlinePlayers, setOnlinePlayers] = useState<OnlinePlayer[]>([]);
     const [whitelistData, setWhitelistData] = useState<WhitelistData>({ players: [], enabled: false });
     const [bannedPlayers, setBannedPlayers] = useState<BannedPlayer[]>([]);
+    const [capabilities, setCapabilities] = useState<PlayerCapabilities | null>(null);
+    const [worlds, setWorlds] = useState<World[]>([]);
 
     const fetchOnlinePlayers = async () => {
         const data = await jsonRequest("players/online");
@@ -35,6 +39,10 @@ const Players = () => {
 
     useEffect(() => {
         fetchAllData();
+        jsonRequest("players/capabilities").then((d) => setCapabilities({
+            inventory: d.inventory, teleport: d.teleport, mute: d.mute,
+        })).catch(() => {});
+        jsonRequest("worlds").then((d) => setWorlds(d.worlds || [])).catch(() => {});
 
         const interval = setInterval(fetchAllData, 10000);
         return () => clearInterval(interval);
@@ -75,14 +83,18 @@ const Players = () => {
                                 {bannedPlayers.length}
                             </span>
                         </TabsTrigger>
+                        <TabsTrigger value="all" className="gap-2 flex-1 sm:flex-none whitespace-nowrap">
+                            {t("players.tabs.all")}
+                        </TabsTrigger>
                     </TabsList>
 
                     <ScrollArea className="flex-1">
                         <TabsContent value="online" className="mt-0 h-full">
-                            <OnlinePlayersTab 
-                                players={onlinePlayers} 
+                            <OnlinePlayersTab
+                                players={onlinePlayers}
                                 onRefresh={fetchOnlinePlayers}
                                 onBanComplete={fetchBannedPlayers}
+                                capabilities={capabilities}
                             />
                         </TabsContent>
                         <TabsContent value="whitelist" className="mt-0 h-full">
@@ -92,9 +104,16 @@ const Players = () => {
                             />
                         </TabsContent>
                         <TabsContent value="banned" className="mt-0 h-full">
-                            <BannedPlayersTab 
-                                players={bannedPlayers} 
+                            <BannedPlayersTab
+                                players={bannedPlayers}
                                 onRefresh={fetchBannedPlayers}
+                            />
+                        </TabsContent>
+                        <TabsContent value="all" className="mt-0 h-full">
+                            <AllPlayersTab
+                                onlinePlayers={onlinePlayers}
+                                capabilities={capabilities}
+                                worlds={worlds}
                             />
                         </TabsContent>
                     </ScrollArea>
