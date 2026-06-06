@@ -1,5 +1,6 @@
 package de.gnm.voxeldash.api.ssh;
 
+import de.gnm.voxeldash.VoxelDashLoader;
 import de.gnm.voxeldash.api.controller.AccountController;
 import de.gnm.voxeldash.api.controller.SSHController;
 import org.apache.sshd.common.file.virtualfs.VirtualFileSystemFactory;
@@ -13,12 +14,14 @@ import java.util.Collections;
 
 public class SSHManager {
 
+    private final VoxelDashLoader loader;
     private final SSHController sshController;
     private final AccountController accountManager;
     private final File serverRoot;
     private SshServer sshServer;
 
-    public SSHManager(SSHController sshController, AccountController accountManager, File serverRoot) {
+    public SSHManager(VoxelDashLoader loader, SSHController sshController, AccountController accountManager, File serverRoot) {
+        this.loader = loader;
         this.sshController = sshController;
         this.accountManager = accountManager;
         this.serverRoot = serverRoot;
@@ -33,7 +36,7 @@ public class SSHManager {
         if (sshServer != null) sshServer.stop();
 
         sshServer = SshServer.setUpDefaultServer();
-        sshServer.setShellFactory(new SSHShellFactory(sshController));
+        sshServer.setShellFactory(new SSHShellFactory(loader, sshController));
         sshServer.setKeyPairProvider(new SSHKeyProvider(sshController.getPublicKey(), sshController.getPrivateKey()));
 
         SftpSubsystemFactory.Builder builder = new SftpSubsystemFactory.Builder();

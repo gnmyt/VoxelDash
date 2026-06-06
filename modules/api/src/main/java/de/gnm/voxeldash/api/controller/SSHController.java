@@ -1,6 +1,7 @@
 package de.gnm.voxeldash.api.controller;
 
 import com.fasterxml.jackson.databind.node.BinaryNode;
+import de.gnm.voxeldash.VoxelDashLoader;
 import de.gnm.voxeldash.api.ssh.SSHManager;
 import org.apache.sshd.common.AttributeRepository;
 import org.apache.sshd.common.session.helpers.AbstractSession;
@@ -195,17 +196,18 @@ public class SSHController extends BaseController {
 
     /**
      * Initialize the SSH controller
+     * @param loader The loader
      * @param accountController The account controller
      * @param serverRoot The server root
      */
-    public void initialize(AccountController accountController, File serverRoot) {
+    public void initialize(VoxelDashLoader loader, AccountController accountController, File serverRoot) {
         createDefaultConfig();
         if (sshManager == null) {
             if (getPublicKey() == null || getPrivateKey() == null) {
                 generateKeys();
             }
 
-            sshManager = new SSHManager(this, accountController, serverRoot);
+            sshManager = new SSHManager(loader, this, accountController, serverRoot);
         }
 
         if (isEnabled()) {

@@ -108,7 +108,7 @@ public class VoxelDashLoader {
         controllerManager.registerController(PermissionController.class);
 
         controllerManager.registerController(SSHController.class);
-        getController(SSHController.class).initialize(getController(AccountController.class), serverRoot);
+        getController(SSHController.class).initialize(this, getController(AccountController.class), serverRoot);
 
         controllerManager.registerController(ScheduleController.class);
 
