@@ -3,6 +3,7 @@ import {
     CalendarIcon,
     ChatCircleTextIcon,
     FolderOpenIcon,
+    GaugeIcon,
     GearSixIcon,
     GlobeHemisphereWestIcon,
     HardDrivesIcon,
@@ -27,6 +28,7 @@ import Users from "@/states/Root/pages/Users/Users.tsx";
 import Schedules from "@/states/Root/pages/Schedules/Schedules.tsx";
 import Worlds from "@/states/Root/pages/Worlds/Worlds.tsx";
 import Motd from "@/states/Root/pages/Motd/Motd.tsx";
+import Profiling from "@/states/Root/pages/Profiling/Profiling.tsx";
 
 export const getResourceIcon = (typeIdentifier: string): Icon => {
     switch (typeIdentifier) {
@@ -85,6 +87,13 @@ export const sidebar = [
         requiredFeatures: ["Worlds"],
         element: <Worlds />,
         name: () => t("nav.worlds")
+    },
+    {
+        path: "/profiling",
+        icon: GaugeIcon,
+        requiredFeatures: ["Profiling"],
+        element: <Profiling/>,
+        name: () => t("nav.profiling")
     },
     {
         path: "/backups",

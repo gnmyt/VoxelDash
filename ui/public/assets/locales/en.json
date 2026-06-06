@@ -52,7 +52,8 @@
       "ssh": "SSH/SFTP Access",
       "server": "Server",
       "users": "Users"
-    }
+    },
+    "profiling": "Profiling"
   },
   "motd": {
     "title": "Message of the Day",
@@ -734,5 +735,45 @@
     "server-ip": "IP address for server to listen on",
     "prevent-proxy-connections": "Prevents connections from proxies",
     "hide-online-players": "Hides the number of online players in the server list"
+  },
+  "profiling": {
+    "title": "Profiling",
+    "subtitle": "Find out where the tick goes and which plugins or mods cause lag.",
+    "start": "Start",
+    "stop": "Stop",
+    "duration": {
+      "30s": "30 seconds",
+      "60s": "60 seconds",
+      "120s": "2 minutes",
+      "manual": "Until stopped"
+    },
+    "metrics": {
+      "tps": "TPS",
+      "mspt": "MSPT",
+      "memory": "Memory",
+      "gc": "GC",
+      "threads": "Threads",
+      "entities": "Entities"
+    },
+    "running": "Sampling… {{seconds}}s elapsed, {{samples}} samples collected",
+    "empty": {
+      "title": "No profile yet",
+      "description": "Start a session to see which plugins and mods take the most server time."
+    },
+    "byResource": "What's using the most time",
+    "summary": "{{samples}} samples · {{seconds}}s",
+    "unsupported": {
+      "title": "Profiling not available",
+      "description": "This server doesn't support profiling. Live metrics are shown above."
+    },
+    "noSamples": {
+      "title": "No samples collected",
+      "description": "The session ended before any stack samples were taken. Try a longer duration."
+    },
+    "tree": {
+      "title": "Where the time goes",
+      "hint": "Each row is a method; expand to drill in. Click a plugin above to highlight where it spends time.",
+      "more": "+ {{count}} smaller calls"
+    }
   }
 }
