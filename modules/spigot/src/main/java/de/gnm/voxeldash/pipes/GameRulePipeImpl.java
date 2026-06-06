@@ -125,6 +125,8 @@ public class GameRulePipeImpl implements GameRulePipe {
             Object parsed = parse(typeClass, value);
             if (parsed == null) return false;
 
+            Method setValue = World.class.getMethod("setGameRule", gameRuleClass, Object.class);
+
             boolean any = false;
             for (World world : Bukkit.getWorlds()) {
                 Object ok = setValue.invoke(world, rule, parsed);

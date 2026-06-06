@@ -63,6 +63,14 @@ public final class BanCompat {
     }
 
     @SuppressWarnings("rawtypes")
+    public static void tempBan(String name, String reason, Date expiry, String source) {
+        BanList banList = resolveBanList();
+        if (banList != null) {
+            banList.addBan(name, reason, expiry, source);
+        }
+    }
+
+    @SuppressWarnings("rawtypes")
     public static void unban(String name) {
         BanList banList = resolveBanList();
         if (banList != null) {

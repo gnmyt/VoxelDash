@@ -8,8 +8,13 @@ import de.gnm.voxeldash.api.entities.schedule.ScheduleAction;
 import de.gnm.voxeldash.api.helper.BackupHelper;
 import de.gnm.voxeldash.api.pipes.*;
 import de.gnm.voxeldash.api.pipes.players.BanPipe;
+import de.gnm.voxeldash.api.pipes.players.InventoryPipe;
+import de.gnm.voxeldash.api.pipes.players.MessagePipe;
 import de.gnm.voxeldash.api.pipes.players.OnlinePlayerPipe;
 import de.gnm.voxeldash.api.pipes.players.OperatorPipe;
+import de.gnm.voxeldash.api.pipes.players.ProfilePipe;
+import de.gnm.voxeldash.api.pipes.players.PunishmentPipe;
+import de.gnm.voxeldash.api.pipes.players.TeleportPipe;
 import de.gnm.voxeldash.api.pipes.players.WhitelistPipe;
 import de.gnm.voxeldash.api.pipes.resources.ResourcePipe;
 import de.gnm.voxeldash.api.pipes.worlds.WorldPipe;
@@ -109,6 +114,15 @@ public class VoxelDashSpigot extends JavaPlugin {
 
         loader.registerPipe(ProfilingPipe.class, new ProfilingPipeImpl(this));
         loader.registerPipe(GameRulePipe.class, new GameRulePipeImpl());
+
+        loader.registerPipe(InventoryPipe.class, new InventoryPipeImpl());
+        loader.registerPipe(TeleportPipe.class, new TeleportPipeImpl());
+        loader.registerPipe(MessagePipe.class, new MessagePipeImpl());
+        loader.registerPipe(ProfilePipe.class, new ProfilePipeImpl());
+
+        PunishmentPipeImpl punishmentPipe = new PunishmentPipeImpl();
+        loader.registerPipe(PunishmentPipe.class, punishmentPipe);
+        getServer().getPluginManager().registerEvents(punishmentPipe, this);
     }
 
     /**
@@ -161,15 +175,7 @@ public class VoxelDashSpigot extends JavaPlugin {
             "schedules.actions.backup_input",
             metadata -> {
                 try {
-                    int backupMode = 0;
-                    if (metadata != null && !metadata.isEmpty()) {
-                        try {
-                            backupMode = Integer.parseInt(metadata);
-                        } catch (NumberFormatException ignored) {
-                        }
-                    }
-                    backupHelper.createBackup(String.valueOf(backupMode),
-                        backupHelper.getBackupDirectories(backupMode).toArray(new File[0]));
+                    backupHelper.createScheduledBackup(metadata);
                 } catch (Exception e) {
                     getLogger().log(Level.SEVERE, "Failed to create backup", e);
                 }

@@ -38,6 +38,13 @@ public final class VersionCompat {
         return datapackSupport == 1;
     }
 
+    /**
+     * Whether the server exposes the off-hand slot (1.9+).
+     */
+    public static boolean hasOffhand() {
+        return atLeast(9);
+    }
+
     private static boolean atLeast(int minor) {
         try {
             String[] parts = Bukkit.getBukkitVersion().split("-")[0].split("\\.");
