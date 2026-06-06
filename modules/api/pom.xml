@@ -4,6 +4,13 @@
     <artifactId>voxeldash-api</artifactId>
     <version>1.2.0-beta.18</version>
 
+    <repositories>
+        <repository>
+            <id>jitpack.io</id>
+            <url>https://jitpack.io</url>
+        </repository>
+    </repositories>
+
     <dependencies>
         <!-- SQLite JDBC -->
         <dependency>
@@ -87,6 +94,13 @@
             <groupId>org.apache.sshd</groupId>
             <artifactId>sshd-sftp</artifactId>
             <version>2.14.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.github.Querz</groupId>
+            <artifactId>NBT</artifactId>
+            <version>6.1</version>
+            <scope>provided</scope>
         </dependency>
 
     </dependencies>

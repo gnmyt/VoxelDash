@@ -34,6 +34,19 @@ public abstract class BaseRoute {
     }
 
     /**
+     * Gets a pipe of the given type, or {@code null} if no implementation is
+     * registered on this platform. Use this for optional/capability-gated pipes
+     * (e.g. inventory on a proxy) instead of {@link #getPipe(Class)}, which throws.
+     *
+     * @param pipeType the type of the pipe
+     * @param <T>      the type of the pipe
+     * @return the pipe, or null if not registered
+     */
+    public <T> T getPipeOrNull(Class<T> pipeType) {
+        return loader.getPipeOrNull(pipeType);
+    }
+
+    /**
      * Sets the loader
      *
      * @param loader The loader

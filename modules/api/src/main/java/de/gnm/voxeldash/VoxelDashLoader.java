@@ -17,7 +17,7 @@ import de.gnm.voxeldash.api.pipes.BasePipe;
 import de.gnm.voxeldash.api.routes.*;
 import de.gnm.voxeldash.api.routes.files.FileRouter;
 import de.gnm.voxeldash.api.routes.files.FolderRouter;
-import de.gnm.voxeldash.api.routes.players.PlayerRouter;
+import de.gnm.voxeldash.api.routes.players.*;
 import de.gnm.voxeldash.api.routes.resources.ResourceRouter;
 import de.gnm.voxeldash.api.routes.resources.StoreRouter;
 import de.gnm.voxeldash.api.routes.service.SSHRouter;
@@ -63,48 +63,16 @@ public class VoxelDashLoader {
     }
 
     /**
-     * Initializes the server
+     * Explicit registry of every {@link BaseRoute} to register at startup
+     * (see {@link #registerRoutes()}).
      */
-    private void initialize() {
-        connection = ConnectionConfig.detect();
-
-        registerRoutes();
-
-        controllerManager.setConnection(String.format("jdbc:sqlite:%s", databaseFile));
-
-        PathHandler handler = new PathHandler()
-                .addPrefixPath("/api", routeHandler)
-                .addPrefixPath("/api/ws", new WebSocketProtocolHandshakeHandler(webSocketHandler))
-                .addPrefixPath("/", new StaticHandler());
-
-        if (connection != null) {
-            httpServer = Undertow.builder().addHttpListener(connection.getApiPort(), "127.0.0.1").setHandler(handler).build();
-        } else {
-            httpServer = Undertow.builder().addHttpListener(7867, "0.0.0.0").setHandler(handler).build();
-        }
-
-        controllerManager.registerController(AccountController.class);
-
-        controllerManager.registerController(SessionController.class);
-
-        controllerManager.registerController(PermissionController.class);
-
-        controllerManager.registerController(SSHController.class);
-        getController(SSHController.class).initialize(this, getController(AccountController.class), serverRoot);
-
-        controllerManager.registerController(ScheduleController.class);
-
-        controllerManager.registerController(ApiKeyController.class);
-
-        registerFeatures(Feature.UserManagement);
-
-        if (connection != null) {
-            prepareConnectedMode();
-        }
-
-        scheduleExecutor = new ScheduleExecutor(this);
-        scheduleExecutor.start();
-    }
+    private static final List<Class<? extends BaseRoute>> ROUTES = Arrays.asList(
+            BackupRouter.class, FileRouter.class, FolderRouter.class, GameRuleRouter.class, InfoRouter.class,
+            MotdRouter.class, PingRouter.class, PlayerRouter.class, ProfilingRouter.class, PropertyRouter.class, QuickActionRouter.class,
+            ResourceRouter.class, StoreRouter.class, ScheduleRouter.class, SSHRouter.class,
+            SessionRouter.class, UserRouter.class, WidgetRouter.class, WorldRouter.class,
+            InventoryRouter.class, ProfileRouter.class, PunishmentRouter.class, TeleportRouter.class
+    );
 
     private void prepareConnectedMode() {
         AccountController accounts = getController(AccountController.class);
@@ -150,15 +118,50 @@ public class VoxelDashLoader {
     }
 
     /**
-     * Explicit registry of every {@link BaseRoute} to register at startup
-     * (see {@link #registerRoutes()}).
+     * Initializes the server
      */
-    private static final List<Class<? extends BaseRoute>> ROUTES = Arrays.asList(
-            BackupRouter.class, FileRouter.class, FolderRouter.class, GameRuleRouter.class, InfoRouter.class,
-            MotdRouter.class, PingRouter.class, PlayerRouter.class, ProfilingRouter.class, PropertyRouter.class, QuickActionRouter.class,
-            ResourceRouter.class, StoreRouter.class, ScheduleRouter.class, SSHRouter.class,
-            SessionRouter.class, UserRouter.class, WidgetRouter.class, WorldRouter.class
-    );
+    private void initialize() {
+        connection = ConnectionConfig.detect();
+
+        registerRoutes();
+
+        controllerManager.setConnection(String.format("jdbc:sqlite:%s", databaseFile));
+
+        PathHandler handler = new PathHandler()
+                .addPrefixPath("/api", routeHandler)
+                .addPrefixPath("/api/ws", new WebSocketProtocolHandshakeHandler(webSocketHandler))
+                .addPrefixPath("/", new StaticHandler());
+
+        if (connection != null) {
+            httpServer = Undertow.builder().addHttpListener(connection.getApiPort(), "127.0.0.1").setHandler(handler).build();
+        } else {
+            httpServer = Undertow.builder().addHttpListener(7867, "0.0.0.0").setHandler(handler).build();
+        }
+
+        controllerManager.registerController(AccountController.class);
+
+        controllerManager.registerController(SessionController.class);
+
+        controllerManager.registerController(PermissionController.class);
+
+        controllerManager.registerController(SSHController.class);
+        getController(SSHController.class).initialize(this, getController(AccountController.class), serverRoot);
+
+        controllerManager.registerController(ScheduleController.class);
+
+        controllerManager.registerController(ApiKeyController.class);
+
+        controllerManager.registerController(PlayerDataController.class);
+
+        registerFeatures(Feature.UserManagement);
+
+        if (connection != null) {
+            prepareConnectedMode();
+        }
+
+        scheduleExecutor = new ScheduleExecutor(this);
+        scheduleExecutor.start();
+    }
 
     /**
      * Gets the name of the route package
@@ -224,6 +227,22 @@ public class VoxelDashLoader {
         } else {
             throw new IllegalStateException("Registered handler is not of type: " + pipeType.getName());
         }
+    }
+
+    /**
+     * Gets a pipe of the given type, or {@code null} if no implementation is
+     * registered (rather than throwing). Used for optional, capability-gated pipes.
+     *
+     * @param pipeType the type of the pipe
+     * @param <T>      the type of the pipe
+     * @return the pipe, or null if not registered
+     */
+    public <T> T getPipeOrNull(Class<T> pipeType) {
+        BasePipe pipe = pipes.get(pipeType);
+        if (pipeType.isInstance(pipe)) {
+            return (T) pipe;
+        }
+        return null;
     }
 
     /**

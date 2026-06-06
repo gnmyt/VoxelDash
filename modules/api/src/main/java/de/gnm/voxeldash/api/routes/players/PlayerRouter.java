@@ -2,27 +2,16 @@ package de.gnm.voxeldash.api.routes.players;
 
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import de.gnm.voxeldash.api.annotations.ApiDoc;
-import de.gnm.voxeldash.api.annotations.ApiField;
-import de.gnm.voxeldash.api.annotations.AuthenticatedRoute;
-import de.gnm.voxeldash.api.annotations.FieldType;
-import de.gnm.voxeldash.api.annotations.Method;
-import de.gnm.voxeldash.api.annotations.Path;
-import de.gnm.voxeldash.api.annotations.RequiresFeatures;
-import de.gnm.voxeldash.api.entities.BannedPlayer;
-import de.gnm.voxeldash.api.entities.Feature;
-import de.gnm.voxeldash.api.entities.OfflinePlayer;
-import de.gnm.voxeldash.api.entities.OnlinePlayer;
-import de.gnm.voxeldash.api.entities.PermissionLevel;
+import de.gnm.voxeldash.api.annotations.*;
+import de.gnm.voxeldash.api.controller.PlayerDataController;
+import de.gnm.voxeldash.api.entities.*;
 import de.gnm.voxeldash.api.http.JSONRequest;
 import de.gnm.voxeldash.api.http.JSONResponse;
-import de.gnm.voxeldash.api.pipes.players.BanPipe;
-import de.gnm.voxeldash.api.pipes.players.OnlinePlayerPipe;
-import de.gnm.voxeldash.api.pipes.players.OperatorPipe;
-import de.gnm.voxeldash.api.pipes.players.WhitelistPipe;
+import de.gnm.voxeldash.api.pipes.players.*;
 import de.gnm.voxeldash.api.routes.BaseRoute;
 
-import static de.gnm.voxeldash.api.http.HTTPMethod.*;
+import static de.gnm.voxeldash.api.http.HTTPMethod.GET;
+import static de.gnm.voxeldash.api.http.HTTPMethod.POST;
 
 public class PlayerRouter extends BaseRoute {
 
@@ -34,6 +23,9 @@ public class PlayerRouter extends BaseRoute {
     public JSONResponse getOnlinePlayers() {
         OnlinePlayerPipe pipe = getPipe(OnlinePlayerPipe.class);
         ArrayNode players = getMapper().createArrayNode();
+
+        PlayerDataController playerData = getController(PlayerDataController.class);
+        long now = System.currentTimeMillis();
 
         for (OnlinePlayer player : pipe.getOnlinePlayers()) {
             ObjectNode playerNode = getMapper().createObjectNode();
@@ -47,9 +39,30 @@ public class PlayerRouter extends BaseRoute {
             playerNode.put("gamemode", player.getGamemode());
             playerNode.put("playtime", player.getPlaytime());
             players.add(playerNode);
+
+            try {
+                playerData.recordIp(player.getUuid(), normalizeIp(player.getIpAddress()), now);
+            } catch (Exception ignored) {
+            }
         }
 
         return new JSONResponse().add("players", players);
+    }
+
+    /**
+     * Strips a leading slash and any trailing {@code :port} so the stored IP is
+     * just the address (platforms report it in different shapes).
+     */
+    private String normalizeIp(String ip) {
+        if (ip == null) {
+            return null;
+        }
+        String value = ip.startsWith("/") ? ip.substring(1) : ip;
+        int colon = value.lastIndexOf(':');
+        if (colon > 0 && value.indexOf(':') == colon) {
+            value = value.substring(0, colon);
+        }
+        return value;
     }
 
     @ApiDoc(summary = "Kick a player", description = "Kicks the given online player from the server, optionally with a custom reason.", tag = "Players")
@@ -232,6 +245,23 @@ public class PlayerRouter extends BaseRoute {
         pipe.unbanPlayer(playerName);
 
         return new JSONResponse().message("Player unbanned");
+    }
+
+    @ApiDoc(summary = "Send a private message to a player", description = "Sends a private (whisper) message to an online player, shown in their chat.", tag = "Players")
+    @ApiField(name = "playerName", description = "Name of the recipient")
+    @ApiField(name = "message", description = "The message text")
+    @AuthenticatedRoute
+    @RequiresFeatures(value = Feature.Players, level = PermissionLevel.FULL)
+    @Path("/players/whisper")
+    @Method(POST)
+    public JSONResponse whisper(JSONRequest request) {
+        request.checkFor("playerName", "message");
+        MessagePipe pipe = getPipeOrNull(MessagePipe.class);
+        if (pipe == null) {
+            return new JSONResponse().error("Messaging is not supported on this platform.");
+        }
+        pipe.whisper(request.get("playerName"), request.get("message"));
+        return new JSONResponse().message("Message sent");
     }
 
 
