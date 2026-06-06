@@ -46,7 +46,7 @@ CARGO="$ROOT/desktop/src-tauri/Cargo.toml"
 sed -i -E "0,/^version = \".*\"/s//version = \"$VERSION\"/" "$CARGO"
 echo "desktop/src-tauri/Cargo.toml: set version -> $VERSION"
 
-for MODULE in fabric forge/mc1.8 forge/mc1.12 forge/mc1.16 forge/mc1.20 forge/mc1.21 forge/mc26; do
+for MODULE in fabric/mc1.8 fabric/mc1.12 fabric/mc1.14 fabric/mc1.16 fabric/mc1.20 fabric/mc1.21 forge/mc1.8 forge/mc1.12 forge/mc1.16 forge/mc1.20 forge/mc1.21 forge/mc26; do
   GP="$ROOT/modules/$MODULE/gradle.properties"
   sed -i -E "s/^mod_version=.*/mod_version=$VERSION/" "$GP"
   sed -i -E "s/^voxeldash_version=.*/voxeldash_version=$VERSION/" "$GP"

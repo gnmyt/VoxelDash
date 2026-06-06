@@ -1,0 +1,151 @@
+plugins {
+    id 'fabric-loom' version '1.9-SNAPSHOT'
+    id 'maven-publish'
+    id 'com.gradleup.shadow' version '8.3.6'
+}
+
+version = project.mod_version
+group = project.maven_group
+
+base {
+    archivesName = project.archives_base_name
+}
+
+sourceSets {
+    main {
+        java {
+            srcDir "${projectDir}/../shared/src/main/java"
+            exclude "de/gnm/voxeldash/listener/ConsoleListener.java"
+        }
+    }
+}
+
+java {
+    toolchain.languageVersion = JavaLanguageVersion.of(8)
+    sourceCompatibility = JavaVersion.VERSION_1_8
+    targetCompatibility = JavaVersion.VERSION_1_8
+    withSourcesJar()
+}
+
+repositories {
+    mavenLocal()
+    maven {
+        name = 'Legacy Fabric'
+        url = 'https://maven.legacyfabric.net/'
+    }
+    maven {
+        name = 'Fabric'
+        url = 'https://maven.fabricmc.net/'
+    }
+    mavenCentral()
+}
+
+loom {
+    intermediaryUrl = 'https://maven.legacyfabric.net/net/fabricmc/intermediary/%1$s/intermediary-%1$s-v2.jar'
+
+    runs {
+        server {
+            runDir "run"
+        }
+    }
+}
+
+dependencies {
+    minecraft "com.mojang:minecraft:${project.minecraft_version}"
+    mappings "net.legacyfabric:yarn:${project.yarn_mappings}:v2"
+    modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
+    modImplementation "net.legacyfabric.legacy-fabric-api:legacy-fabric-api:${project.legacy_fabric_api_version}"
+
+    implementation "de.gnm:voxeldash-api:${project.voxeldash_version}"
+    shadow "de.gnm:voxeldash-api:${project.voxeldash_version}"
+}
+
+tasks.register('buildWebUI', Exec) {
+    description = 'Builds the web UI using pnpm'
+    workingDir = file("${projectDir}/../../../ui")
+
+    commandLine 'sh', '-c', 'pnpm install && pnpm run build'
+
+    inputs.dir("${projectDir}/../../../ui/src")
+    inputs.file("${projectDir}/../../../ui/package.json")
+    inputs.file("${projectDir}/../../../ui/vite.config.ts")
+    outputs.dir("${projectDir}/../../../ui/dist")
+}
+
+tasks.register('copyWebUI', Copy) {
+    description = 'Copies the built web UI to resources'
+    dependsOn 'buildWebUI'
+
+    from "${projectDir}/../../../ui/dist"
+    into "${projectDir}/src/main/resources/webui"
+}
+
+tasks.named('clean') {
+    doLast {
+        delete "${projectDir}/src/main/resources/webui"
+    }
+}
+
+processResources {
+    dependsOn 'copyWebUI'
+
+    inputs.property "version", project.version
+
+    filesMatching("fabric.mod.json") {
+        expand "version": project.version
+    }
+}
+
+tasks.matching { it.name == 'sourcesJar' }.configureEach {
+    dependsOn 'copyWebUI'
+}
+
+tasks.withType(JavaCompile).configureEach {
+    it.options.encoding = 'UTF-8'
+}
+
+jar {
+    from("LICENSE") {
+        rename { "${it}_${project.base.archivesName.get()}" }
+    }
+}
+
+tasks.named("shadowJar") {
+    configurations = [project.configurations.shadow]
+    archiveClassifier.set("dev-all")
+
+    mergeServiceFiles()
+
+    relocate 'io.undertow', 'de.gnm.voxeldash.libs.undertow'
+    relocate 'org.apache.commons', 'de.gnm.voxeldash.libs.commons'
+    relocate 'com.fasterxml.jackson', 'de.gnm.voxeldash.libs.jackson'
+    relocate 'org.apache.sshd', 'de.gnm.voxeldash.libs.sshd'
+    relocate 'org.jboss', 'de.gnm.voxeldash.libs.jboss'
+    relocate 'org.xnio', 'de.gnm.voxeldash.libs.xnio'
+    relocate 'org.wildfly', 'de.gnm.voxeldash.libs.wildfly'
+    relocate 'org.reflections', 'de.gnm.voxeldash.libs.reflections'
+    relocate 'org.mindrot', 'de.gnm.voxeldash.libs.mindrot'
+    relocate 'org.yaml.snakeyaml', 'de.gnm.voxeldash.libs.snakeyaml'
+}
+
+tasks.named("remapJar") {
+    dependsOn("shadowJar")
+    inputFile = tasks.shadowJar.archiveFile
+    archiveClassifier.set("")
+}
+
+tasks.build {
+    dependsOn("remapJar")
+}
+
+publishing {
+    publications {
+        create("mavenJava", MavenPublication) {
+            artifactId = project.archives_base_name
+            from components.java
+        }
+    }
+
+    repositories {
+    }
+}

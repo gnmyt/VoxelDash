@@ -7,7 +7,12 @@ import {getChannel} from "../updater/settings.js";
 const ARTIFACT_MODULE = {
     spigot: "spigot",
     bungeecord: "bungeecord",
-    fabric: "fabric",
+    fabric8: "fabric/mc1.8",
+    fabric12: "fabric/mc1.12",
+    fabric14: "fabric/mc1.14",
+    fabric16: "fabric/mc1.16",
+    fabric20: "fabric/mc1.20",
+    fabric: "fabric/mc1.21",
     forge8: "forge/mc1.8",
     forge12: "forge/mc1.12",
     forge16: "forge/mc1.16",

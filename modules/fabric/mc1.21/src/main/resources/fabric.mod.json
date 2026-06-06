@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "voxeldash",
+  "version": "${version}",
+  "name": "VoxelDash",
+  "description": "A simple dashboard for your Minecraft server.",
+  "authors": [
+    "GNM"
+  ],
+  "contact": {
+    "homepage": "https://voxeldash.dev/",
+    "sources": "https://github.com/gnmyt/VoxelDash"
+  },
+  "license": "CC0-1.0",
+  "environment": "server",
+  "entrypoints": {
+    "server": [
+      "de.gnm.voxeldash.VoxelDashMod"
+    ]
+  },
+  "depends": {
+    "fabricloader": ">=0.16.9",
+    "fabric-api": "*",
+    "minecraft": ">=1.21- <1.22",
+    "java": ">=21"
+  }
+}

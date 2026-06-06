@@ -61,10 +61,41 @@ jobs:
             webui: true
             java: "21"
           - module: fabric
-            path: fabric
+            path: fabric/mc1.21
             tool: gradle
             webui: true
             java: "21"
+            loom: true
+          - module: fabric20
+            path: fabric/mc1.20
+            tool: gradle
+            webui: true
+            java: "17"
+            loom: true
+          - module: fabric16
+            path: fabric/mc1.16
+            tool: gradle
+            webui: true
+            java: "8"
+            loom: true
+          - module: fabric14
+            path: fabric/mc1.14
+            tool: gradle
+            webui: true
+            java: "8"
+            loom: true
+          - module: fabric12
+            path: fabric/mc1.12
+            tool: gradle
+            webui: true
+            java: "8"
+            loom: true
+          - module: fabric8
+            path: fabric/mc1.8
+            tool: gradle
+            webui: true
+            java: "8"
+            loom: true
           - module: forge8
             path: forge/mc1.8
             tool: gradle
@@ -162,10 +193,17 @@ jobs:
         working-directory: modules/${{ matrix.path }}
         run: |
           chmod +x ./gradlew
-          JDK_VAR="JAVA_HOME_${{ matrix.java }}_X64"
-          export JAVA_HOME="${!JDK_VAR}"
-          echo "Building ${{ matrix.module }} with JAVA_HOME=$JAVA_HOME"
-          ./gradlew build --no-daemon
+          if [ "${{ matrix.loom }}" = "true" ]; then
+            export JAVA_HOME="${JAVA_HOME_21_X64}"
+            echo "Building ${{ matrix.module }} (Loom) on JDK21, compile toolchain Java ${{ matrix.java }}"
+            ./gradlew build --no-daemon \
+              -Porg.gradle.java.installations.fromEnv=JAVA_HOME_8_X64,JAVA_HOME_17_X64,JAVA_HOME_21_X64
+          else
+            JDK_VAR="JAVA_HOME_${{ matrix.java }}_X64"
+            export JAVA_HOME="${!JDK_VAR}"
+            echo "Building ${{ matrix.module }} with JAVA_HOME=$JAVA_HOME"
+            ./gradlew build --no-daemon
+          fi
 
       - name: Stage release artifact
         id: stage
