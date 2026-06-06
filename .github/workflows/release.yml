@@ -559,7 +559,8 @@ jobs:
           name: dist-${{ matrix.module }}
           path: dist
 
-      - name: Publish to Modrinth
+      - name: Publish to Modrinth (explicit metadata)
+        if: matrix.loaders != ''
         uses: Kira-NT/mc-publish@v3.3
         continue-on-error: ${{ matrix.optional || false }}
         with:
@@ -571,6 +572,22 @@ jobs:
           version-type: ${{ needs.setup.outputs.version_type }}
           loaders: ${{ matrix.loaders }}
           game-versions: ${{ matrix.game_versions }}
+          changelog: ${{ needs.release.outputs.changelog }}
+          modrinth-unfeature-mode: subset
+          retry-attempts: 3
+          retry-delay: 10000
+
+      - name: Publish to Modrinth (inferred metadata)
+        if: matrix.loaders == ''
+        uses: Kira-NT/mc-publish@v3.3
+        continue-on-error: ${{ matrix.optional || false }}
+        with:
+          modrinth-id: voxeldash
+          modrinth-token: ${{ secrets.MODRINTH_TOKEN }}
+          files: dist/voxeldash-${{ matrix.module }}-${{ needs.setup.outputs.version }}.jar
+          name: VoxelDash ${{ needs.setup.outputs.version }} (${{ matrix.label }})
+          version: ${{ needs.setup.outputs.version }}+${{ matrix.suffix }}
+          version-type: ${{ needs.setup.outputs.version_type }}
           changelog: ${{ needs.release.outputs.changelog }}
           modrinth-unfeature-mode: subset
           retry-attempts: 3
