@@ -14,14 +14,18 @@ import java.io.File;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.util.ArrayList;
+import java.util.UUID;
 
 public class OnlinePlayerPipeImpl implements OnlinePlayerPipe {
 
     private static final Logger LOG = Logger.getLogger("VoxelDashVanilla");
+    private static final long SAVE_DEBOUNCE_MS = 3000;
 
     private final BufferedWriter consoleWriter;
     private final PlayerTracker playerTracker;
     private final File worldFolder;
+
+    private volatile long lastSaveAll = 0;
 
     public OnlinePlayerPipeImpl(OutputStream console, PlayerTracker playerTracker, File worldFolder) {
         this.consoleWriter = new BufferedWriter(new OutputStreamWriter(console));
@@ -33,38 +37,33 @@ public class OnlinePlayerPipeImpl implements OnlinePlayerPipe {
     public ArrayList<OnlinePlayer> getOnlinePlayers() {
         ArrayList<OnlinePlayer> players = new ArrayList<>();
 
-        triggerWorldSave();
+        ensureFreshPlayerData();
 
         for (PlayerTracker.TrackedPlayer tracked : playerTracker.getOnlinePlayers()) {
-            CompoundTag playerData = NBTHelper.readPlayerData(worldFolder, tracked.getUuid());
-
-            double health = NBTHelper.getHealth(playerData);
-            int foodLevel = NBTHelper.getFoodLevel(playerData);
-            String gameMode = NBTHelper.getGameMode(playerData);
-            String dimension = NBTHelper.getDimension(playerData);
-
-            String worldName = dimensionToWorldName(dimension);
-
-            boolean isOp = isOperator(tracked.getName());
-
-            long sessionTime = System.currentTimeMillis() - tracked.getJoinTime();
-
-            OnlinePlayer player = new OnlinePlayer(
+            players.add(buildOnlinePlayer(
                     tracked.getName(),
                     tracked.getUuid(),
-                    worldName,
                     tracked.getIpAddress(),
-                    health,
-                    foodLevel,
-                    isOp,
-                    gameMode,
-                    sessionTime
-            );
-
-            players.add(player);
+                    tracked.getJoinTime()
+            ));
         }
 
         return players;
+    }
+
+    public OnlinePlayer buildOnlinePlayer(String name, UUID uuid, String ipAddress, long joinTime) {
+        CompoundTag playerData = NBTHelper.readPlayerData(worldFolder, uuid);
+
+        double health = NBTHelper.getHealth(playerData);
+        int foodLevel = NBTHelper.getFoodLevel(playerData);
+        String gameMode = NBTHelper.getGameMode(playerData);
+        String dimension = NBTHelper.getDimension(playerData);
+
+        String worldName = dimensionToWorldName(dimension);
+        boolean isOp = isOperator(name);
+        long sessionTime = System.currentTimeMillis() - joinTime;
+
+        return new OnlinePlayer(name, uuid, worldName, ipAddress, health, foodLevel, isOp, gameMode, sessionTime);
     }
 
     @Override
@@ -87,6 +86,7 @@ public class OnlinePlayerPipeImpl implements OnlinePlayerPipe {
             String mode = gamemode.toLowerCase();
             consoleWriter.write("gamemode " + mode + " " + playerName + System.lineSeparator());
             consoleWriter.flush();
+            saveAll();
         } catch (Exception e) {
             LOG.error("Failed to set gamemode for " + playerName, e);
         }
@@ -98,15 +98,23 @@ public class OnlinePlayerPipeImpl implements OnlinePlayerPipe {
             String dimension = worldNameToDimension(worldName);
             consoleWriter.write("execute in " + dimension + " run tp " + playerName + " ~ ~ ~" + System.lineSeparator());
             consoleWriter.flush();
+            saveAll();
         } catch (Exception e) {
             LOG.error("Failed to teleport " + playerName + " to " + worldName, e);
         }
     }
 
-    private void triggerWorldSave() {
+    public void ensureFreshPlayerData() {
+        if (System.currentTimeMillis() - lastSaveAll >= SAVE_DEBOUNCE_MS) {
+            saveAll();
+        }
+    }
+
+    private void saveAll() {
         try {
             consoleWriter.write("save-all" + System.lineSeparator());
             consoleWriter.flush();
+            lastSaveAll = System.currentTimeMillis();
             Thread.sleep(100);
         } catch (Exception e) {
             LOG.debug("Failed to trigger world save", e);

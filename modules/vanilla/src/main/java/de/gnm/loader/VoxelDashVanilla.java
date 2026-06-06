@@ -3,6 +3,12 @@ package de.gnm.loader;
 import de.gnm.loader.command.SetupHandler;
 import de.gnm.loader.helper.PlayerTracker;
 import de.gnm.loader.helper.ServerHelper;
+import de.gnm.loader.msmp.MsmpBanPipe;
+import de.gnm.loader.msmp.MsmpClient;
+import de.gnm.loader.msmp.MsmpOnlinePlayerPipe;
+import de.gnm.loader.msmp.MsmpOperatorPipe;
+import de.gnm.loader.msmp.MsmpQuickActionPipe;
+import de.gnm.loader.msmp.MsmpWhitelistPipe;
 import de.gnm.loader.pipes.*;
 import de.gnm.loader.widgets.VanillaWidgetProvider;
 import de.gnm.voxeldash.VoxelDashLoader;
@@ -40,6 +46,7 @@ public class VoxelDashVanilla {
     private static String serverVersion = null;
     private static PlayerTracker playerTracker = null;
     private static VanillaWidgetProvider widgetProvider = null;
+    private static MsmpClient msmpClient = null;
 
     /**
      * Main method. Starts the VoxelDash Vanilla server
@@ -53,6 +60,9 @@ public class VoxelDashVanilla {
             if (serverVersion == null && event.getMessage().contains("Starting minecraft server version")) {
                 serverVersion = event.getMessage().split("Starting minecraft server version ")[1].split(" ")[0];
                 loader.registerPipe(ServerInfoPipe.class, new ServerInfoPipeImpl(serverVersion));
+                if (msmpClient != null) {
+                    msmpClient.notifyServerVersion(serverVersion);
+                }
             }
             LOG.info(event.getMessage());
         });
@@ -70,6 +80,12 @@ public class VoxelDashVanilla {
         }
 
         playerTracker = new PlayerTracker(SERVER_ROOT, loader.getEventDispatcher());
+
+        msmpClient = new MsmpClient(serverHelper.getManagementPort(), serverHelper.getManagementSecret());
+        msmpClient.start();
+        if (serverVersion != null) {
+            msmpClient.notifyServerVersion(serverVersion);
+        }
 
         registerPipes();
         registerFeatures();
@@ -96,11 +112,19 @@ public class VoxelDashVanilla {
         File worldFolder = getWorldFolder();
 
         loader.registerPipe(ServerInfoPipe.class, new ServerInfoPipeImpl(serverVersion != null ? serverVersion : "Unknown"));
-        loader.registerPipe(OperatorPipe.class, new OperatorPipeImpl(outputStream));
-        loader.registerPipe(WhitelistPipe.class, new WhitelistPipeImpl(outputStream));
-        loader.registerPipe(QuickActionPipe.class, new QuickActionPipeImpl(outputStream));
-        loader.registerPipe(OnlinePlayerPipe.class, new OnlinePlayerPipeImpl(outputStream, playerTracker, worldFolder));
-        loader.registerPipe(BanPipe.class, new BanPipeImpl(outputStream));
+
+        OperatorPipeImpl operatorFallback = new OperatorPipeImpl(outputStream);
+        WhitelistPipeImpl whitelistFallback = new WhitelistPipeImpl(outputStream);
+        QuickActionPipeImpl quickActionFallback = new QuickActionPipeImpl(outputStream);
+        OnlinePlayerPipeImpl onlinePlayerFallback = new OnlinePlayerPipeImpl(outputStream, playerTracker, worldFolder);
+        BanPipeImpl banFallback = new BanPipeImpl(outputStream);
+
+        loader.registerPipe(OperatorPipe.class, new MsmpOperatorPipe(msmpClient, operatorFallback));
+        loader.registerPipe(WhitelistPipe.class, new MsmpWhitelistPipe(msmpClient, whitelistFallback));
+        loader.registerPipe(QuickActionPipe.class, new MsmpQuickActionPipe(msmpClient, quickActionFallback));
+        loader.registerPipe(OnlinePlayerPipe.class, new MsmpOnlinePlayerPipe(msmpClient, onlinePlayerFallback, playerTracker));
+        loader.registerPipe(BanPipe.class, new MsmpBanPipe(msmpClient, banFallback));
+
         loader.registerPipe(WorldPipe.class, new WorldPipeImpl(outputStream, SERVER_ROOT));
         loader.registerPipe(ResourcePipe.class, new ResourcePipeImpl(outputStream, SERVER_ROOT));
     }

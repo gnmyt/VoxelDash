@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import de.gnm.voxeldash.api.event.EventDispatcher;
 import de.gnm.voxeldash.api.event.console.ConsoleMessageReceivedEvent;
+import de.gnm.voxeldash.api.helper.PropertyHelper;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
@@ -13,9 +14,12 @@ import java.io.*;
 import java.nio.file.Files;
 import java.lang.management.ManagementFactory;
 import java.lang.management.MemoryMXBean;
+import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 public class ServerHelper {
 
@@ -29,11 +33,17 @@ public class ServerHelper {
             "-XX:MaxTenuringThreshold=1 -XX:SurvivorRatio=32 -Dusing.aikars.flags=https://mcflags.emc.gs " +
             "-Daikars.new.flags=true";
 
+    private static final String MGMT_SECRET_ALPHABET = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+    private static final int MGMT_SECRET_LENGTH = 40;
+
     private final File serverRoot;
     private final EventDispatcher eventDispatcher;
     private final ManifestHelper manifestHelper;
     private final OkHttpClient client;
     private Process process;
+
+    private int managementPort = -1;
+    private String managementSecret;
 
     public ServerHelper(File serverRoot, EventDispatcher eventDispatcher) {
         this.serverRoot = serverRoot;
@@ -253,7 +263,67 @@ public class ServerHelper {
         if (!isInstalled()) {
             install();
         }
+        prepareManagementServer();
         createProcess();
+    }
+
+    private void prepareManagementServer() {
+        try {
+            managementPort = resolveManagementPort();
+            managementSecret = generateSecret();
+
+            Map<String, String> properties = new LinkedHashMap<>();
+            properties.put("management-server-enabled", "true");
+            properties.put("management-server-host", "localhost");
+            properties.put("management-server-port", String.valueOf(managementPort));
+            properties.put("management-server-secret", managementSecret);
+            properties.put("management-server-tls-enabled", "false");
+            PropertyHelper.setProperties(properties);
+
+            LOG.info("Configured management server on localhost:" + managementPort);
+        } catch (Exception e) {
+            LOG.warn("Failed to configure the management server, falling back to console/file access", e);
+            managementPort = -1;
+            managementSecret = null;
+        }
+    }
+
+    private int resolveManagementPort() {
+        String override = System.getenv("VOXELDASH_MGMT_PORT");
+        if (override != null && !override.isEmpty()) {
+            try {
+                return Integer.parseInt(override.trim());
+            } catch (NumberFormatException e) {
+                LOG.warn("Invalid VOXELDASH_MGMT_PORT '" + override + "', deriving from server-port instead");
+            }
+        }
+
+        int serverPort = 25565;
+        String configured = PropertyHelper.getProperty("server-port");
+        if (configured != null && !configured.isEmpty()) {
+            try {
+                serverPort = Integer.parseInt(configured.trim());
+            } catch (NumberFormatException ignored) {
+            }
+        }
+        return serverPort + 1;
+    }
+
+    private String generateSecret() {
+        SecureRandom random = new SecureRandom();
+        StringBuilder builder = new StringBuilder(MGMT_SECRET_LENGTH);
+        for (int i = 0; i < MGMT_SECRET_LENGTH; i++) {
+            builder.append(MGMT_SECRET_ALPHABET.charAt(random.nextInt(MGMT_SECRET_ALPHABET.length())));
+        }
+        return builder.toString();
+    }
+
+    public int getManagementPort() {
+        return managementPort;
+    }
+
+    public String getManagementSecret() {
+        return managementSecret;
     }
 
     /**
