@@ -5,63 +5,63 @@
 @layer base {
   :root {
     --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
-  
+    --foreground: 270 20% 12%;
+
     --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
-  
+    --card-foreground: 270 20% 12%;
+
     --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
-  
-    --primary: 221.2 83.2% 53.3%;
-    --primary-foreground: 210 40% 98%;
-  
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
-  
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
-  
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
-  
+    --popover-foreground: 270 20% 12%;
+
+    --primary: 270 93% 37%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 270 25% 96%;
+    --secondary-foreground: 270 30% 18%;
+
+    --muted: 270 25% 96%;
+    --muted-foreground: 270 8% 42%;
+
+    --accent: 270 25% 95%;
+    --accent-foreground: 270 30% 18%;
+
     --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
-  
-    --border:214.3 31.8% 91.4%;
-    --input:214.3 31.8% 91.4%;
-    --ring:221.2 83.2% 53.3%;
+    --destructive-foreground: 0 0% 98%;
+
+    --border:270 20% 90%;
+    --input:270 20% 90%;
+    --ring:270 93% 37%;
     --radius: 0.5rem;
   }
-   
+
   .dark {
-    --background:222.2 84% 4.9%;
-    --foreground:210 40% 98%;
-  
-    --card:222.2 84% 4.9%;
-    --card-foreground:210 40% 98%;
-  
-    --popover:222.2 84% 4.9%;
-    --popover-foreground:210 40% 98%;
-  
-    --primary:217.2 91.2% 59.8%;
-    --primary-foreground:222.2 47.4% 11.2%;
-  
-    --secondary:217.2 32.6% 17.5%;
-    --secondary-foreground:210 40% 98%;
-  
-    --muted:217.2 32.6% 17.5%;
-    --muted-foreground:215 20.2% 65.1%;
-  
-    --accent:217.2 32.6% 17.5%;
-    --accent-foreground:210 40% 98%;
-  
-    --destructive:0 62.8% 30.6%;
-    --destructive-foreground:210 40% 98%;
-  
-    --border:217.2 32.6% 17.5%;
-    --input:217.2 32.6% 17.5%;
-    --ring:224.3 76.3% 48%;
+    --background:270 20% 7%;
+    --foreground:270 10% 96%;
+
+    --card:270 22% 9%;
+    --card-foreground:270 10% 96%;
+
+    --popover:270 22% 9%;
+    --popover-foreground:270 10% 96%;
+
+    --primary:270 80% 60%;
+    --primary-foreground:0 0% 100%;
+
+    --secondary:270 20% 16%;
+    --secondary-foreground:270 10% 96%;
+
+    --muted:270 18% 16%;
+    --muted-foreground:270 10% 65%;
+
+    --accent:270 18% 18%;
+    --accent-foreground:270 10% 96%;
+
+    --destructive:0 62.8% 45%;
+    --destructive-foreground:0 0% 98%;
+
+    --border:270 18% 18%;
+    --input:270 18% 18%;
+    --ring:270 80% 60%;
   }
 }
 
@@ -85,4 +85,20 @@
   body {
     @apply bg-background text-foreground;
   }
+}
+
+/* Force the dashboard's exact purple (hue 270) regardless of the persisted
+   theme cookie/class (theme-green, theme-violet, ...). The shadcn theme
+   classes only set --primary/--primary-foreground/--ring, so overriding
+   those fully recolors the docs. */
+body[class*="theme-"] {
+  --primary: 270 93% 37% !important;
+  --primary-foreground: 0 0% 100% !important;
+  --ring: 270 93% 37% !important;
+}
+
+.dark body[class*="theme-"] {
+  --primary: 270 80% 60% !important;
+  --primary-foreground: 0 0% 100% !important;
+  --ring: 270 80% 60% !important;
 }

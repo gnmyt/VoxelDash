@@ -2,11 +2,12 @@ export default defineAppConfig({
   shadcnDocs: {
     site: {
       name: 'VoxelDash',
-      description: 'VoxelDash is a simple dashboard for your Minecraft server',
+      description: 'VoxelDash (formerly MCDash) is a modern, open-source web dashboard for managing your Minecraft server — players, files, console, plugins, backups and more, from your browser.',
+      ogImage: 'https://voxeldash.dev/img/screenshots/overview.png',
     },
     theme: {
       customizable: false,
-      color: 'green',
+      color: 'violet',
       radius: 0.75,
     },
     header: {

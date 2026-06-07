@@ -1,5 +1,5 @@
 <h1 align="center"><img src=".github/logo.png" alt="" width="32" height="32" style="vertical-align: middle;"> VoxelDash</h1>
-<p align="center">A modern, beautiful web dashboard for managing your Minecraft server</p>
+<p align="center">A modern, beautiful web dashboard for managing your Minecraft server <em>(formerly MCDash)</em></p>
 <p align="center">
   <a href="https://github.com/gnmyt/VoxelDash/stargazers"><img src="https://img.shields.io/github/stars/gnmyt/VoxelDash?style=flat-square&logo=github&color=f97316" alt="GitHub Stars"></a>
   <a href="https://github.com/gnmyt/VoxelDash/network/members"><img src="https://img.shields.io/github/forks/gnmyt/VoxelDash?style=flat-square&logo=github&color=f97316" alt="GitHub Forks"></a>
@@ -21,15 +21,20 @@ VoxelDash provides everything you need to manage your Minecraft server from a sl
 
 | Feature | Description |
 |---------|-------------|
-| **Dashboard** | Real-time server status, player count, memory usage, and TPS monitoring |
-| **Player Management** | View online players, manage whitelist, and moderate your community |
-| **File Manager** | Browse, edit, upload, and manage server files directly in your browser |
-| **Console** | Full server console access with command execution |
-| **World Management** | Manage multiple worlds, change settings, and organize your server |
-| **Plugin Manager** | Install, update, and manage plugins with SpigotMC integration |
-| **Backups** | Create and restore server backups with scheduling support |
-| **Schedules** | Automate tasks with daily, weekly, or monthly schedules |
-| **Configuration** | Edit server.properties and other configuration files easily |
+| **Dashboard** | Real-time status with customizable widgets for TPS, memory, CPU, players, and more |
+| **Players** | See who's online, manage the whitelist, bans, and operators, and edit inventories or profiles |
+| **File Manager** | Browse, edit, upload, and download server files right in your browser |
+| **Console** | Live console output and command execution, with optional SSH access |
+| **Worlds** | Manage every world's time, weather, and difficulty, or create and delete worlds |
+| **Plugins & Mods** | Install and update plugins and mods from Modrinth, SpigotMC, and CurseForge |
+| **Backups** | Create, restore, and download backups, manually or on a schedule |
+| **Schedules** | Automate commands, broadcasts, backups, and restarts |
+| **MOTD Editor** | Design the message and icon shown in the multiplayer server list |
+| **Profiling** | Track live performance metrics and find out what's making your server lag |
+| **Game Rules** | Tweak the game's rules from a searchable list, applied to the running server |
+| **Server Settings** | Edit `server.properties` through a clean, categorized editor |
+
+VoxelDash runs as a plugin or mod on **Spigot, Paper, Fabric, and Forge**, or as a standalone app for **vanilla** servers. You can also run it in front of multiple servers at once with [VoxelDash One](https://voxeldash.dev/voxeldash-one/introduction).
 
 ## Screenshots
 
@@ -57,12 +62,22 @@ VoxelDash provides everything you need to manage your Minecraft server from a sl
     </tr>
     <tr>
       <td align="center">
-        <img src=".github/screenshots/plugins.png" alt="Plugins" width="400">
-        <br><strong>Plugins</strong>
+        <img src=".github/screenshots/worlds.png" alt="Worlds" width="400">
+        <br><strong>Worlds</strong>
       </td>
       <td align="center">
-        <img src=".github/screenshots/backups.png" alt="Backups" width="400">
-        <br><strong>Backups</strong>
+        <img src=".github/screenshots/plugins.png" alt="Plugins & Mods" width="400">
+        <br><strong>Plugins &amp; Mods</strong>
+      </td>
+    </tr>
+    <tr>
+      <td align="center">
+        <img src=".github/screenshots/motd.png" alt="MOTD Editor" width="400">
+        <br><strong>MOTD Editor</strong>
+      </td>
+      <td align="center">
+        <img src=".github/screenshots/gamerules.png" alt="Game Rules" width="400">
+        <br><strong>Game Rules</strong>
       </td>
     </tr>
   </table>
@@ -81,7 +96,7 @@ VoxelDash provides everything you need to manage your Minecraft server from a sl
 
 2. **Install** the plugin/mod on your server:
    - **Spigot/Paper**: Place the `.jar` file in the `plugins` folder
-   - **Fabric**: Place the `.jar` file in the `mods` folder
+   - **Fabric/Forge**: Place the `.jar` file in the `mods` folder
    - **Vanilla**: Run the standalone `.jar` file
 
 3. **Start** your server and access the dashboard at `http://localhost:7867`
@@ -94,7 +109,7 @@ For detailed installation instructions, check out our [documentation](https://vo
 
 - **Frontend**: React, TypeScript, Vite, Tailwind CSS, shadcn/ui
 - **Backend**: Java, integrated with Minecraft server APIs
-- **Supported Platforms**: Spigot, Paper, Fabric, Vanilla
+- **Supported Platforms**: Spigot, Paper, Fabric, Forge, Vanilla
 
 ## Contributing
 
