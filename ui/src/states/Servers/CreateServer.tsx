@@ -13,16 +13,25 @@ import {Dialog, DialogContent, DialogHeader, DialogTitle} from "@/components/ui/
 import {toast} from "@/hooks/use-toast.ts";
 import {
     ArrowLeftIcon, ArrowRightIcon, CheckIcon, CheckCircleIcon, SpinnerGapIcon,
-    WarningCircleIcon, ArrowSquareOutIcon,
+    WarningCircleIcon, ArrowSquareOutIcon, PuzzlePieceIcon, StackIcon, CubeIcon, ShareNetworkIcon,
+    type Icon,
 } from "@phosphor-icons/react";
 
 interface SoftwareEntry {
     key: string;
     name: string;
     kind: string;
+    category: string;
     accent: string;
     tagline: string;
 }
+
+const CATEGORIES: { key: string; icon: Icon; accent: string }[] = [
+    {key: "plugins", icon: PuzzlePieceIcon, accent: "#4f8ff7"},
+    {key: "modded", icon: StackIcon, accent: "#e8732a"},
+    {key: "vanilla", icon: CubeIcon, accent: "#5cb85c"},
+    {key: "proxy", icon: ShareNetworkIcon, accent: "#e0a82e"},
+];
 
 const MEMORY_MIN = 1024;
 const MEMORY_STEP = 512;
@@ -43,6 +52,7 @@ const CreateServerDialog = ({open, onOpenChange}: { open: boolean; onOpenChange:
 
     const [step, setStep] = useState<"software" | "details" | "provisioning">("software");
     const [catalog, setCatalog] = useState<SoftwareEntry[]>([]);
+    const [category, setCategory] = useState<string | null>(null);
     const [software, setSoftware] = useState<string | null>(null);
     const [versions, setVersions] = useState<string[]>([]);
     const [versionsLoading, setVersionsLoading] = useState(false);
@@ -65,6 +75,7 @@ const CreateServerDialog = ({open, onOpenChange}: { open: boolean; onOpenChange:
         if (open) return;
         const t = setTimeout(() => {
             setStep("software");
+            setCategory(null);
             setSoftware(null);
             setVersions([]);
             setName("");
@@ -120,31 +131,75 @@ const CreateServerDialog = ({open, onOpenChange}: { open: boolean; onOpenChange:
 
                 <Steps step={step}/>
 
-                {step === "software" && (
+                {step === "software" && category === null && (
                     <div className="grid gap-3 sm:grid-cols-2">
-                        {catalog.map((entry) => (
-                            <button key={entry.key} onClick={() => chooseSoftware(entry.key)}
-                                    className={`group relative flex items-start gap-4 overflow-hidden rounded-2xl border p-4 text-left transition-all
-                                        "border-border/70 bg-card/40 hover:border-border hover:bg-card/80 cursor-pointer"}`}>
-                                {softwareMeta(entry.key).logo ? (
-                                    <div className="flex size-11 shrink-0 items-center justify-center rounded-xl border border-border/60 bg-background">
-                                        <img src={softwareMeta(entry.key).logo} alt={entry.name} className="size-7 object-contain"
-                                             style={{imageRendering: entry.key === "fabric" ? "pixelated" : "auto"}}/>
+                        {CATEGORIES.filter((cat) => catalog.some((e) => e.category === cat.key)).map((cat) => {
+                            const Icon = cat.icon;
+                            const loaders = catalog.filter((e) => e.category === cat.key);
+                            const pick = () => loaders.length === 1 ? chooseSoftware(loaders[0].key) : setCategory(cat.key);
+                            return (
+                                <button key={cat.key} onClick={pick}
+                                        className="group flex min-h-[10.5rem] cursor-pointer flex-col gap-3 rounded-2xl border border-border/70 bg-card/40 p-5 text-left transition-all hover:border-border hover:bg-card/80">
+                                    <div className="flex items-center gap-3">
+                                        <div className="flex size-10 shrink-0 items-center justify-center rounded-xl transition-transform group-hover:scale-105"
+                                             style={{backgroundColor: `${cat.accent}1a`, color: cat.accent}}>
+                                            <Icon weight="duotone" className="size-[22px]"/>
+                                        </div>
+                                        <h3 className="font-display text-base font-semibold">{t(`create_server.category_${cat.key}`)}</h3>
                                     </div>
-                                ) : (
-                                    <div className="flex size-11 shrink-0 items-center justify-center rounded-xl text-base font-bold text-white"
-                                         style={{backgroundColor: entry.accent}}>
-                                        {entry.name.slice(0, 2).toUpperCase()}
+                                    <p className="text-sm leading-relaxed text-muted-foreground">{t(`create_server.category_${cat.key}_desc`)}</p>
+                                    <div className="mt-auto flex items-center gap-2 pt-1">
+                                        <div className="flex -space-x-1.5">
+                                            {loaders.slice(0, 5).map((e) => (
+                                                <div key={e.key} title={e.name}
+                                                     className="flex size-7 items-center justify-center rounded-lg border border-border/60 bg-background ring-2 ring-card/40">
+                                                    {softwareMeta(e.key).logo ? (
+                                                        <img src={softwareMeta(e.key).logo} alt={e.name} className="size-4 object-contain"
+                                                             style={{imageRendering: e.key === "fabric" ? "pixelated" : "auto"}}/>
+                                                    ) : (
+                                                        <span className="text-[9px] font-bold">{e.name.slice(0, 2).toUpperCase()}</span>
+                                                    )}
+                                                </div>
+                                            ))}
+                                        </div>
+                                        <span className="text-xs text-muted-foreground">
+                                            {t("create_server.option_count", {count: loaders.length})}
+                                        </span>
                                     </div>
-                                )}
-                                <div className="min-w-0 flex-1">
-                                    <div className="flex items-center gap-2">
+                                </button>
+                            );
+                        })}
+                    </div>
+                )}
+
+                {step === "software" && category !== null && (
+                    <div className="space-y-3">
+                        <button onClick={() => setCategory(null)}
+                                className="flex cursor-pointer items-center gap-1.5 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground">
+                            <ArrowLeftIcon className="size-4"/> {t(`create_server.category_${category}`)}
+                        </button>
+                        <div className="grid gap-3 sm:grid-cols-2">
+                            {catalog.filter((e) => e.category === category).map((entry) => (
+                                <button key={entry.key} onClick={() => chooseSoftware(entry.key)}
+                                        className="group relative flex cursor-pointer items-start gap-4 overflow-hidden rounded-2xl border border-border/70 bg-card/40 p-4 text-left transition-all hover:border-border hover:bg-card/80">
+                                    {softwareMeta(entry.key).logo ? (
+                                        <div className="flex size-11 shrink-0 items-center justify-center rounded-xl border border-border/60 bg-background">
+                                            <img src={softwareMeta(entry.key).logo} alt={entry.name} className="size-7 object-contain"
+                                                 style={{imageRendering: entry.key === "fabric" ? "pixelated" : "auto"}}/>
+                                        </div>
+                                    ) : (
+                                        <div className="flex size-11 shrink-0 items-center justify-center rounded-xl text-base font-bold text-white"
+                                             style={{backgroundColor: entry.accent}}>
+                                            {entry.name.slice(0, 2).toUpperCase()}
+                                        </div>
+                                    )}
+                                    <div className="min-w-0 flex-1">
                                         <h3 className="font-display text-base font-semibold">{entry.name}</h3>
+                                        <p className="text-xs text-muted-foreground">{entry.tagline}</p>
                                     </div>
-                                    <p className="text-xs text-muted-foreground">{entry.tagline}</p>
-                                </div>
-                            </button>
-                        ))}
+                                </button>
+                            ))}
+                        </div>
                     </div>
                 )}
 
