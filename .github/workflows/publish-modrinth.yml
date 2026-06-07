@@ -57,6 +57,9 @@ jobs:
           - { module: forge20,  label: "Forge 1.20.1", suffix: "forge-1.20.1" }
           - { module: forge,    label: "Forge 1.21",   suffix: "forge-1.21" }
           - { module: forge26,  label: "Forge 26",     suffix: "forge-26", optional: true }
+          - { module: neoforge20, label: "NeoForge 1.20", suffix: "neoforge-1.20" }
+          - { module: neoforge,   label: "NeoForge 1.21", suffix: "neoforge-1.21" }
+          - { module: neoforge26, label: "NeoForge 26",   suffix: "neoforge-26", optional: true }
     steps:
       - name: Download ${{ matrix.module }} artifact
         uses: actions/download-artifact@v4

@@ -111,6 +111,21 @@ jobs:
             tool: gradle
             webui: true
             java: "25"
+          - module: neoforge20
+            path: neoforge/mc1.20
+            tool: gradle
+            webui: true
+            java: "17"
+          - module: neoforge
+            path: neoforge/mc1.21
+            tool: gradle
+            webui: true
+            java: "21"
+          - module: neoforge26
+            path: neoforge/mc26
+            tool: gradle
+            webui: true
+            java: "25"
     steps:
       - name: Checkout
         uses: actions/checkout@v4
