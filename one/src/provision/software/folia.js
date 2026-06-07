@@ -1,9 +1,9 @@
 import {fillSoftware} from "./papermc.js";
 
-export const paper = fillSoftware({
-    key: "paper",
-    name: "Paper",
-    project: "paper",
+export const folia = fillSoftware({
+    key: "folia",
+    name: "Folia",
+    project: "folia",
     voxeldashArtifact: "spigot",
     installDir: "plugins",
 });

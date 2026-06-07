@@ -20,6 +20,9 @@ const ARTIFACT_MODULE = {
     forge20: "forge/mc1.20",
     forge: "forge/mc1.21",
     forge26: "forge/mc26",
+    neoforge20: "neoforge/mc1.20",
+    neoforge: "neoforge/mc1.21",
+    neoforge26: "neoforge/mc26",
     vanilla: "vanilla",
 };
 

@@ -1,8 +1,7 @@
-import {join, relative} from "node:path";
-import {existsSync, readdirSync, readFileSync, rmSync} from "node:fs";
 import {config} from "../../config.js";
 import {mojangJavaMajor} from "../mojang.js";
 import {writeMinecraftProperties} from "./common.js";
+import {argfileLaunch, installForgeLike} from "./forgeInstaller.js";
 
 const MAVEN = "https://maven.minecraftforge.net";
 const PROMOS = "https://files.minecraftforge.net/net/minecraftforge/forge/promotions_slim.json";
@@ -52,39 +51,6 @@ const resolveForgeVersion = async (mcVersion) => {
     return version;
 };
 
-const findUnixArgs = (forgeRoot) => {
-    if (!existsSync(forgeRoot)) return null;
-    for (const entry of readdirSync(forgeRoot, {withFileTypes: true})) {
-        if (!entry.isDirectory()) continue;
-        const candidate = join(forgeRoot, entry.name, "unix_args.txt");
-        if (existsSync(candidate)) return candidate;
-    }
-    return null;
-};
-
-const runJava = async (javaPath, args, cwd, log) => {
-    const proc = Bun.spawn([javaPath, ...args], {cwd, stdout: "pipe", stderr: "pipe"});
-    const pipe = async (stream) => {
-        if (!stream) return;
-        const reader = stream.getReader();
-        const decoder = new TextDecoder();
-        let buffer = "";
-        while (true) {
-            const {done, value} = await reader.read();
-            if (done) break;
-            buffer += decoder.decode(value, {stream: true});
-            let idx;
-            while ((idx = buffer.indexOf("\n")) >= 0) {
-                log(buffer.slice(0, idx));
-                buffer = buffer.slice(idx + 1);
-            }
-        }
-    };
-    await Promise.all([pipe(proc.stdout), pipe(proc.stderr)]);
-    const code = await proc.exited;
-    if (code !== 0) throw new Error(`Forge installer exited with code ${code}`);
-};
-
 export const forge = {
     key: "forge",
     name: "Forge",
@@ -128,23 +94,17 @@ export const forge = {
     },
 
     async install(dir, {javaPath, log}) {
-        log("Running Forge installer (this downloads Minecraft and libraries)...");
-        const installerPath = join(dir, "forge-installer.jar");
-        await runJava(javaPath, ["-jar", installerPath, "--installServer"], dir, log);
-
-        const argsFile = findUnixArgs(join(dir, "libraries", "net", "minecraftforge", "forge"));
-        if (!argsFile) throw new Error("Forge installer did not produce a unix_args.txt launch file");
-        await Bun.write(join(dir, this.provisionedMarker), `@${relative(dir, argsFile)}\nnogui\n`);
-
-        rmSync(installerPath, {force: true});
-        rmSync(`${installerPath}.log`, {force: true});
-        log("Forge server installed.");
+        await installForgeLike(dir, {
+            javaPath, log,
+            librariesSubpath: ["net", "minecraftforge", "forge"],
+            marker: this.provisionedMarker,
+            label: "Forge",
+        });
     },
 
     layout: writeMinecraftProperties,
 
     launchArgs(_jarFileName, serverDir) {
-        const descriptor = join(serverDir, this.provisionedMarker);
-        return readFileSync(descriptor, "utf8").split("\n").map((l) => l.trim()).filter(Boolean);
+        return argfileLaunch(serverDir, this.provisionedMarker);
     },
 };
