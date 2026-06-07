@@ -19,8 +19,8 @@
     "move": "Mover",
     "yes": "Sí",
     "no": "Nu",
-    "close": "Close",
-    "loading": "Loading..."
+    "close": "Cerrar",
+    "loading": "Cargando..."
   },
   "header": {
     "account": "Administrar cuenta",
@@ -37,23 +37,23 @@
     "password": "Contraseña",
     "forgot_password": "¿Olvidaste tu contraseña?",
     "forgot_password_description": "Si has olvidado tu contraseña, puedes restablecerla usando el comando /account dentro del juego.",
-    "auth_failed": "Authentication failed",
-    "docs": "Documentation",
-    "tagline": "Your Minecraft server, fully in your hands.",
-    "description": "Manage players, console, files, worlds and settings from one clean dashboard. No SSH, no fiddling with config files.",
-    "welcome_title": "Welcome back",
-    "welcome_subtitle": "Sign in to your server dashboard.",
+    "auth_failed": "Autenticación fallida",
+    "docs": "Documentación",
+    "tagline": "Tu servidor de Minecraft, completamente en tus manos.",
+    "description": "Administrar reproductores, consolas, archivos, mundos y ajustes desde un panel limpio. Sin SSH, sin manipulación con archivos de configuración.",
+    "welcome_title": "Bienvenida de nuevo",
+    "welcome_subtitle": "Inicie sesión en el panel de control de su servidor.",
     "master": {
-      "tagline": "All your Minecraft servers in one place.",
-      "description": "Create Paper, Fabric, Vanilla or proxy servers from here. VoxelDash One downloads the server jar and a matching Java version, then starts it for you. No manual setup, no SSH.",
-      "setup_title": "Set up your admin account",
-      "welcome_title": "Welcome back",
-      "setup_subtitle": "This is the first run. Create the admin account for this instance.",
-      "welcome_subtitle": "Sign in to manage your servers.",
-      "username": "Username",
-      "password": "Password",
-      "create_account": "Create admin account",
-      "sign_in": "Sign in"
+      "tagline": "Todos tus servidores de Minecraft en un solo lugar.",
+      "description": "Crear servidores Papel, Fabric, Vanilla o proxy desde aquí. VoxelDash One descarga el jar del servidor y una versión compatible de Java, luego lo inicia para usted. Sin configuración manual, sin SSH.",
+      "setup_title": "Configura tu cuenta de admin",
+      "welcome_title": "Bienvenida de nuevo",
+      "setup_subtitle": "Esta es la primera ejecución. Crea la cuenta de administrador para esta instancia.",
+      "welcome_subtitle": "Inicia sesión para administrar tus servidores.",
+      "username": "Usuario",
+      "password": "Contraseña",
+      "create_account": "Crear cuenta de administrador",
+      "sign_in": "Iniciar sesión"
     }
   },
   "nav": {
@@ -61,7 +61,7 @@
     "players": "Jugadores",
     "files": "Gestor de Archivos",
     "console": "Consola",
-    "motd": "MOTD",
+    "motd": "MÁS",
     "worlds": "Mundos",
     "plugins": "Plugins",
     "backups": "Copias de Seguridad",
@@ -72,60 +72,60 @@
       "ssh": "Acceso SSH/SFTP",
       "server": "Servidor",
       "users": "Usuarios",
-      "gamerules": "Game Rules"
+      "gamerules": "Reglas de juego"
     },
     "profiling": "Profiling",
-    "select_server": "Select a server",
-    "manage_servers": "Manage servers",
-    "toggle": "Toggle"
+    "select_server": "Seleccione un servidor",
+    "manage_servers": "Administrar servidores",
+    "toggle": "Cambiar"
   },
   "motd": {
-    "title": "Message of the Day",
-    "subtitle": "Design the message and icon shown in the multiplayer server list",
-    "save": "Save",
-    "saved_title": "MOTD saved",
-    "saved_description": "Your message of the day has been applied.",
-    "save_error_title": "Could not save the MOTD",
-    "preview": "Preview",
-    "editor_hint": "Type below. This is exactly how it appears in the server list.",
-    "restart_title": "Restart required",
-    "restart_description": "This platform applies the MOTD on the next server start. Restart the server for the changes to appear.",
-    "default_color": "Default",
+    "title": "Mensaje del día",
+    "subtitle": "Diseñar el mensaje e icono mostrados en la lista de servidores multijugador",
+    "save": "Guardar",
+    "saved_title": "MOTD guardado",
+    "saved_description": "Su mensaje del día ha sido aplicado.",
+    "save_error_title": "No se pudo guardar el MOTD",
+    "preview": "Vista previa",
+    "editor_hint": "Escribe a continuación. Así es exactamente como aparece en la lista de servidores.",
+    "restart_title": "Es necesario reiniciar",
+    "restart_description": "Esta plataforma aplica el MOTD en el siguiente inicio del servidor. Reinicie el servidor para que aparezcan los cambios.",
+    "default_color": "Por defecto",
     "hex": "Hex",
-    "no_hex_hint": "This platform does not render hex colors; they will be matched to the nearest classic color.",
-    "clear": "Clear formatting",
-    "line": "Line {{number}}",
-    "line_placeholder": "Type your message…",
-    "add_line": "Add second line",
-    "selection_hint": "Select text, then pick a color or style to apply it. With no selection, the next characters you type use the chosen style.",
+    "no_hex_hint": "Esta plataforma no muestra los colores hexadecimales, se igualarán con el color clásico más cercano.",
+    "clear": "Borrar formato",
+    "line": "Línea {{number}}",
+    "line_placeholder": "Escribe tu mensaje…",
+    "add_line": "Añadir segunda línea",
+    "selection_hint": "Seleccione texto, luego elija un color o estilo para aplicarlo. Sin selección, los siguientes caracteres que escriba utilizan el estilo elegido.",
     "style": {
       "bold": "Bold",
       "italic": "Italic",
-      "underline": "Underline",
-      "strikethrough": "Strikethrough",
-      "obfuscated": "Obfuscated"
+      "underline": "Bajo línea",
+      "strikethrough": "Tachado",
+      "obfuscated": "Obuscado"
     },
     "icon": {
-      "title": "Server icon",
-      "description": "A 64x64 image shown next to your MOTD. Larger images are scaled down automatically.",
-      "upload": "Upload icon",
-      "remove": "Remove icon",
-      "updated_title": "Server icon updated",
-      "updated_description": "The new icon has been applied.",
-      "removed_title": "Server icon removed",
-      "removed_description": "The custom icon has been deleted.",
-      "error_title": "Could not update the icon",
-      "error_description": "The image could not be processed. Please try a different file.",
+      "title": "Icono del servidor",
+      "description": "Una imagen de 64x64 que se muestra junto a tu MOTD. Las imágenes más grandes se reducen automáticamente.",
+      "upload": "Subir icono",
+      "remove": "Eliminar icono",
+      "updated_title": "Icono del servidor actualizado",
+      "updated_description": "El nuevo icono ha sido aplicado.",
+      "removed_title": "Icono del servidor eliminado",
+      "removed_description": "El icono personalizado ha sido eliminado.",
+      "error_title": "No se pudo actualizar el icono",
+      "error_description": "La imagen no pudo ser procesada. Por favor intente un archivo diferente.",
       "editor": {
-        "open": "Click to edit the icon",
-        "title": "Edit server icon",
-        "description": "Draw your 64x64 server icon. Pick a colour and paint, or erase to clear pixels.",
+        "open": "Haga clic para editar el icono",
+        "title": "Editar icono del servidor",
+        "description": "Dibuja el icono del servidor 64x64. Elige un color y pintar, o borra para borrar píxeles.",
         "pen": "Pen",
         "eraser": "Eraser",
-        "fill": "Fill",
-        "clear": "Clear",
-        "custom": "Custom",
-        "size": "Size"
+        "fill": "Rellenar",
+        "clear": "Claro",
+        "custom": "Personalizado",
+        "size": "Tamaño"
       }
     }
   },
@@ -181,7 +181,7 @@
         "view_distance": "Distancia de vista"
       }
     },
-    "unknown_widget": "Unknown widget type"
+    "unknown_widget": "Tipo de widget desconocido"
   },
   "resources": {
     "subtitle": "Recursos {{count}} instalados",
@@ -230,12 +230,12 @@
       "save_failed": "Error al guardar la configuración",
       "load_failed": "Error al cargar la configuración",
       "open_in_files": "Abrir en gestor de archivos",
-      "enabled": "Enabled",
-      "disabled": "Disabled",
-      "item": "item",
-      "items": "items",
-      "property": "property",
-      "properties": "properties"
+      "enabled": "Activado",
+      "disabled": "Deshabilitado",
+      "item": "objeto",
+      "items": "objetos",
+      "property": "propiedad",
+      "properties": "propiedades"
     }
   },
   "store": {
@@ -360,7 +360,7 @@
       "online": "En línea",
       "whitelist": "Lista blanca",
       "banned": "Baneado",
-      "all": "All Players"
+      "all": "Todos los jugadores"
     },
     "table": {
       "player": "Jugador",
@@ -424,69 +424,69 @@
     "remove_whitelist_description": "Esto eliminará {{count}} jugador(es) de la lista blanca.",
     "no_reason": "Ningún motivo proporcionado",
     "permanent": "Permanente",
-    "food": "Food",
-    "online_badge": "Online",
-    "offline_badge": "Offline",
+    "food": "Comida",
+    "online_badge": "En línea",
+    "offline_badge": "Desconectado",
     "all": {
-      "empty": "No players found",
-      "empty_description": "No player data has been recorded on this server yet.",
-      "search": "Search players..."
+      "empty": "No se encontraron jugadores",
+      "empty_description": "Todavía no se han grabado datos del reproductor en este servidor.",
+      "search": "Buscar jugadores..."
     },
     "inventory": {
-      "menu": "Inventory",
+      "menu": "Inventario",
       "title": "{{player}}'s Inventory",
-      "editable": "Editing the live inventory of this online player.",
-      "online_readonly": "Live inventory is not available on this platform.",
-      "offline_readonly": "Read-only view of this offline player (from saved data).",
-      "tab_inventory": "Inventory",
-      "tab_enderchest": "Ender Chest",
-      "armor": "Armor",
-      "offhand": "Off-hand",
-      "give_item": "Give item (id)",
-      "give": "Give",
-      "given": "Item given",
-      "clear": "Clear",
-      "edit_slot": "Edit Slot",
+      "editable": "Editando el inventario en vivo de este jugador en línea.",
+      "online_readonly": "El inventario en vivo no está disponible en esta plataforma.",
+      "offline_readonly": "Vista de sólo lectura de este jugador sin conexión (de datos guardados).",
+      "tab_inventory": "Inventario",
+      "tab_enderchest": "Cofre de Ender",
+      "armor": "Armadura",
+      "offhand": "Of-hand",
+      "give_item": "Dar objeto (id)",
+      "give": "Dar",
+      "given": "Objeto dado",
+      "clear": "Claro",
+      "edit_slot": "Editar Slot",
       "item_id": "Item id",
-      "count": "Count",
-      "clear_slot": "Clear slot"
+      "count": "Contador",
+      "clear_slot": "Limpiar espacio"
     },
     "profile": {
-      "menu": "Profile",
-      "title": "Player Profile",
-      "first_join": "First join",
-      "last_seen": "Last seen",
-      "dimension": "Dimension",
-      "health": "Health",
-      "banned": "Banned",
+      "menu": "Perfil",
+      "title": "Perfil del jugador",
+      "first_join": "Primera unión",
+      "last_seen": "Última vista",
+      "dimension": "Dimensión",
+      "health": "Salud",
+      "banned": "Baneado",
       "uuid": "UUID",
-      "ip_history": "IP history",
-      "no_ips": "No IP addresses recorded yet."
+      "ip_history": "Historial de IP",
+      "no_ips": "No hay direcciones IP registradas todavía."
     },
     "actions": {
-      "whisper": "Private message",
-      "message_placeholder": "Message to send...",
-      "send": "Send",
-      "message_sent": "Message sent to {{player}}",
-      "teleport": "Teleport",
-      "go": "Go",
-      "target_player": "Target player",
-      "to_player": "To player",
-      "to_spawn": "To spawn",
-      "teleported": "Player teleported",
+      "whisper": "Mensaje privado",
+      "message_placeholder": "Mensaje a enviar...",
+      "send": "Enviar",
+      "message_sent": "Mensaje enviado a {{player}}",
+      "teleport": "Teletransporte",
+      "go": "Ir",
+      "target_player": "Jugador objetivo",
+      "to_player": "A jugador",
+      "to_spawn": "Para generar",
+      "teleported": "Jugador teletransportado",
       "tempban": "Temp-ban",
-      "tempbanned": "Player temporarily banned",
-      "mute": "Mute",
-      "unmute": "Unmute",
-      "muted": "Player muted",
-      "unmuted": "Player unmuted",
-      "muted_badge": "Muted",
-      "permanent": "Permanent",
-      "default_mute_reason": "Muted by administrator",
-      "offline_note": "These actions are only available while the player is online.",
-      "coordinates": "Coordinates",
-      "to_world": "Send to world",
-      "duration": "Duration"
+      "tempbanned": "Jugador temporalmente baneado",
+      "mute": "Silenciar",
+      "unmute": "Reactivar",
+      "muted": "Jugador silenciado",
+      "unmuted": "Jugador no silenciado",
+      "muted_badge": "Silenciado",
+      "permanent": "Permanente",
+      "default_mute_reason": "Silenciado por el administrador",
+      "offline_note": "Estas acciones sólo están disponibles mientras el reproductor está conectado.",
+      "coordinates": "Coordenadas",
+      "to_world": "Enviar al mundo",
+      "duration": "Duración"
     }
   },
   "files": {
@@ -534,7 +534,7 @@
     "delete": "Eliminar",
     "delete_description": "Esta acción no se puede deshacer. Esto eliminará permanentemente el elemento.",
     "search_placeholder": "Buscar archivos...",
-    "open_menu": "Open menu",
+    "open_menu": "Abrir menú",
     "no_results": "No se han encontrado archivos que coincidan con tu búsqueda.",
     "empty": {
       "title": "Esta carpeta está vacía",
@@ -627,9 +627,9 @@
     "title": "Copias de seguridad",
     "subtitle": "Crear y restaurar copias de seguridad de su servidor",
     "name": "Copia de seguridad",
-    "name_label": "Name (optional)",
-    "name_placeholder": "e.g. Before update {date}",
-    "name_hint": "Leave empty to use the date. Placeholders: {date}, {time}, {datetime}, {year}, {month}, {day}, {hour}, {minute}.",
+    "name_label": "Nombre (opcional)",
+    "name_placeholder": "ej. Antes de actualizar {date}",
+    "name_hint": "Deje vacío para usar la fecha. Posiciones: {date}, {time}, {datetime}, {year}, {month}, {day}, {hour}, {minute}.",
     "created": "Copia de seguridad creada con éxito",
     "creating": "Creando respaldo...",
     "create": "Crear una copia de seguridad",
@@ -637,7 +637,7 @@
     "restore": "Restaurar",
     "download": "Descargar",
     "none_found": "No se han encontrado copias de seguridad",
-    "none_found_hint": "Create a backup to get started",
+    "none_found_hint": "Crear una copia de seguridad para empezar",
     "description": "¿Qué quieres guardar en la copia de seguridad?",
     "include": "Incluye en copia de seguridad",
     "select_all": "Seleccionar todo",
@@ -657,7 +657,7 @@
       "root": "Servidor completo",
       "worlds": "Mundos",
       "plugins": "Plugins",
-      "mods": "Mods",
+      "mods": "Modos",
       "configs": "Configuraciones",
       "logs": "Logs"
     }
@@ -683,11 +683,11 @@
       "console_enabled": "Acceso a la consola habilitado",
       "console_disabled": "Acceso a la consola desactivado",
       "sftp_label": "SFTP Access",
-      "sftp_hint": "Allow file transfers via SFTP",
-      "console_label": "Console Access",
-      "console_hint": "Allow terminal access via SSH",
-      "state_enabled": "Enabled",
-      "state_disabled": "Disabled"
+      "sftp_hint": "Permitir transferencias de archivos vía SFTP",
+      "console_label": "Acceso a la consola",
+      "console_hint": "Permitir el acceso al terminal a través de SSH",
+      "state_enabled": "Activado",
+      "state_disabled": "Deshabilitado"
     },
     "sessions": {
       "title": "Sesiones activas",
@@ -697,7 +697,7 @@
       "sftp": "Es SFTP",
       "actions": "Acciones",
       "disconnect": "Desconectar",
-      "none": "No active sessions"
+      "none": "No hay sesiones activas"
     }
   },
   "schedules": {
@@ -800,52 +800,52 @@
     "warning": "Cambiar estos ajustes puede tener un impacto significativo en su servidor. Por favor, proceda con precaución.",
     "updated_title": "Propiedades actualizadas",
     "updated_description": "Reinicie su servidor para aplicar los cambios.",
-    "enabled": "Enabled",
-    "disabled": "Disabled",
+    "enabled": "Activado",
+    "disabled": "Deshabilitado",
     "category": {
       "gameplay": {
-        "label": "Gameplay",
-        "description": "Game modes, PvP, and gameplay mechanics"
+        "label": "Juego",
+        "description": "Modos de juego, JcJ y mecanismos de juego"
       },
       "world": {
-        "label": "World",
-        "description": "World generation and level settings"
+        "label": "Mundo",
+        "description": "Configuración de nivel y generación del mundo"
       },
       "spawning": {
-        "label": "Mob Spawning",
-        "description": "Control creature spawning behavior"
+        "label": "Generar mob",
+        "description": "Controla el comportamiento de generación de criaturas"
       },
       "players": {
-        "label": "Players",
-        "description": "Player limits and permissions"
+        "label": "Jugadores",
+        "description": "Límites y permisos del jugador"
       },
       "network": {
-        "label": "Network",
-        "description": "Connection and network settings"
+        "label": "Red",
+        "description": "Configuración de conexión y red"
       },
       "performance": {
-        "label": "Performance",
-        "description": "Server performance tuning"
+        "label": "Rendimiento",
+        "description": "Ajuste de rendimiento del servidor"
       },
       "security": {
-        "label": "Security",
-        "description": "Whitelist and security options"
+        "label": "Seguridad",
+        "description": "Lista blanca y opciones de seguridad"
       },
       "rcon": {
-        "label": "RCON & Query",
-        "description": "Remote console and query settings"
+        "label": "RCON y Consulta",
+        "description": "Consola remota y configuración de consultas"
       },
       "resourcepack": {
-        "label": "Resource Pack",
-        "description": "Server resource pack settings"
+        "label": "Paquete de recursos",
+        "description": "Configuración del paquete de recursos del servidor"
       },
       "info": {
-        "label": "Server Info",
-        "description": "MOTD and server status"
+        "label": "Información del Servidor",
+        "description": "MOTD y estado del servidor"
       },
       "advanced": {
-        "label": "Advanced",
-        "description": "Advanced debugging options"
+        "label": "Avanzado",
+        "description": "Opciones avanzadas de depuración"
       }
     },
     "enable-jmx-monitoring": "Habilitar monitorización JMX para métricas del servidor y datos de rendimiento",
@@ -905,309 +905,309 @@
     "hide-online-players": "Oculta el número de jugadores en línea en la lista de servidores"
   },
   "gamerules": {
-    "title": "Game Rules",
-    "subtitle": "Tweak the rules of the game. Changes apply to the running server.",
-    "search": "Search game rules...",
-    "enabled": "Enabled",
-    "disabled": "Disabled",
-    "modified": "Changed",
-    "reset_default": "Reset to default",
-    "wiki": "View on the Minecraft Wiki",
+    "title": "Reglas de juego",
+    "subtitle": "Modificar las reglas del juego. Los cambios se aplican al servidor en ejecución.",
+    "search": "Buscar reglas de juego...",
+    "enabled": "Activado",
+    "disabled": "Deshabilitado",
+    "modified": "Cambiado",
+    "reset_default": "Restablecer por defecto",
+    "wiki": "Ver en la Wiki de Minecraft",
     "wiki_learn": "Wiki",
-    "updated": "{{rule}} updated",
-    "none_found": "No game rules found",
-    "none_found_hint": "This server did not report any game rules. You can still change them through the console.",
-    "no_matches": "No matching game rules",
-    "no_matches_hint": "Try a different search term."
+    "updated": "{{rule}} actualizado",
+    "none_found": "No se encontraron reglas de juego",
+    "none_found_hint": "Este servidor no reportó ninguna regla de juego. Aún puedes cambiarla a través de la consola.",
+    "no_matches": "No hay reglas de juego coincidentes",
+    "no_matches_hint": "Prueba un término de búsqueda diferente."
   },
   "profiling": {
     "title": "Profiling",
-    "subtitle": "Find out where the tick goes and which plugins or mods cause lag.",
-    "start": "Start",
-    "stop": "Stop",
+    "subtitle": "Descubre a dónde va el tick y qué plugins o mods causan lag.",
+    "start": "Comenzar",
+    "stop": "Parar",
     "duration": {
-      "30s": "30 seconds",
-      "60s": "60 seconds",
-      "120s": "2 minutes",
-      "manual": "Until stopped"
+      "30s": "30 segundos",
+      "60s": "60 segundos",
+      "120s": "2 minutos",
+      "manual": "Hasta detenido"
     },
     "metrics": {
       "tps": "TPS",
       "mspt": "MSPT",
-      "memory": "Memory",
+      "memory": "Memoria",
       "gc": "GC",
-      "threads": "Threads",
-      "entities": "Entities"
+      "threads": "Hilos",
+      "entities": "Entidades"
     },
-    "running": "Sampling… {{seconds}}s elapsed, {{samples}} samples collected",
+    "running": "Muestreando… {{seconds}}s transcurridos, {{samples}} muestras recolectadas",
     "empty": {
-      "title": "No profile yet",
-      "description": "Start a session to see which plugins and mods take the most server time."
+      "title": "Aún no hay perfil",
+      "description": "Inicie una sesión para ver qué plugins y mods toman más tiempo del servidor."
     },
-    "byResource": "What's using the most time",
-    "summary": "{{samples}} samples · {{seconds}}s",
+    "byResource": "Qué está usando más tiempo",
+    "summary": "{{samples}} muestras · {{seconds}}s",
     "unsupported": {
-      "title": "Profiling not available",
-      "description": "This server doesn't support profiling. Live metrics are shown above."
+      "title": "Perfil no disponible",
+      "description": "Este servidor no es compatible con el perfil. Las métricas en vivo se muestran arriba."
     },
     "noSamples": {
-      "title": "No samples collected",
-      "description": "The session ended before any stack samples were taken. Try a longer duration."
+      "title": "No hay muestras recogidas",
+      "description": "La sesión terminó antes de que se tomaran muestras de pila. Intenta una duración más larga."
     },
     "tree": {
-      "title": "Where the time goes",
-      "hint": "Each row is a method; expand to drill in. Click a plugin above to highlight where it spends time.",
-      "more": "+ {{count}} smaller calls"
+      "title": "Donde va el tiempo",
+      "hint": "Cada fila es un método; expandirse a perforar. Haz clic en un plugin de arriba para resaltar dónde pasa el tiempo.",
+      "more": "+ {{count}} llamadas más pequeñas"
     }
   },
   "servers": {
-    "title": "Servers",
-    "count_one": "{{count}} server",
-    "count_other": "{{count}} servers",
-    "new_server": "New server",
-    "create_server": "Create a server",
-    "start": "Start",
-    "installing": "Installing",
-    "view_log": "View log",
-    "remove_forwarding": "Remove forwarding",
-    "forward_with_playit": "Forward with playit",
-    "set_up_forwarding": "Set up forwarding",
-    "copied": "Copied to clipboard",
-    "copy_failed": "Couldn't copy",
+    "title": "Servidores",
+    "count_one": "Servidor {{count}}",
+    "count_other": "Servidores {{count}}",
+    "new_server": "Nuevo servidor",
+    "create_server": "Crear un servidor",
+    "start": "Comenzar",
+    "installing": "Instalando",
+    "view_log": "Ver log",
+    "remove_forwarding": "Eliminar reenvío",
+    "forward_with_playit": "Avanzar con playit",
+    "set_up_forwarding": "Configurar reenvío",
+    "copied": "Copiado al portapapeles",
+    "copy_failed": "No se pudo copiar",
     "log_title": "{{name}} · log",
-    "waiting_for_output": "Waiting for output…",
-    "forward_create_failed": "Failed to create forwarding",
-    "forward_created": "Forwarding created",
-    "forward_removed": "Forwarding removed",
+    "waiting_for_output": "Esperando salida…",
+    "forward_create_failed": "Error al crear el reenvío",
+    "forward_created": "Reenvío creado",
+    "forward_removed": "Reenvío eliminado",
     "delete": {
-      "title": "Delete \"{{name}}\"?",
-      "description": "This permanently removes the server and all of its files. This can't be undone."
+      "title": "¿Eliminar \"{{name}}\"?",
+      "description": "Esto elimina permanentemente el servidor y todos sus archivos. Esto no se puede deshacer."
     },
     "empty": {
-      "title": "No servers yet",
-      "can_create": "Create your first server. VoxelDash One downloads the software and a matching Java runtime, then starts it for you.",
-      "no_access": "You don't have access to any servers yet. Ask an administrator to grant you access."
+      "title": "Aún no hay servidores",
+      "can_create": "Cree su primer servidor. VoxelDash One descarga el software y un tiempo de ejecución de Java que coincida y luego lo inicia para usted.",
+      "no_access": "Aún no tiene acceso a ningún servidor. Pídele a un administrador que le conceda acceso."
     },
     "stat": {
-      "port": "Port",
+      "port": "Puerto",
       "ram": "RAM",
-      "build": "Build"
+      "build": "Construir"
     }
   },
   "create_server": {
-    "title": "New server",
-    "server_name": "Server name",
-    "server_name_placeholder": "Survival, Lobby, Creative…",
-    "minecraft_version": "Minecraft version",
-    "loading_versions": "Loading versions…",
-    "choose_version": "Choose a version",
-    "load_versions_failed": "Could not load versions",
-    "memory": "Memory",
-    "memory_low": "Low",
-    "memory_medium": "Medium",
-    "memory_high": "High",
-    "back": "Back",
-    "create_and_start": "Create & start",
+    "title": "Nuevo servidor",
+    "server_name": "Nombre del servidor",
+    "server_name_placeholder": "Sobrevival, Lobby, Creative…",
+    "minecraft_version": "Versión de Minecraft",
+    "loading_versions": "Cargando versiones…",
+    "choose_version": "Elija una versión",
+    "load_versions_failed": "No se pudo cargar las versiones",
+    "memory": "Memoria",
+    "memory_low": "Baja",
+    "memory_medium": "Medio",
+    "memory_high": "Alta",
+    "back": "Atrás",
+    "create_and_start": "Crear e iniciar",
     "step_software": "Software",
-    "step_details": "Details",
-    "step_provision": "Provision",
-    "provision_failed": "Provisioning failed",
-    "server_online": "Server is online",
-    "setting_up": "Setting things up…",
-    "starting": "Starting…",
-    "close": "Close",
-    "open_dashboard": "Open dashboard"
+    "step_details": "Detalles",
+    "step_provision": "Disposición",
+    "provision_failed": "Error de aprovisionamiento",
+    "server_online": "Servidor está conectado",
+    "setting_up": "Configurando cosas…",
+    "starting": "Iniciando…",
+    "close": "Cerrar",
+    "open_dashboard": "Abrir panel"
   },
   "master": {
-    "server_manager": "Server manager",
+    "server_manager": "Gestor de servidor",
     "nav": {
-      "servers": "Servers",
-      "forwardings": "Forwardings",
-      "users": "Users",
-      "updates": "Updates"
+      "servers": "Servidores",
+      "forwardings": "Reenvios",
+      "users": "Usuarios",
+      "updates": "Actualizaciones"
     }
   },
   "forwardings": {
-    "title": "Forwardings",
-    "active_count": "{{count}} active",
-    "disconnect": "Disconnect",
-    "tunnel": "Tunnel",
-    "disabled": "disabled",
-    "assigning_address": "assigning address…",
-    "copied": "Copied to clipboard",
-    "copy_failed": "Couldn't copy",
-    "restarts_one": "{{count}} restart",
-    "restarts_other": "{{count}} restarts",
-    "linked": "playit.gg linked",
-    "disconnected": "playit.gg disconnected",
-    "link_start_failed": "Failed to start linking",
-    "remove_failed": "Failed to remove forwarding",
-    "this_tunnel": "this tunnel",
+    "title": "Reenvios",
+    "active_count": "{{count}} activo",
+    "disconnect": "Desconectar",
+    "tunnel": "Túnel",
+    "disabled": "deshabilitado",
+    "assigning_address": "asignando dirección…",
+    "copied": "Copiado al portapapeles",
+    "copy_failed": "No se pudo copiar",
+    "restarts_one": "Reinicio {{count}}",
+    "restarts_other": "Reinicios {{count}}",
+    "linked": "playit.gg enlazado",
+    "disconnected": "playit.gg desconectado",
+    "link_start_failed": "Error al iniciar el enlace",
+    "remove_failed": "Error al eliminar el reenvío",
+    "this_tunnel": "este túnel",
     "agent": {
-      "connected": "Agent online",
-      "connecting": "Connecting…",
-      "error": "Agent error, reconnecting",
-      "stopped": "Agent stopped"
+      "connected": "Agente en línea",
+      "connecting": "Conectando…",
+      "error": "Error de agente, reconectando",
+      "stopped": "Agente detenido"
     },
-    "connect_title": "Connect playit.gg",
-    "connect_description": "Link a playit.gg account to give your servers public addresses without port forwarding. One-click forwarding then appears on every server.",
-    "waiting_approval": "Waiting for you to approve the link…",
-    "open_approval": "Open the approval page",
-    "link_account": "Link account",
+    "connect_title": "Conectar playit.gg",
+    "connect_description": "Enlace una cuenta playit.gg para dar direcciones públicas a sus servidores sin reenvío de puertos. Un reenvío de un clic luego aparece en cada servidor.",
+    "waiting_approval": "Esperando a que apruebe el enlace…",
+    "open_approval": "Abrir la página de aprobación",
+    "link_account": "Vincular cuenta",
     "empty": {
-      "title": "No forwardings yet",
-      "description": "Open the Servers page and hit \"Forward\" on a server to give it a public playit.gg address."
+      "title": "Aún no hay reenvíos",
+      "description": "Abra la página de servidores y pulse \"Adelante\" en un servidor para darle una dirección pública playit.gg."
     },
     "remove": {
-      "title": "Remove forwarding?",
-      "description_prefix": "Players will no longer be able to reach this server through"
+      "title": "¿Eliminar reenvío?",
+      "description_prefix": "Los jugadores ya no podrán acceder a este servidor a través de"
     }
   },
   "updates": {
-    "title": "Updates",
-    "beta_channel": "Beta channel",
-    "release_channel": "Release channel",
-    "release_channel_description": "Choose which builds servers and the dashboard update to.",
-    "auto_updates": "Automatic updates",
-    "auto_updates_description": "When on, servers and the dashboard update themselves in the background.",
-    "update": "Update",
-    "up_to_date": "Up to date",
-    "save_failed": "Failed to save",
-    "update_failed": "Update failed",
-    "server_updated": "{{name}} updated to {{version}}",
-    "node_updating": "Updating to {{version}}. The dashboard will restart…",
-    "node_subtitle": "VoxelDash One dashboard",
-    "load_failed": "Couldn't load update information.",
-    "auto_on": "Automatic updates are on. VoxelDash keeps your servers and dashboard up to date on the {{channel}} channel.",
-    "everything_up_to_date": "Everything is up to date",
-    "latest_build": "Your servers and the VoxelDash One dashboard are running the latest {{channel}} build.",
+    "title": "Actualizaciones",
+    "beta_channel": "Canal beta",
+    "release_channel": "Canal de lanzamiento",
+    "release_channel_description": "Elegir a qué servidores construye y al que se actualiza el tablero.",
+    "auto_updates": "Actualizaciones automáticas",
+    "auto_updates_description": "Cuando está activado, los servidores y el panel de control se actualizan a sí mismos en segundo plano.",
+    "update": "Actualizar",
+    "up_to_date": "Actualizado",
+    "save_failed": "Error al guardar",
+    "update_failed": "Error al actualizar",
+    "server_updated": "{{name}} actualizado a {{version}}",
+    "node_updating": "Actualizando a {{version}}. El panel reiniciará…",
+    "node_subtitle": "Panel de control de VoxelDash",
+    "load_failed": "No se pudo cargar la información de actualización.",
+    "auto_on": "Hay actualizaciones automáticas. VoxelDash mantiene tus servidores y tu panel actualizado en el canal {{channel}}.",
+    "everything_up_to_date": "Todo está actualizado",
+    "latest_build": "Tus servidores y el panel de control de VoxelDash One están ejecutando la última compilación de {{channel}}.",
     "channel": {
-      "release": "Release",
-      "release_hint": "Stable builds only",
-      "release_lower": "release",
+      "release": "Liberar",
+      "release_hint": "Sólo construcciones estables",
+      "release_lower": "lanzamiento",
       "beta": "Beta",
-      "beta_hint": "Includes pre-releases",
+      "beta_hint": "Incluye pre-versiones",
       "beta_lower": "beta"
     }
   },
   "master_users": {
-    "title": "Users",
-    "new_user": "New user",
+    "title": "Usuarios",
+    "new_user": "Nuevo usuario",
     "admin": "Admin",
-    "username": "Username",
-    "password": "Password",
-    "confirm_password": "Confirm password",
-    "new_password": "New password",
-    "create_title": "Create user",
-    "create_description": "New users start with no access until you grant permissions.",
-    "create_failed": "Failed to create user",
-    "created": "User created",
-    "rename_title": "Rename user",
-    "rename_failed": "Failed to rename",
-    "username_updated": "Username updated",
-    "change_password_title": "Change password",
-    "change_password_failed": "Failed to change password",
-    "password_updated": "Password updated",
-    "delete_failed": "Failed to delete user",
-    "deleted": "User deleted",
-    "permissions_title": "Permissions · {{username}}",
-    "permissions_description": "Control what this user can do across the servers.",
-    "permissions_update_failed": "Failed to update permissions",
-    "permissions_updated": "Permissions updated",
-    "access_all": "Access all servers",
-    "access_all_hint": "Off lets you pick specific servers.",
-    "no_servers_exist": "No servers exist yet.",
+    "username": "Usuario",
+    "password": "Contraseña",
+    "confirm_password": "Confirmar contraseña",
+    "new_password": "Nueva contraseña",
+    "create_title": "Crear usuario",
+    "create_description": "Los nuevos usuarios comienzan sin acceso hasta que concedes permisos.",
+    "create_failed": "Error al crear el usuario",
+    "created": "Usuario creado",
+    "rename_title": "Renombrar usuario",
+    "rename_failed": "Error al renombrar",
+    "username_updated": "Usuario actualizado",
+    "change_password_title": "Cambiar contraseña",
+    "change_password_failed": "Error al cambiar la contraseña",
+    "password_updated": "Contraseña actualizada",
+    "delete_failed": "Error al eliminar el usuario",
+    "deleted": "Usuario eliminado",
+    "permissions_title": "Permisos · {{username}}",
+    "permissions_description": "Controla lo que este usuario puede hacer en todos los servidores.",
+    "permissions_update_failed": "Error al actualizar los permisos",
+    "permissions_updated": "Permisos actualizados",
+    "access_all": "Acceder a todos los servidores",
+    "access_all_hint": "Off te permite elegir servidores específicos.",
+    "no_servers_exist": "Aún no existen servidores.",
     "error": {
-      "username_length": "Username must be at least 3 characters",
-      "password_length": "Password must be at least 4 characters",
-      "passwords_mismatch": "Passwords don't match"
+      "username_length": "El nombre de usuario debe tener al menos 3 caracteres",
+      "password_length": "La contraseña debe tener al menos 4 caracteres",
+      "passwords_mismatch": "Las contraseñas no coinciden"
     },
     "feature": {
-      "servers": "Servers",
-      "forwardings": "Forwardings",
-      "user_management": "User management"
+      "servers": "Servidores",
+      "forwardings": "Reenvios",
+      "user_management": "Gestión de usuarios"
     },
     "access": {
-      "all_servers": "All servers",
-      "no_servers": "No servers",
-      "server_count_one": "{{count}} server",
-      "server_count_other": "{{count}} servers"
+      "all_servers": "Todos los servidores",
+      "no_servers": "No hay servidores",
+      "server_count_one": "Servidor {{count}}",
+      "server_count_other": "Servidores {{count}}"
     },
     "perm": {
-      "full_access": "Full access",
-      "no_access": "No access",
-      "full": "{{count}} full",
-      "read": "{{count}} read"
+      "full_access": "Acceso completo",
+      "no_access": "Sin acceso",
+      "full": "{{count}} completo",
+      "read": "{{count}} leídos"
     },
     "col": {
-      "user": "User",
-      "permissions": "Permissions",
-      "access": "Access",
-      "actions": "Actions"
+      "user": "Usuario",
+      "permissions": "Permisos",
+      "access": "Acceder",
+      "actions": "Acciones"
     },
     "action": {
-      "admin_full": "The admin always has full access",
-      "edit_permissions": "Edit permissions",
-      "rename": "Rename",
-      "change_password": "Change password",
-      "delete": "Delete"
+      "admin_full": "El administrador siempre tiene acceso completo",
+      "edit_permissions": "Editar permisos",
+      "rename": "Renombrar",
+      "change_password": "Cambiar contraseña",
+      "delete": "Eliminar"
     },
     "delete": {
-      "title": "Delete {{username}}?",
-      "description": "This removes the user and their access. This can't be undone."
+      "title": "¿Eliminar {{username}}?",
+      "description": "Esto elimina el usuario y su acceso. Esto no se puede deshacer."
     }
   },
   "console": {
-    "empty": "No console output yet. Server logs will appear here.",
-    "placeholder": "Enter command...",
-    "send": "Send"
+    "empty": "Aún no hay salida de consola. Los registros del servidor aparecerán aquí.",
+    "placeholder": "Introducir comando...",
+    "send": "Enviar"
   },
   "root": {
-    "home": "Home",
-    "loading": "Loading VoxelDash…",
-    "connecting": "Connecting to {{name}}…",
-    "server_fallback": "server",
-    "server_fallback_cap": "Server",
-    "offline": "{{name}} is offline",
-    "offline_hint": "Start it from the server list, then open it again.",
-    "back_to_servers": "Back to servers",
-    "retry": "Retry",
-    "starting": "Starting {{name}}…",
-    "booting_hint": "Booting up. Give it a sec...",
-    "file_management_hint": "File management is available. Start the server for console, players and worlds.",
-    "starting_short": "Starting…",
-    "start_server": "Start server"
+    "home": "Inicio",
+    "loading": "Cargando VoxelDash…",
+    "connecting": "Conectando a {{name}}…",
+    "server_fallback": "servidor",
+    "server_fallback_cap": "Servidor",
+    "offline": "{{name}} está desconectado",
+    "offline_hint": "Comienza desde la lista de servidores, luego vuelve a abrirla.",
+    "back_to_servers": "Volver a servidores",
+    "retry": "Reintentar",
+    "starting": "Iniciando {{name}}…",
+    "booting_hint": "Arrancando. Dale un segundo...",
+    "file_management_hint": "La gestión de archivos está disponible. Inicie el servidor para consola, jugadores y mundos.",
+    "starting_short": "Iniciando…",
+    "start_server": "Iniciar servidor"
   },
   "titlebar": {
     "minimize": "Minimize",
     "maximize": "Maximize",
-    "restore": "Restore",
-    "close": "Close"
+    "restore": "Restaurar",
+    "close": "Cerrar"
   },
   "context": {
-    "request_failed": "Request failed",
-    "create_failed": "Failed to create server",
-    "delete_failed": "Failed to delete server",
+    "request_failed": "Petición fallida",
+    "create_failed": "Error al crear el servidor",
+    "delete_failed": "Error al eliminar el servidor",
     "action_failed": {
-      "start": "Failed to start server",
-      "stop": "Failed to stop server"
+      "start": "Error al iniciar el servidor",
+      "stop": "Error al detener el servidor"
     }
   },
   "errors": {
     "notFound": {
-      "title": "Page Not Found",
-      "description": "The page you're looking for doesn't exist or has been moved.",
-      "backHome": "Back to Home"
+      "title": "Página no encontrada",
+      "description": "La página que estás buscando no existe o ha sido movida.",
+      "backHome": "Volver a Inicio"
     }
   },
   "pwa": {
-    "update_available": "A new version is available",
-    "update_desc": "Reload to get the latest VoxelDash.",
+    "update_available": "Una nueva versión está disponible",
+    "update_desc": "Recarga para obtener la última VoxelDash.",
     "reload": "Reload",
-    "dismiss": "Dismiss",
-    "install_title": "Install VoxelDash",
-    "install_desc": "Add it to your home screen for a faster, full-screen experience.",
-    "install": "Install",
-    "not_now": "Not now"
+    "dismiss": "Descartar",
+    "install_title": "Instalar VoxelDash",
+    "install_desc": "Añádela a tu pantalla de inicio para una experiencia más rápida y de pantalla completa.",
+    "install": "Instalar",
+    "not_now": "No ahora"
   }
 }
