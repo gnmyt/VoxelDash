@@ -1,6 +1,7 @@
 package de.gnm.voxeldash.widgets;
 
 import de.gnm.voxeldash.api.entities.widget.WidgetDataPoint;
+import de.gnm.voxeldash.util.SchedulerCompat;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -29,7 +30,7 @@ public class WidgetDataCollector {
     private final AtomicInteger cachedChunkCount = new AtomicInteger(0);
 
     private Timer collectionTimer;
-    private int bukkitTaskId = -1;
+    private Object schedulerHandle;
     private JavaPlugin plugin;
 
     /**
@@ -58,7 +59,7 @@ public class WidgetDataCollector {
             }
         }, 0, intervalSeconds * 1000L);
 
-        bukkitTaskId = Bukkit.getScheduler().runTaskTimer(plugin, this::collectMainThreadData, 0L, intervalSeconds * 20L).getTaskId();
+        schedulerHandle = SchedulerCompat.runTimer(plugin, this::collectMainThreadData, 0L, intervalSeconds * 20L);
     }
 
     /**
@@ -69,9 +70,9 @@ public class WidgetDataCollector {
             collectionTimer.cancel();
             collectionTimer = null;
         }
-        if (bukkitTaskId != -1 && plugin != null) {
-            Bukkit.getScheduler().cancelTask(bukkitTaskId);
-            bukkitTaskId = -1;
+        if (schedulerHandle != null) {
+            SchedulerCompat.cancel(schedulerHandle);
+            schedulerHandle = null;
         }
     }
 
@@ -109,14 +110,17 @@ public class WidgetDataCollector {
         addDataPoint(tpsData, new WidgetDataPoint(timestamp, timeLabel, tps));
 
         cachedWorldCount.set(Bukkit.getWorlds().size());
-        int totalEntities = Bukkit.getWorlds().stream()
-                .mapToInt(world -> world.getEntities().size())
-                .sum();
-        cachedEntityCount.set(totalEntities);
-        int totalChunks = Bukkit.getWorlds().stream()
-                .mapToInt(world -> world.getLoadedChunks().length)
-                .sum();
-        cachedChunkCount.set(totalChunks);
+        try {
+            int totalEntities = Bukkit.getWorlds().stream()
+                    .mapToInt(world -> world.getEntities().size())
+                    .sum();
+            cachedEntityCount.set(totalEntities);
+            int totalChunks = Bukkit.getWorlds().stream()
+                    .mapToInt(world -> world.getLoadedChunks().length)
+                    .sum();
+            cachedChunkCount.set(totalChunks);
+        } catch (Throwable ignored) {
+        }
     }
 
     /**

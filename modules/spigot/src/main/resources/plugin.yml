@@ -2,6 +2,7 @@ name: VoxelDash
 version: ${project.version}
 main: de.gnm.voxeldash.VoxelDashSpigot
 api-version: '1.13'
+folia-supported: true
 description: A web-based dashboard for managing your Minecraft server
 author: GNM
 website: https://voxeldash.dev/

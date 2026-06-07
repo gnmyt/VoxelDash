@@ -23,22 +23,30 @@ public class BukkitUtil {
     public static void runOnMainThread(Runnable runnable) {
         if (Bukkit.isPrimaryThread()) {
             runnable.run();
-        } else {
-            CountDownLatch latch = new CountDownLatch(1);
+            return;
+        }
+
+        CountDownLatch latch = new CountDownLatch(1);
+        Runnable wrapped = () -> {
+            try {
+                runnable.run();
+            } finally {
+                latch.countDown();
+            }
+        };
+
+        if (!SchedulerCompat.runOnGlobalRegion(VoxelDashSpigot.getInstance(), wrapped)) {
             new BukkitRunnable() {
                 @Override
                 public void run() {
-                    try {
-                        runnable.run();
-                    } finally {
-                        latch.countDown();
-                    }
+                    wrapped.run();
                 }
             }.runTask(VoxelDashSpigot.getInstance());
-            try {
-                latch.await(5, TimeUnit.SECONDS);
-            } catch (InterruptedException ignored) {
-            }
+        }
+
+        try {
+            latch.await(5, TimeUnit.SECONDS);
+        } catch (InterruptedException ignored) {
         }
     }
 

@@ -8,6 +8,7 @@ import de.gnm.voxeldash.api.profiling.PackagePrefixAttributor;
 import de.gnm.voxeldash.api.profiling.ResourceRef;
 import de.gnm.voxeldash.api.profiling.SamplingProfiler;
 import de.gnm.voxeldash.util.BukkitUtil;
+import de.gnm.voxeldash.util.SchedulerCompat;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.PluginDescriptionFile;
 
@@ -33,7 +34,7 @@ public class ProfilingPipeImpl implements ProfilingPipe {
     public ProfilingPipeImpl(VoxelDashSpigot plugin) {
         this.plugin = plugin;
         BukkitUtil.runOnMainThread(() -> serverThread = Thread.currentThread());
-        Bukkit.getScheduler().runTaskTimer(plugin, this::updateCounts, 0L, 40L);
+        SchedulerCompat.runTimer(plugin, this::updateCounts, 0L, 40L);
     }
 
     @Override
