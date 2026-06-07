@@ -91,6 +91,7 @@ export default defineNuxtConfig({
         '/getting-started/reverse-proxy',
         '/voxeldash-one/introduction',
         '/voxeldash-one/installation',
+        '/voxeldash-one/docker',
         '/features/overview',
         '/features/players',
         '/features/file_manager',

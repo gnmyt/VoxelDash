@@ -6,6 +6,7 @@ on:
 
 permissions:
   contents: write
+  packages: write
 
 concurrency:
   group: release-${{ github.ref_name }}
@@ -75,6 +76,16 @@ jobs:
       version: ${{ needs.setup.outputs.version }}
     secrets: inherit
 
+  docker:
+    name: Docker
+    needs: setup
+    uses: ./.github/workflows/build-docker.yml
+    with:
+      push: true
+      version: ${{ needs.setup.outputs.version }}
+      channel: ${{ needs.setup.outputs.version_type == 'release' && 'release' || 'beta' }}
+    secrets: inherit
+
   publish-maven:
     name: Publish API
     needs: [setup, modules]
@@ -105,7 +116,7 @@ jobs:
 
   cleanup-on-failure:
     name: Cleanup on Failure
-    needs: [setup, modules, one, desktop, release]
+    needs: [setup, modules, one, desktop, docker, release]
     if: failure()
     runs-on: ubuntu-latest
     steps:

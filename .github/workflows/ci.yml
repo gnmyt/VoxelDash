@@ -9,6 +9,10 @@ concurrency:
   group: ci-${{ github.ref }}
   cancel-in-progress: true
 
+permissions:
+  contents: read
+  packages: write
+
 jobs:
   modules:
     name: Modules
@@ -21,3 +25,11 @@ jobs:
   one:
     name: VoxelDash One
     uses: ./.github/workflows/build-one.yml
+
+  docker:
+    name: Docker
+    uses: ./.github/workflows/build-docker.yml
+    with:
+      push: ${{ github.ref == 'refs/heads/master' && github.event_name == 'push' }}
+      channel: dev
+    secrets: inherit
