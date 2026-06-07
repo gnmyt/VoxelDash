@@ -19,8 +19,8 @@
     "move": "Flyt",
     "yes": "Ja",
     "no": "Nej",
-    "close": "Close",
-    "loading": "Loading..."
+    "close": "Luk",
+    "loading": "Indlæser..."
   },
   "header": {
     "account": "Administrer konto",
@@ -37,23 +37,23 @@
     "password": "adgangskode",
     "forgot_password": "Glemt din adgangskode?",
     "forgot_password_description": "Hvis du har glemt din adgangskode, kan du nulstille den ved hjælp af kommandoen /account i spillet.",
-    "auth_failed": "Authentication failed",
-    "docs": "Documentation",
-    "tagline": "Your Minecraft server, fully in your hands.",
-    "description": "Manage players, console, files, worlds and settings from one clean dashboard. No SSH, no fiddling with config files.",
-    "welcome_title": "Welcome back",
-    "welcome_subtitle": "Sign in to your server dashboard.",
+    "auth_failed": "Godkendelse mislykkedes",
+    "docs": "Dokumentation",
+    "tagline": "Din Minecraft-server er helt i dine hænder.",
+    "description": "Administrer spillere, konsol, filer, verdener og indstillinger fra et rent betjeningspanel. Ingen SSH, ingen fiddling med konfigurationsfiler.",
+    "welcome_title": "Velkommen tilbage",
+    "welcome_subtitle": "Log ind på din serverdashboard.",
     "master": {
-      "tagline": "All your Minecraft servers in one place.",
-      "description": "Create Paper, Fabric, Vanilla or proxy servers from here. VoxelDash One downloads the server jar and a matching Java version, then starts it for you. No manual setup, no SSH.",
-      "setup_title": "Set up your admin account",
-      "welcome_title": "Welcome back",
-      "setup_subtitle": "This is the first run. Create the admin account for this instance.",
-      "welcome_subtitle": "Sign in to manage your servers.",
-      "username": "Username",
-      "password": "Password",
-      "create_account": "Create admin account",
-      "sign_in": "Sign in"
+      "tagline": "Alle dine Minecraft servere på ét sted.",
+      "description": "Opret papir-, Fabric-, Vanille- eller proxy-servere herfra. VoxelDash One henter serverkrukken og en matchende Java-version, så starter den for dig. Ingen manuel opsætning, ingen SSH.",
+      "setup_title": "Konfigurer din admin konto",
+      "welcome_title": "Velkommen tilbage",
+      "setup_subtitle": "Dette er den første kørsel. Opret admin-konto for denne instans.",
+      "welcome_subtitle": "Log ind for at administrere dine servere.",
+      "username": "Brugernavn",
+      "password": "Adgangskode",
+      "create_account": "Opret administratorkonto",
+      "sign_in": "Log ind"
     }
   },
   "nav": {
@@ -72,60 +72,60 @@
       "ssh": "SSH/SFTP Adgang",
       "server": "Server",
       "users": "Brugere",
-      "gamerules": "Game Rules"
+      "gamerules": "Spilleregler"
     },
     "profiling": "Profiling",
-    "select_server": "Select a server",
-    "manage_servers": "Manage servers",
-    "toggle": "Toggle"
+    "select_server": "Vælg en server",
+    "manage_servers": "Administrer servere",
+    "toggle": "Skift"
   },
   "motd": {
-    "title": "Message of the Day",
-    "subtitle": "Design the message and icon shown in the multiplayer server list",
-    "save": "Save",
-    "saved_title": "MOTD saved",
-    "saved_description": "Your message of the day has been applied.",
-    "save_error_title": "Could not save the MOTD",
-    "preview": "Preview",
-    "editor_hint": "Type below. This is exactly how it appears in the server list.",
-    "restart_title": "Restart required",
-    "restart_description": "This platform applies the MOTD on the next server start. Restart the server for the changes to appear.",
-    "default_color": "Default",
+    "title": "Besked fra dagen",
+    "subtitle": "Design beskeden og ikonet vist på multiplayer-serverlisten",
+    "save": "Gem",
+    "saved_title": "MOTD gemt",
+    "saved_description": "Din meddelelse om dagen er blevet anvendt.",
+    "save_error_title": "Kunne ikke gemme MOTD",
+    "preview": "Eksempelvisning",
+    "editor_hint": "Skriv nedenfor. Dette er præcis hvordan det vises på serverlisten.",
+    "restart_title": "Genstart påkrævet",
+    "restart_description": "Denne platform anvender MOTD på næste serverstart. Genstart serveren for at ændringerne skal vises.",
+    "default_color": "Standard",
     "hex": "Hex",
-    "no_hex_hint": "This platform does not render hex colors; they will be matched to the nearest classic color.",
-    "clear": "Clear formatting",
-    "line": "Line {{number}}",
-    "line_placeholder": "Type your message…",
-    "add_line": "Add second line",
-    "selection_hint": "Select text, then pick a color or style to apply it. With no selection, the next characters you type use the chosen style.",
+    "no_hex_hint": "Denne platform gør ikke hex farver; de vil blive matchet til den nærmeste klassiske farve.",
+    "clear": "Ryd formatering",
+    "line": "Linje {{number}}",
+    "line_placeholder": "Skriv din besked…",
+    "add_line": "Tilføj anden linje",
+    "selection_hint": "Vælg tekst, vælg derefter en farve eller stil for at anvende den. Med ingen markering, bruger de næste tegn du skriver den valgte stil.",
     "style": {
       "bold": "Bold",
       "italic": "Italic",
-      "underline": "Underline",
-      "strikethrough": "Strikethrough",
+      "underline": "Understreget",
+      "strikethrough": "Gennemstreget",
       "obfuscated": "Obfuscated"
     },
     "icon": {
-      "title": "Server icon",
-      "description": "A 64x64 image shown next to your MOTD. Larger images are scaled down automatically.",
-      "upload": "Upload icon",
-      "remove": "Remove icon",
-      "updated_title": "Server icon updated",
-      "updated_description": "The new icon has been applied.",
-      "removed_title": "Server icon removed",
-      "removed_description": "The custom icon has been deleted.",
-      "error_title": "Could not update the icon",
-      "error_description": "The image could not be processed. Please try a different file.",
+      "title": "Server ikon",
+      "description": "Et 64x64-billede, der vises ved siden af din MOTD. Større billeder skaleres automatisk ned.",
+      "upload": "Upload ikon",
+      "remove": "Fjern ikon",
+      "updated_title": "Server ikon opdateret",
+      "updated_description": "Det nye ikon er blevet anvendt.",
+      "removed_title": "Serverikon fjernet",
+      "removed_description": "Det brugerdefinerede ikon er blevet slettet.",
+      "error_title": "Kunne ikke opdatere ikonet",
+      "error_description": "Billedet kunne ikke behandles. Prøv en anden fil.",
       "editor": {
-        "open": "Click to edit the icon",
-        "title": "Edit server icon",
-        "description": "Draw your 64x64 server icon. Pick a colour and paint, or erase to clear pixels.",
+        "open": "Klik for at redigere ikonet",
+        "title": "Rediger server ikon",
+        "description": "Tegn dit 64x64-serverikon. Vælg en farve og maling, eller slet for at rydde pixels.",
         "pen": "Pen",
         "eraser": "Eraser",
-        "fill": "Fill",
-        "clear": "Clear",
-        "custom": "Custom",
-        "size": "Size"
+        "fill": "Udfyld",
+        "clear": "Ryd",
+        "custom": "Tilpasset",
+        "size": "Størrelse"
       }
     }
   },
@@ -181,7 +181,7 @@
         "view_distance": "Vis Afstand"
       }
     },
-    "unknown_widget": "Unknown widget type"
+    "unknown_widget": "Ukendt widget-type"
   },
   "resources": {
     "subtitle": "{{count}} ressourcer installeret",
@@ -230,12 +230,12 @@
       "save_failed": "Konfigurationen kunne ikke gemmes",
       "load_failed": "Kunne ikke indlæse konfiguration",
       "open_in_files": "Åbn i filhåndtering",
-      "enabled": "Enabled",
-      "disabled": "Disabled",
-      "item": "item",
-      "items": "items",
-      "property": "property",
-      "properties": "properties"
+      "enabled": "Aktiveret",
+      "disabled": "Deaktiveret",
+      "item": "vare",
+      "items": "varer",
+      "property": "egenskab",
+      "properties": "egenskaber"
     }
   },
   "store": {
@@ -360,7 +360,7 @@
       "online": "Online",
       "whitelist": "Hvidliste",
       "banned": "Udelukket",
-      "all": "All Players"
+      "all": "Alle Spillere"
     },
     "table": {
       "player": "Spiller",
@@ -424,69 +424,69 @@
     "remove_whitelist_description": "Dette vil fjerne {{count}} spiller(e) fra whitelisten.",
     "no_reason": "Ingen grund angivet",
     "permanent": "Permanent",
-    "food": "Food",
+    "food": "Mad",
     "online_badge": "Online",
     "offline_badge": "Offline",
     "all": {
-      "empty": "No players found",
-      "empty_description": "No player data has been recorded on this server yet.",
-      "search": "Search players..."
+      "empty": "Ingen spillere fundet",
+      "empty_description": "Ingen spillerdata er blevet registreret på denne server endnu.",
+      "search": "Søg spillere..."
     },
     "inventory": {
-      "menu": "Inventory",
-      "title": "{{player}}'s Inventory",
-      "editable": "Editing the live inventory of this online player.",
-      "online_readonly": "Live inventory is not available on this platform.",
-      "offline_readonly": "Read-only view of this offline player (from saved data).",
-      "tab_inventory": "Inventory",
-      "tab_enderchest": "Ender Chest",
-      "armor": "Armor",
+      "menu": "Inventar",
+      "title": "{{player}}'s Inventar",
+      "editable": "Redigering af live inventar af denne online-afspiller.",
+      "online_readonly": "Live inventar er ikke tilgængelig på denne platform.",
+      "offline_readonly": "Skrivebeskyttet visning af denne offline spiller (fra gemte data).",
+      "tab_inventory": "Inventar",
+      "tab_enderchest": "Ender Kiste",
+      "armor": "Rustning",
       "offhand": "Off-hand",
-      "give_item": "Give item (id)",
-      "give": "Give",
-      "given": "Item given",
-      "clear": "Clear",
-      "edit_slot": "Edit Slot",
+      "give_item": "Giv element (id)",
+      "give": "Giv",
+      "given": "Element givet",
+      "clear": "Ryd",
+      "edit_slot": "Rediger Plads",
       "item_id": "Item id",
-      "count": "Count",
-      "clear_slot": "Clear slot"
+      "count": "Antal",
+      "clear_slot": "Ryd plads"
     },
     "profile": {
-      "menu": "Profile",
-      "title": "Player Profile",
-      "first_join": "First join",
-      "last_seen": "Last seen",
+      "menu": "Profil",
+      "title": "Spiller Profil",
+      "first_join": "Tilslut dig først",
+      "last_seen": "Sidst set",
       "dimension": "Dimension",
-      "health": "Health",
-      "banned": "Banned",
+      "health": "Sundhed",
+      "banned": "Udelukket",
       "uuid": "UUID",
-      "ip_history": "IP history",
-      "no_ips": "No IP addresses recorded yet."
+      "ip_history": "IP historik",
+      "no_ips": "Ingen IP-adresser registreret endnu."
     },
     "actions": {
-      "whisper": "Private message",
-      "message_placeholder": "Message to send...",
+      "whisper": "Privat besked",
+      "message_placeholder": "Besked at sende...",
       "send": "Send",
-      "message_sent": "Message sent to {{player}}",
-      "teleport": "Teleport",
-      "go": "Go",
-      "target_player": "Target player",
-      "to_player": "To player",
-      "to_spawn": "To spawn",
-      "teleported": "Player teleported",
+      "message_sent": "Besked sendt til {{player}}",
+      "teleport": "Teleportering",
+      "go": "Gå",
+      "target_player": "Mål spiller",
+      "to_player": "Til spiller",
+      "to_spawn": "At gyde",
+      "teleported": "Afspiller teleporteret",
       "tempban": "Temp-ban",
-      "tempbanned": "Player temporarily banned",
-      "mute": "Mute",
-      "unmute": "Unmute",
-      "muted": "Player muted",
-      "unmuted": "Player unmuted",
-      "muted_badge": "Muted",
+      "tempbanned": "Spiller midlertidigt udelukket",
+      "mute": "Lydløs",
+      "unmute": "Lyd Fra",
+      "muted": "Spiller dæmpet",
+      "unmuted": "Spiller slået fra",
+      "muted_badge": "Lydløs",
       "permanent": "Permanent",
-      "default_mute_reason": "Muted by administrator",
-      "offline_note": "These actions are only available while the player is online.",
-      "coordinates": "Coordinates",
-      "to_world": "Send to world",
-      "duration": "Duration"
+      "default_mute_reason": "Lydløs af administrator",
+      "offline_note": "Disse handlinger er kun tilgængelige, mens spilleren er online.",
+      "coordinates": "Koordinater",
+      "to_world": "Send til verden",
+      "duration": "Varighed"
     }
   },
   "files": {
@@ -534,7 +534,7 @@
     "delete": "Slet",
     "delete_description": "Denne handling kan ikke fortrydes. Dette vil permanent slette elementet.",
     "search_placeholder": "Søg i filer...",
-    "open_menu": "Open menu",
+    "open_menu": "Åbn menu",
     "no_results": "Ingen filer fundet der matcher din søgning.",
     "empty": {
       "title": "Denne mappe er tom",
@@ -627,9 +627,9 @@
     "title": "Sikkerhedskopier",
     "subtitle": "Opret og gendan sikkerhedskopier af din server",
     "name": "Backup",
-    "name_label": "Name (optional)",
-    "name_placeholder": "e.g. Before update {date}",
-    "name_hint": "Leave empty to use the date. Placeholders: {date}, {time}, {datetime}, {year}, {month}, {day}, {hour}, {minute}.",
+    "name_label": "Navn (valgfrit)",
+    "name_placeholder": "f.eks. før opdatering {date}",
+    "name_hint": "Lad være tom for at bruge datoen. Pladsholdere: {date}, {time}, {datetime}, {year}, {month}, {day}, {hour}, {minute}.",
     "created": "Sikkerhedskopien blev oprettet",
     "creating": "Opretter sikkerhedskopi...",
     "create": "Opret backup",
@@ -637,7 +637,7 @@
     "restore": "Gendan",
     "download": "Hent",
     "none_found": "Ingen sikkerhedskopier fundet",
-    "none_found_hint": "Create a backup to get started",
+    "none_found_hint": "Opret en sikkerhedskopi for at komme i gang",
     "description": "Hvad vil du sikre?",
     "include": "Inkluder i sikkerhedskopi",
     "select_all": "Vælg alle",
@@ -657,7 +657,7 @@
       "root": "Færdiggør server",
       "worlds": "Verdener",
       "plugins": "Plugins",
-      "mods": "Mods",
+      "mods": "Modifikationer",
       "configs": "Konfigurationer",
       "logs": "Logs"
     }
@@ -683,11 +683,11 @@
       "console_enabled": "Konsoladgang Aktiveret",
       "console_disabled": "Konsoladgang Deaktiveret",
       "sftp_label": "SFTP Access",
-      "sftp_hint": "Allow file transfers via SFTP",
-      "console_label": "Console Access",
-      "console_hint": "Allow terminal access via SSH",
-      "state_enabled": "Enabled",
-      "state_disabled": "Disabled"
+      "sftp_hint": "Tillad filoverførsler via SFTP",
+      "console_label": "Konsoladgang",
+      "console_hint": "Tillad terminaladgang via SSH",
+      "state_enabled": "Aktiveret",
+      "state_disabled": "Deaktiveret"
     },
     "sessions": {
       "title": "Aktive Sessioner",
@@ -697,7 +697,7 @@
       "sftp": "Er SFTP",
       "actions": "Handlinger",
       "disconnect": "Afbryd",
-      "none": "No active sessions"
+      "none": "Ingen aktive sessioner"
     }
   },
   "schedules": {
@@ -800,52 +800,52 @@
     "warning": "Ændring af disse indstillinger kan have en betydelig indvirkning på din server. Fortsæt med forsigtighed.",
     "updated_title": "Egenskaber opdateret",
     "updated_description": "Genstart din server for at anvende ændringerne.",
-    "enabled": "Enabled",
-    "disabled": "Disabled",
+    "enabled": "Aktiveret",
+    "disabled": "Deaktiveret",
     "category": {
       "gameplay": {
         "label": "Gameplay",
-        "description": "Game modes, PvP, and gameplay mechanics"
+        "description": "Spiltilstande, PvP og gameplay mekanikere"
       },
       "world": {
-        "label": "World",
-        "description": "World generation and level settings"
+        "label": "Verden",
+        "description": "Indstillinger for verdens generering og niveau"
       },
       "spawning": {
-        "label": "Mob Spawning",
-        "description": "Control creature spawning behavior"
+        "label": "Væsner Gydning",
+        "description": "Styr skabnings gydeadfærd"
       },
       "players": {
-        "label": "Players",
-        "description": "Player limits and permissions"
+        "label": "Spillere",
+        "description": "Spiller grænser og tilladelser"
       },
       "network": {
-        "label": "Network",
-        "description": "Connection and network settings"
+        "label": "Netværk",
+        "description": "Forbindelse og netværksindstillinger"
       },
       "performance": {
-        "label": "Performance",
+        "label": "Ydeevne",
         "description": "Server performance tuning"
       },
       "security": {
-        "label": "Security",
-        "description": "Whitelist and security options"
+        "label": "Sikkerhed",
+        "description": "Whiteliste og sikkerhedsmuligheder"
       },
       "rcon": {
-        "label": "RCON & Query",
-        "description": "Remote console and query settings"
+        "label": "RCON & Forespørgsel",
+        "description": "Indstillinger for fjernkonsol og forespørgsel"
       },
       "resourcepack": {
-        "label": "Resource Pack",
-        "description": "Server resource pack settings"
+        "label": "Ressource Pakke",
+        "description": "Server ressourcepakke indstillinger"
       },
       "info": {
         "label": "Server Info",
-        "description": "MOTD and server status"
+        "description": "Status for MOTD og server"
       },
       "advanced": {
-        "label": "Advanced",
-        "description": "Advanced debugging options"
+        "label": "Avanceret",
+        "description": "Avancerede fejlfindingsindstillinger"
       }
     },
     "enable-jmx-monitoring": "Aktiver JMX-overvågning for servermålinger og ydelsesdata",
@@ -905,309 +905,309 @@
     "hide-online-players": "Skjuler antallet af online spillere i serverlisten"
   },
   "gamerules": {
-    "title": "Game Rules",
-    "subtitle": "Tweak the rules of the game. Changes apply to the running server.",
-    "search": "Search game rules...",
-    "enabled": "Enabled",
-    "disabled": "Disabled",
-    "modified": "Changed",
-    "reset_default": "Reset to default",
-    "wiki": "View on the Minecraft Wiki",
+    "title": "Spilleregler",
+    "subtitle": "Tweak spillereglerne. Ændringer gælder for den kørende server.",
+    "search": "Søg i spilregler...",
+    "enabled": "Aktiveret",
+    "disabled": "Deaktiveret",
+    "modified": "Ændret",
+    "reset_default": "Nulstil til standard",
+    "wiki": "Se på Minecraft Wiki",
     "wiki_learn": "Wiki",
-    "updated": "{{rule}} updated",
-    "none_found": "No game rules found",
-    "none_found_hint": "This server did not report any game rules. You can still change them through the console.",
-    "no_matches": "No matching game rules",
-    "no_matches_hint": "Try a different search term."
+    "updated": "{{rule}} opdateret",
+    "none_found": "Ingen spilleregler fundet",
+    "none_found_hint": "Denne server rapporterede ingen spilleregler. Du kan stadig ændre dem gennem konsollen.",
+    "no_matches": "Ingen matchende spilregler",
+    "no_matches_hint": "Prøv et andet søgeord."
   },
   "profiling": {
     "title": "Profiling",
-    "subtitle": "Find out where the tick goes and which plugins or mods cause lag.",
+    "subtitle": "Find ud af, hvor flåten går, og hvilke plugins eller mods forårsager halte.",
     "start": "Start",
     "stop": "Stop",
     "duration": {
-      "30s": "30 seconds",
-      "60s": "60 seconds",
-      "120s": "2 minutes",
-      "manual": "Until stopped"
+      "30s": "30 sekunder",
+      "60s": "60 sekunder",
+      "120s": "2 minutter",
+      "manual": "Indtil stoppet"
     },
     "metrics": {
       "tps": "TPS",
       "mspt": "MSPT",
-      "memory": "Memory",
+      "memory": "Hukommelse",
       "gc": "GC",
-      "threads": "Threads",
-      "entities": "Entities"
+      "threads": "Tråde",
+      "entities": "Enheder"
     },
-    "running": "Sampling… {{seconds}}s elapsed, {{samples}} samples collected",
+    "running": "Prøveudtagning… {{seconds}}s forløbet, {{samples}} prøver indsamlet",
     "empty": {
-      "title": "No profile yet",
-      "description": "Start a session to see which plugins and mods take the most server time."
+      "title": "Ingen profil endnu",
+      "description": "Start en session for at se, hvilke plugins og mods tager mest servertid."
     },
-    "byResource": "What's using the most time",
-    "summary": "{{samples}} samples · {{seconds}}s",
+    "byResource": "Hvad bruger mest tid",
+    "summary": "{{samples}} prøver · {{seconds}}s",
     "unsupported": {
-      "title": "Profiling not available",
-      "description": "This server doesn't support profiling. Live metrics are shown above."
+      "title": "Profilering ikke tilgængelig",
+      "description": "Denne server understøtter ikke profilering. Live målinger vises ovenfor."
     },
     "noSamples": {
-      "title": "No samples collected",
-      "description": "The session ended before any stack samples were taken. Try a longer duration."
+      "title": "Ingen prøver indsamlet",
+      "description": "Sessionen sluttede, før der blev taget stak prøver. Prøv en længere varighed."
     },
     "tree": {
-      "title": "Where the time goes",
-      "hint": "Each row is a method; expand to drill in. Click a plugin above to highlight where it spends time.",
-      "more": "+ {{count}} smaller calls"
+      "title": "Hvor tiden går",
+      "hint": "Hver række er en metode; udvid til at bore i. Klik på et plugin ovenfor for at fremhæve, hvor det tilbringer tid.",
+      "more": "+ {{count}} mindre opkald"
     }
   },
   "servers": {
-    "title": "Servers",
+    "title": "Servere",
     "count_one": "{{count}} server",
-    "count_other": "{{count}} servers",
-    "new_server": "New server",
-    "create_server": "Create a server",
+    "count_other": "{{count}} servere",
+    "new_server": "Ny server",
+    "create_server": "Opret en server",
     "start": "Start",
-    "installing": "Installing",
-    "view_log": "View log",
-    "remove_forwarding": "Remove forwarding",
-    "forward_with_playit": "Forward with playit",
-    "set_up_forwarding": "Set up forwarding",
-    "copied": "Copied to clipboard",
-    "copy_failed": "Couldn't copy",
+    "installing": "Installerer",
+    "view_log": "Vis log",
+    "remove_forwarding": "Fjern viderestilling",
+    "forward_with_playit": "Videresend med spil",
+    "set_up_forwarding": "Opsæt viderestilling",
+    "copied": "Kopieret til udklipsholder",
+    "copy_failed": "Kunne ikke kopiere",
     "log_title": "{{name}} · log",
-    "waiting_for_output": "Waiting for output…",
-    "forward_create_failed": "Failed to create forwarding",
-    "forward_created": "Forwarding created",
-    "forward_removed": "Forwarding removed",
+    "waiting_for_output": "Venter på output…",
+    "forward_create_failed": "Kunne ikke oprette videresendelse",
+    "forward_created": "Videresend oprettet",
+    "forward_removed": "Videresend fjernet",
     "delete": {
-      "title": "Delete \"{{name}}\"?",
-      "description": "This permanently removes the server and all of its files. This can't be undone."
+      "title": "Slet \"{{name}}\"?",
+      "description": "Dette fjerner permanent serveren og alle dens filer. Dette kan ikke fortrydes."
     },
     "empty": {
-      "title": "No servers yet",
-      "can_create": "Create your first server. VoxelDash One downloads the software and a matching Java runtime, then starts it for you.",
-      "no_access": "You don't have access to any servers yet. Ask an administrator to grant you access."
+      "title": "Ingen servere endnu",
+      "can_create": "Opret din første server. VoxelDash One henter softwaren og en matchende Java runtime, derefter starter det for dig.",
+      "no_access": "Du har endnu ikke adgang til nogen servere. Bed en administrator om at give dig adgang."
     },
     "stat": {
       "port": "Port",
       "ram": "RAM",
-      "build": "Build"
+      "build": "Byg"
     }
   },
   "create_server": {
-    "title": "New server",
-    "server_name": "Server name",
-    "server_name_placeholder": "Survival, Lobby, Creative…",
+    "title": "Ny server",
+    "server_name": "Server navn",
+    "server_name_placeholder": "Overlevelse, Lobby, Kreativ…",
     "minecraft_version": "Minecraft version",
-    "loading_versions": "Loading versions…",
-    "choose_version": "Choose a version",
-    "load_versions_failed": "Could not load versions",
-    "memory": "Memory",
-    "memory_low": "Low",
-    "memory_medium": "Medium",
-    "memory_high": "High",
-    "back": "Back",
-    "create_and_start": "Create & start",
+    "loading_versions": "Indlæser versioner…",
+    "choose_version": "Vælg en version",
+    "load_versions_failed": "Kunne ikke indlæse versioner",
+    "memory": "Hukommelse",
+    "memory_low": "Lav",
+    "memory_medium": "Mellem",
+    "memory_high": "Høj",
+    "back": "Tilbage",
+    "create_and_start": "Opret & start",
     "step_software": "Software",
-    "step_details": "Details",
-    "step_provision": "Provision",
-    "provision_failed": "Provisioning failed",
-    "server_online": "Server is online",
-    "setting_up": "Setting things up…",
-    "starting": "Starting…",
-    "close": "Close",
-    "open_dashboard": "Open dashboard"
+    "step_details": "Detaljer",
+    "step_provision": "Bestemmelse",
+    "provision_failed": "Provisionering mislykkedes",
+    "server_online": "Serveren er online",
+    "setting_up": "Opsætning af ting…",
+    "starting": "Starter…",
+    "close": "Luk",
+    "open_dashboard": "Åbn betjeningspanel"
   },
   "master": {
     "server_manager": "Server manager",
     "nav": {
-      "servers": "Servers",
-      "forwardings": "Forwardings",
-      "users": "Users",
-      "updates": "Updates"
+      "servers": "Servere",
+      "forwardings": "Videresend",
+      "users": "Brugere",
+      "updates": "Opdateringer"
     }
   },
   "forwardings": {
-    "title": "Forwardings",
-    "active_count": "{{count}} active",
-    "disconnect": "Disconnect",
+    "title": "Videresend",
+    "active_count": "{{count}} aktiv",
+    "disconnect": "Afbryd",
     "tunnel": "Tunnel",
-    "disabled": "disabled",
-    "assigning_address": "assigning address…",
-    "copied": "Copied to clipboard",
-    "copy_failed": "Couldn't copy",
-    "restarts_one": "{{count}} restart",
-    "restarts_other": "{{count}} restarts",
-    "linked": "playit.gg linked",
-    "disconnected": "playit.gg disconnected",
-    "link_start_failed": "Failed to start linking",
-    "remove_failed": "Failed to remove forwarding",
-    "this_tunnel": "this tunnel",
+    "disabled": "deaktiveret",
+    "assigning_address": "tildele adresse…",
+    "copied": "Kopieret til udklipsholder",
+    "copy_failed": "Kunne ikke kopiere",
+    "restarts_one": "{{count}} genstart",
+    "restarts_other": "{{count}} genstarter",
+    "linked": "playit.gg linket",
+    "disconnected": "playit.gg afbrudt",
+    "link_start_failed": "Kunne ikke starte linkning",
+    "remove_failed": "Kunne ikke fjerne videresendelse",
+    "this_tunnel": "denne tunnel",
     "agent": {
       "connected": "Agent online",
-      "connecting": "Connecting…",
-      "error": "Agent error, reconnecting",
-      "stopped": "Agent stopped"
+      "connecting": "Forbinder…",
+      "error": "Agent fejl, gentilslutning",
+      "stopped": "Agenten er stoppet"
     },
-    "connect_title": "Connect playit.gg",
-    "connect_description": "Link a playit.gg account to give your servers public addresses without port forwarding. One-click forwarding then appears on every server.",
-    "waiting_approval": "Waiting for you to approve the link…",
-    "open_approval": "Open the approval page",
-    "link_account": "Link account",
+    "connect_title": "Forbind playit.gg",
+    "connect_description": "Link en playit.gg konto for at give dine servere offentlige adresser uden port videresendelse. Et klik videresendelse vises derefter på hver server.",
+    "waiting_approval": "Venter på at du godkender linket…",
+    "open_approval": "Åbn godkendelsessiden",
+    "link_account": "Link konto",
     "empty": {
-      "title": "No forwardings yet",
-      "description": "Open the Servers page and hit \"Forward\" on a server to give it a public playit.gg address."
+      "title": "Ingen videresendelser endnu",
+      "description": "Åbn siden Servere og ramte \"fremad\" på en server for at give det en offentlig playit.gg adresse."
     },
     "remove": {
-      "title": "Remove forwarding?",
-      "description_prefix": "Players will no longer be able to reach this server through"
+      "title": "Fjern viderestilling?",
+      "description_prefix": "Spillere vil ikke længere kunne nå denne server gennem"
     }
   },
   "updates": {
-    "title": "Updates",
-    "beta_channel": "Beta channel",
-    "release_channel": "Release channel",
-    "release_channel_description": "Choose which builds servers and the dashboard update to.",
-    "auto_updates": "Automatic updates",
-    "auto_updates_description": "When on, servers and the dashboard update themselves in the background.",
-    "update": "Update",
-    "up_to_date": "Up to date",
-    "save_failed": "Failed to save",
-    "update_failed": "Update failed",
-    "server_updated": "{{name}} updated to {{version}}",
-    "node_updating": "Updating to {{version}}. The dashboard will restart…",
-    "node_subtitle": "VoxelDash One dashboard",
-    "load_failed": "Couldn't load update information.",
-    "auto_on": "Automatic updates are on. VoxelDash keeps your servers and dashboard up to date on the {{channel}} channel.",
-    "everything_up_to_date": "Everything is up to date",
-    "latest_build": "Your servers and the VoxelDash One dashboard are running the latest {{channel}} build.",
+    "title": "Opdateringer",
+    "beta_channel": "Beta kanal",
+    "release_channel": "Udgiv kanal",
+    "release_channel_description": "Vælg, hvilke bygger servere og dashboard opdatering til.",
+    "auto_updates": "Automatiske opdateringer",
+    "auto_updates_description": "Når på, servere og instrumentbrættet opdatere sig selv i baggrunden.",
+    "update": "Opdater",
+    "up_to_date": "Op til dato",
+    "save_failed": "Kunne ikke gemme",
+    "update_failed": "Opdatering mislykkedes",
+    "server_updated": "{{name}} opdateret til {{version}}",
+    "node_updating": "Opdatering til {{version}}. Kontrolpanelet vil genstarte…",
+    "node_subtitle": "VoxelDash ét betjeningspanel",
+    "load_failed": "Kunne ikke indlæse opdateringsoplysninger.",
+    "auto_on": "Automatiske opdateringer er tændt. VoxelDash holder dine servere og dashboard ajour på {{channel}} kanalen.",
+    "everything_up_to_date": "Alt er opdateret",
+    "latest_build": "Dine servere og VoxelDash One dashboard kører den seneste {{channel}} build.",
     "channel": {
-      "release": "Release",
-      "release_hint": "Stable builds only",
-      "release_lower": "release",
+      "release": "Udgivelse",
+      "release_hint": "Kun stabile builds",
+      "release_lower": "udgivelse",
       "beta": "Beta",
-      "beta_hint": "Includes pre-releases",
+      "beta_hint": "Inkluderer forhåndsudgivelser",
       "beta_lower": "beta"
     }
   },
   "master_users": {
-    "title": "Users",
-    "new_user": "New user",
-    "admin": "Admin",
-    "username": "Username",
-    "password": "Password",
-    "confirm_password": "Confirm password",
-    "new_password": "New password",
-    "create_title": "Create user",
-    "create_description": "New users start with no access until you grant permissions.",
-    "create_failed": "Failed to create user",
-    "created": "User created",
-    "rename_title": "Rename user",
-    "rename_failed": "Failed to rename",
-    "username_updated": "Username updated",
-    "change_password_title": "Change password",
-    "change_password_failed": "Failed to change password",
-    "password_updated": "Password updated",
-    "delete_failed": "Failed to delete user",
-    "deleted": "User deleted",
-    "permissions_title": "Permissions · {{username}}",
-    "permissions_description": "Control what this user can do across the servers.",
-    "permissions_update_failed": "Failed to update permissions",
-    "permissions_updated": "Permissions updated",
-    "access_all": "Access all servers",
-    "access_all_hint": "Off lets you pick specific servers.",
-    "no_servers_exist": "No servers exist yet.",
+    "title": "Brugere",
+    "new_user": "Ny bruger",
+    "admin": "Administrator",
+    "username": "Brugernavn",
+    "password": "Adgangskode",
+    "confirm_password": "Bekræft adgangskode",
+    "new_password": "Ny adgangskode",
+    "create_title": "Opret bruger",
+    "create_description": "Nye brugere starter uden adgang, før du giver tilladelser.",
+    "create_failed": "Kunne ikke oprette bruger",
+    "created": "Bruger oprettet",
+    "rename_title": "Omdøb bruger",
+    "rename_failed": "Kunne ikke omdøbe",
+    "username_updated": "Brugernavn opdateret",
+    "change_password_title": "Skift adgangskode",
+    "change_password_failed": "Ændring af adgangskode mislykkedes",
+    "password_updated": "Adgangskode opdateret",
+    "delete_failed": "Kunne ikke slette bruger",
+    "deleted": "Bruger slettet",
+    "permissions_title": "Tilladelser · {{username}}",
+    "permissions_description": "Kontroller, hvad denne bruger kan gøre på tværs af serverne.",
+    "permissions_update_failed": "Mislykkedes at opdatere tilladelser",
+    "permissions_updated": "Tilladelser opdateret",
+    "access_all": "Få adgang til alle servere",
+    "access_all_hint": "Fra kan du vælge specifikke servere.",
+    "no_servers_exist": "Ingen servere findes endnu.",
     "error": {
-      "username_length": "Username must be at least 3 characters",
-      "password_length": "Password must be at least 4 characters",
-      "passwords_mismatch": "Passwords don't match"
+      "username_length": "Brugernavn skal være på mindst 3 tegn",
+      "password_length": "Adgangskoden skal være på mindst 4 tegn",
+      "passwords_mismatch": "Adgangskoder matcher ikke"
     },
     "feature": {
-      "servers": "Servers",
-      "forwardings": "Forwardings",
-      "user_management": "User management"
+      "servers": "Servere",
+      "forwardings": "Videresend",
+      "user_management": "Bruger håndtering"
     },
     "access": {
-      "all_servers": "All servers",
-      "no_servers": "No servers",
+      "all_servers": "Alle servere",
+      "no_servers": "Ingen servere",
       "server_count_one": "{{count}} server",
-      "server_count_other": "{{count}} servers"
+      "server_count_other": "{{count}} servere"
     },
     "perm": {
-      "full_access": "Full access",
-      "no_access": "No access",
-      "full": "{{count}} full",
-      "read": "{{count}} read"
+      "full_access": "Fuld adgang",
+      "no_access": "Ingen adgang",
+      "full": "{{count}} fuld",
+      "read": "{{count}} læst"
     },
     "col": {
-      "user": "User",
-      "permissions": "Permissions",
-      "access": "Access",
-      "actions": "Actions"
+      "user": "Bruger",
+      "permissions": "Rettigheder",
+      "access": "Adgang",
+      "actions": "Handlinger"
     },
     "action": {
-      "admin_full": "The admin always has full access",
-      "edit_permissions": "Edit permissions",
-      "rename": "Rename",
-      "change_password": "Change password",
-      "delete": "Delete"
+      "admin_full": "Administratoren har altid fuld adgang",
+      "edit_permissions": "Rediger tilladelser",
+      "rename": "Omdøb",
+      "change_password": "Skift adgangskode",
+      "delete": "Slet"
     },
     "delete": {
-      "title": "Delete {{username}}?",
-      "description": "This removes the user and their access. This can't be undone."
+      "title": "Slet {{username}}?",
+      "description": "Dette fjerner brugeren og deres adgang. Dette kan ikke fortrydes."
     }
   },
   "console": {
-    "empty": "No console output yet. Server logs will appear here.",
-    "placeholder": "Enter command...",
+    "empty": "Ingen konsol output endnu. Server logs vil blive vist her.",
+    "placeholder": "Indtast kommando...",
     "send": "Send"
   },
   "root": {
-    "home": "Home",
-    "loading": "Loading VoxelDash…",
-    "connecting": "Connecting to {{name}}…",
+    "home": "Hjem",
+    "loading": "Indlæser VoxelDash…",
+    "connecting": "Forbinder til {{name}}…",
     "server_fallback": "server",
     "server_fallback_cap": "Server",
-    "offline": "{{name}} is offline",
-    "offline_hint": "Start it from the server list, then open it again.",
-    "back_to_servers": "Back to servers",
-    "retry": "Retry",
-    "starting": "Starting {{name}}…",
-    "booting_hint": "Booting up. Give it a sec...",
-    "file_management_hint": "File management is available. Start the server for console, players and worlds.",
-    "starting_short": "Starting…",
+    "offline": "{{name}} er offline",
+    "offline_hint": "Start den fra serverlisten, og åbn den så igen.",
+    "back_to_servers": "Tilbage til servere",
+    "retry": "Forsøg igen",
+    "starting": "Starter {{name}}…",
+    "booting_hint": "Opstart op. Giv det et sek...",
+    "file_management_hint": "Filhåndtering er tilgængelig. Start serveren for konsol, spillere og verdener.",
+    "starting_short": "Starter…",
     "start_server": "Start server"
   },
   "titlebar": {
     "minimize": "Minimize",
     "maximize": "Maximize",
-    "restore": "Restore",
-    "close": "Close"
+    "restore": "Gendan",
+    "close": "Luk"
   },
   "context": {
-    "request_failed": "Request failed",
-    "create_failed": "Failed to create server",
-    "delete_failed": "Failed to delete server",
+    "request_failed": "Anmodning mislykkedes",
+    "create_failed": "Kunne ikke oprette server",
+    "delete_failed": "Mislykkedes at slette server",
     "action_failed": {
-      "start": "Failed to start server",
-      "stop": "Failed to stop server"
+      "start": "Mislykkedes at starte server",
+      "stop": "Mislykkedes at stoppe server"
     }
   },
   "errors": {
     "notFound": {
-      "title": "Page Not Found",
-      "description": "The page you're looking for doesn't exist or has been moved.",
-      "backHome": "Back to Home"
+      "title": "Siden Blev Ikke Fundet",
+      "description": "Den side, du leder efter, eksisterer ikke eller er blevet flyttet.",
+      "backHome": "Tilbage til startside"
     }
   },
   "pwa": {
-    "update_available": "A new version is available",
-    "update_desc": "Reload to get the latest VoxelDash.",
+    "update_available": "En ny version er tilgængelig",
+    "update_desc": "Genindlæs for at få den nyeste VoxelDash.",
     "reload": "Reload",
-    "dismiss": "Dismiss",
-    "install_title": "Install VoxelDash",
-    "install_desc": "Add it to your home screen for a faster, full-screen experience.",
-    "install": "Install",
-    "not_now": "Not now"
+    "dismiss": "Afvis",
+    "install_title": "Installer VoxelDash",
+    "install_desc": "Føj det til din startskærm for en hurtigere, fuldskærmsoplevelse.",
+    "install": "Installér",
+    "not_now": "Ikke nu"
   }
 }
