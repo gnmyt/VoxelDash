@@ -19,8 +19,8 @@
     "move": "移動",
     "yes": "はい",
     "no": "いいえ",
-    "close": "Close",
-    "loading": "Loading..."
+    "close": "閉じる",
+    "loading": "読み込み中..."
   },
   "header": {
     "account": "アカウントを管理",
@@ -37,23 +37,23 @@
     "password": "パスワード",
     "forgot_password": "パスワードをお忘れですか？",
     "forgot_password_description": "パスワードを忘れた場合は、ゲーム内で /account コマンドを使用してパスワードをリセットできます。",
-    "auth_failed": "Authentication failed",
-    "docs": "Documentation",
-    "tagline": "Your Minecraft server, fully in your hands.",
-    "description": "Manage players, console, files, worlds and settings from one clean dashboard. No SSH, no fiddling with config files.",
-    "welcome_title": "Welcome back",
-    "welcome_subtitle": "Sign in to your server dashboard.",
+    "auth_failed": "認証に失敗しました",
+    "docs": "ドキュメント",
+    "tagline": "あなたのMinecraftサーバーはあなたの手の中にあります。",
+    "description": "プレイヤー、コンソール、ファイル、ワールド、設定を1つのクリーンダッシュボードから管理します。SSHなし、設定ファイルをいじることはありません。",
+    "welcome_title": "おかえりなさい",
+    "welcome_subtitle": "サーバーダッシュボードにサインインします。",
     "master": {
-      "tagline": "All your Minecraft servers in one place.",
-      "description": "Create Paper, Fabric, Vanilla or proxy servers from here. VoxelDash One downloads the server jar and a matching Java version, then starts it for you. No manual setup, no SSH.",
-      "setup_title": "Set up your admin account",
-      "welcome_title": "Welcome back",
-      "setup_subtitle": "This is the first run. Create the admin account for this instance.",
-      "welcome_subtitle": "Sign in to manage your servers.",
-      "username": "Username",
-      "password": "Password",
-      "create_account": "Create admin account",
-      "sign_in": "Sign in"
+      "tagline": "Minecraft のすべてのサーバーが一箇所にあります。",
+      "description": "ここからペーパー、ファブリック、バニラ、またはプロキシサーバーを作成します。 VoxelDash One はサーバー jar と一致する Java バージョンをダウンロードしてから、それを起動します。手動での設定も、SSH もありません。",
+      "setup_title": "管理者アカウントを設定",
+      "welcome_title": "おかえりなさい",
+      "setup_subtitle": "これは最初の実行です。このインスタンスの管理者アカウントを作成します。",
+      "welcome_subtitle": "ログインしてサーバーを管理します。",
+      "username": "ユーザー名",
+      "password": "パスワード",
+      "create_account": "管理者アカウントを作成",
+      "sign_in": "サインイン"
     }
   },
   "nav": {
@@ -72,60 +72,60 @@
       "ssh": "SSH/SFTP アクセス",
       "server": "サーバー",
       "users": "ユーザー",
-      "gamerules": "Game Rules"
+      "gamerules": "ゲームルール"
     },
     "profiling": "Profiling",
-    "select_server": "Select a server",
-    "manage_servers": "Manage servers",
-    "toggle": "Toggle"
+    "select_server": "サーバーを選択",
+    "manage_servers": "サーバー管理",
+    "toggle": "切り替え"
   },
   "motd": {
-    "title": "Message of the Day",
-    "subtitle": "Design the message and icon shown in the multiplayer server list",
-    "save": "Save",
-    "saved_title": "MOTD saved",
-    "saved_description": "Your message of the day has been applied.",
-    "save_error_title": "Could not save the MOTD",
-    "preview": "Preview",
-    "editor_hint": "Type below. This is exactly how it appears in the server list.",
-    "restart_title": "Restart required",
-    "restart_description": "This platform applies the MOTD on the next server start. Restart the server for the changes to appear.",
-    "default_color": "Default",
+    "title": "今日のメッセージ",
+    "subtitle": "マルチプレイヤーサーバーリストに表示されるメッセージとアイコンをデザインする",
+    "save": "保存",
+    "saved_title": "MOTD を保存しました",
+    "saved_description": "この日のメッセージが適用されました。",
+    "save_error_title": "MOTD を保存できませんでした",
+    "preview": "プレビュー",
+    "editor_hint": "以下に入力してください。これがまさにサーバーリストに表示される方法です。",
+    "restart_title": "再起動が必要です",
+    "restart_description": "このプラットフォームは、次のサーバーの起動時にMOTD を適用します。変更を表示するには、サーバーを再起動してください。",
+    "default_color": "デフォルト",
     "hex": "Hex",
-    "no_hex_hint": "This platform does not render hex colors; they will be matched to the nearest classic color.",
-    "clear": "Clear formatting",
-    "line": "Line {{number}}",
+    "no_hex_hint": "このプラットフォームは16進数の色をレンダリングしません。最も近いクラシックカラーにマッチします。",
+    "clear": "フォーマットをクリア",
+    "line": "{{number}} 行",
     "line_placeholder": "Type your message…",
-    "add_line": "Add second line",
-    "selection_hint": "Select text, then pick a color or style to apply it. With no selection, the next characters you type use the chosen style.",
+    "add_line": "2行目を追加",
+    "selection_hint": "テキストを選択し、色やスタイルを選択して適用します。選択なしで、次に入力する文字は選択したスタイルを使用します。",
     "style": {
       "bold": "Bold",
       "italic": "Italic",
-      "underline": "Underline",
-      "strikethrough": "Strikethrough",
-      "obfuscated": "Obfuscated"
+      "underline": "アンダーライン",
+      "strikethrough": "取り消し線",
+      "obfuscated": "難読化"
     },
     "icon": {
-      "title": "Server icon",
-      "description": "A 64x64 image shown next to your MOTD. Larger images are scaled down automatically.",
-      "upload": "Upload icon",
-      "remove": "Remove icon",
-      "updated_title": "Server icon updated",
-      "updated_description": "The new icon has been applied.",
-      "removed_title": "Server icon removed",
-      "removed_description": "The custom icon has been deleted.",
-      "error_title": "Could not update the icon",
-      "error_description": "The image could not be processed. Please try a different file.",
+      "title": "サーバーのアイコン",
+      "description": "MOTD の横に表示される64x64の画像。大きな画像は自動的に縮小されます。",
+      "upload": "アイコンをアップロード",
+      "remove": "アイコンを削除",
+      "updated_title": "サーバーのアイコンを更新しました",
+      "updated_description": "新しいアイコンが適用されました。",
+      "removed_title": "サーバーのアイコンを削除しました",
+      "removed_description": "カスタムアイコンを削除しました。",
+      "error_title": "アイコンを更新できませんでした",
+      "error_description": "画像を処理できませんでした。別のファイルを試してください。",
       "editor": {
-        "open": "Click to edit the icon",
-        "title": "Edit server icon",
-        "description": "Draw your 64x64 server icon. Pick a colour and paint, or erase to clear pixels.",
-        "pen": "Pen",
+        "open": "アイコンを編集する場合はクリックします",
+        "title": "サーバーのアイコンを編集",
+        "description": "64x64のサーバーアイコンを描きます。色とペイントを選択、または消去してピクセルをクリアします。",
+        "pen": "ペン",
         "eraser": "Eraser",
-        "fill": "Fill",
-        "clear": "Clear",
-        "custom": "Custom",
-        "size": "Size"
+        "fill": "塗りつぶし",
+        "clear": "クリア",
+        "custom": "カスタム",
+        "size": "サイズ"
       }
     }
   },
@@ -181,7 +181,7 @@
         "view_distance": "距離の表示"
       }
     },
-    "unknown_widget": "Unknown widget type"
+    "unknown_widget": "不明なウィジェットの種類"
   },
   "resources": {
     "subtitle": "{{count}} リソースがインストールされました",
@@ -230,12 +230,12 @@
       "save_failed": "設定の保存に失敗しました",
       "load_failed": "設定の読み込みに失敗しました",
       "open_in_files": "ファイルマネージャーで開く",
-      "enabled": "Enabled",
-      "disabled": "Disabled",
-      "item": "item",
-      "items": "items",
-      "property": "property",
-      "properties": "properties"
+      "enabled": "有効",
+      "disabled": "無効",
+      "item": "項目",
+      "items": "項目",
+      "property": "プロパティ",
+      "properties": "プロパティ"
     }
   },
   "store": {
@@ -360,7 +360,7 @@
       "online": "オンライン",
       "whitelist": "ホワイトリスト",
       "banned": "禁止",
-      "all": "All Players"
+      "all": "すべてのプレイヤー"
     },
     "table": {
       "player": "プレイヤー",
@@ -424,69 +424,69 @@
     "remove_whitelist_description": "{{count}} プレイヤーがホワイトリストから削除されます。",
     "no_reason": "理由は提供されていません",
     "permanent": "恒久的",
-    "food": "Food",
-    "online_badge": "Online",
-    "offline_badge": "Offline",
+    "food": "Comida",
+    "online_badge": "オンライン",
+    "offline_badge": "オフライン",
     "all": {
-      "empty": "No players found",
-      "empty_description": "No player data has been recorded on this server yet.",
-      "search": "Search players..."
+      "empty": "プレイヤーが見つかりません",
+      "empty_description": "このサーバーにはまだプレイヤーデータが記録されていません。",
+      "search": "プレイヤーを検索..."
     },
     "inventory": {
-      "menu": "Inventory",
-      "title": "{{player}}'s Inventory",
-      "editable": "Editing the live inventory of this online player.",
-      "online_readonly": "Live inventory is not available on this platform.",
-      "offline_readonly": "Read-only view of this offline player (from saved data).",
-      "tab_inventory": "Inventory",
-      "tab_enderchest": "Ender Chest",
-      "armor": "Armor",
-      "offhand": "Off-hand",
-      "give_item": "Give item (id)",
+      "menu": "棚卸し",
+      "title": "{{player}}のインベントリ：",
+      "editable": "このオンラインプレーヤーのライブインベントリを編集します。",
+      "online_readonly": "このプラットフォームではライブインベントリは利用できません。",
+      "offline_readonly": "このオフラインプレーヤーの読み取り専用ビュー (保存されたデータから)。",
+      "tab_inventory": "棚卸し",
+      "tab_enderchest": "エンダーチェスト",
+      "armor": "よろいかぶと",
+      "offhand": "<unk>",
+      "give_item": "アイテムを与える (ID)",
       "give": "Give",
-      "given": "Item given",
-      "clear": "Clear",
-      "edit_slot": "Edit Slot",
+      "given": "与えられたアイテム",
+      "clear": "クリア",
+      "edit_slot": "スロットを編集",
       "item_id": "Item id",
-      "count": "Count",
-      "clear_slot": "Clear slot"
+      "count": "カウント",
+      "clear_slot": "スロットをクリア"
     },
     "profile": {
-      "menu": "Profile",
-      "title": "Player Profile",
-      "first_join": "First join",
-      "last_seen": "Last seen",
-      "dimension": "Dimension",
-      "health": "Health",
-      "banned": "Banned",
+      "menu": "プロフィール",
+      "title": "プレイヤーのプロフィール",
+      "first_join": "最初の参加",
+      "last_seen": "最終閲覧",
+      "dimension": "寸法",
+      "health": "健康",
+      "banned": "禁止",
       "uuid": "UUID",
-      "ip_history": "IP history",
-      "no_ips": "No IP addresses recorded yet."
+      "ip_history": "IPの履歴",
+      "no_ips": "IPアドレスはまだ記録されていません。"
     },
     "actions": {
-      "whisper": "Private message",
-      "message_placeholder": "Message to send...",
-      "send": "Send",
-      "message_sent": "Message sent to {{player}}",
-      "teleport": "Teleport",
-      "go": "Go",
-      "target_player": "Target player",
-      "to_player": "To player",
-      "to_spawn": "To spawn",
-      "teleported": "Player teleported",
+      "whisper": "プライベートメッセージ",
+      "message_placeholder": "送信するメッセージ...",
+      "send": "送信",
+      "message_sent": "{{player}} にメッセージを送信しました",
+      "teleport": "テレポートする",
+      "go": "移動",
+      "target_player": "ターゲットプレイヤー",
+      "to_player": "プレイヤーに",
+      "to_spawn": "スポーンする",
+      "teleported": "プレイヤーをテレポートしました",
       "tempban": "Temp-ban",
-      "tempbanned": "Player temporarily banned",
-      "mute": "Mute",
-      "unmute": "Unmute",
-      "muted": "Player muted",
-      "unmuted": "Player unmuted",
-      "muted_badge": "Muted",
-      "permanent": "Permanent",
-      "default_mute_reason": "Muted by administrator",
-      "offline_note": "These actions are only available while the player is online.",
-      "coordinates": "Coordinates",
-      "to_world": "Send to world",
-      "duration": "Duration"
+      "tempbanned": "プレイヤーは一時的にBANされました",
+      "mute": "ミュート",
+      "unmute": "ミュート解除",
+      "muted": "プレイヤーがミュートされました",
+      "unmuted": "プレイヤーのミュート解除",
+      "muted_badge": "ミュート中",
+      "permanent": "恒久的",
+      "default_mute_reason": "管理者によってミュート",
+      "offline_note": "これらのアクションはプレイヤーがオンラインの場合にのみ利用できます。",
+      "coordinates": "座標",
+      "to_world": "ワールドに送る",
+      "duration": "期間"
     }
   },
   "files": {
@@ -534,7 +534,7 @@
     "delete": "削除",
     "delete_description": "この操作は元に戻せません。この操作はアイテムを完全に削除します。",
     "search_placeholder": "ファイルを検索...",
-    "open_menu": "Open menu",
+    "open_menu": "メニューを開く",
     "no_results": "検索に一致するファイルが見つかりませんでした。",
     "empty": {
       "title": "このフォルダは空です",
@@ -627,9 +627,9 @@
     "title": "バックアップ",
     "subtitle": "サーバーのバックアップを作成・復元",
     "name": "バックアップ",
-    "name_label": "Name (optional)",
-    "name_placeholder": "e.g. Before update {date}",
-    "name_hint": "Leave empty to use the date. Placeholders: {date}, {time}, {datetime}, {year}, {month}, {day}, {hour}, {minute}.",
+    "name_label": "名前 (オプション)",
+    "name_placeholder": "例: 更新前 {date}",
+    "name_hint": "日付を使用するには空白のままにしてください。プレースホルダ: {date}, {time}, {datetime}, {year}, {month}, {day}, {hour}, {minute}.",
     "created": "バックアップが正常に作成されました。",
     "creating": "バックアップを作成しています...",
     "create": "バックアップを作成",
@@ -637,7 +637,7 @@
     "restore": "復元",
     "download": "ダウンロード",
     "none_found": "バックアップはありません。",
-    "none_found_hint": "Create a backup to get started",
+    "none_found_hint": "バックアップを作成して開始",
     "description": "バックアップするものを選択",
     "include": "バックアップに含める",
     "select_all": "すべて選択",
@@ -683,11 +683,11 @@
       "console_enabled": "コンソールアクセスが有効です",
       "console_disabled": "コンソールアクセスが無効です",
       "sftp_label": "SFTP Access",
-      "sftp_hint": "Allow file transfers via SFTP",
-      "console_label": "Console Access",
-      "console_hint": "Allow terminal access via SSH",
-      "state_enabled": "Enabled",
-      "state_disabled": "Disabled"
+      "sftp_hint": "SFTP 経由でのファイル転送を許可",
+      "console_label": "コンソールアクセス",
+      "console_hint": "SSH経由での端末アクセスを許可する",
+      "state_enabled": "有効",
+      "state_disabled": "無効"
     },
     "sessions": {
       "title": "アクティブなセッション",
@@ -697,7 +697,7 @@
       "sftp": "SFTP です",
       "actions": "アクション",
       "disconnect": "接続を解除",
-      "none": "No active sessions"
+      "none": "アクティブなセッションはありません"
     }
   },
   "schedules": {
@@ -800,52 +800,52 @@
     "warning": "これらの設定を変更すると、サーバーに大きな影響を与える可能性があります。注意してください。",
     "updated_title": "プロパティが更新されました",
     "updated_description": "変更を適用するにはサーバーを再起動してください。",
-    "enabled": "Enabled",
-    "disabled": "Disabled",
+    "enabled": "有効",
+    "disabled": "無効",
     "category": {
       "gameplay": {
-        "label": "Gameplay",
-        "description": "Game modes, PvP, and gameplay mechanics"
+        "label": "ゲームプレイ",
+        "description": "ゲームモード、PvP、およびゲームプレイの仕組み"
       },
       "world": {
-        "label": "World",
-        "description": "World generation and level settings"
+        "label": "ワールド",
+        "description": "ワールドの生成とレベルの設定"
       },
       "spawning": {
-        "label": "Mob Spawning",
-        "description": "Control creature spawning behavior"
+        "label": "Mob のスポーニング",
+        "description": "クリーチャーのスポーン動作を制御する"
       },
       "players": {
-        "label": "Players",
-        "description": "Player limits and permissions"
+        "label": "プレイヤー",
+        "description": "プレイヤーの制限と権限"
       },
       "network": {
-        "label": "Network",
-        "description": "Connection and network settings"
+        "label": "ネットワーク",
+        "description": "接続とネットワーク設定"
       },
       "performance": {
-        "label": "Performance",
-        "description": "Server performance tuning"
+        "label": "パフォーマンス",
+        "description": "サーバーパフォーマンスのチューニング"
       },
       "security": {
-        "label": "Security",
-        "description": "Whitelist and security options"
+        "label": "セキュリティ",
+        "description": "ホワイトリストとセキュリティオプション"
       },
       "rcon": {
-        "label": "RCON & Query",
-        "description": "Remote console and query settings"
+        "label": "RCON & クエリ",
+        "description": "リモートコンソールとクエリの設定"
       },
       "resourcepack": {
-        "label": "Resource Pack",
-        "description": "Server resource pack settings"
+        "label": "リソース パック",
+        "description": "サーバーリソースパックの設定"
       },
       "info": {
-        "label": "Server Info",
-        "description": "MOTD and server status"
+        "label": "サーバー情報",
+        "description": "MOTD とサーバーの状態"
       },
       "advanced": {
-        "label": "Advanced",
-        "description": "Advanced debugging options"
+        "label": "高度な設定",
+        "description": "高度なデバッグオプション"
       }
     },
     "enable-jmx-monitoring": "サーバーのメトリックとパフォーマンス データの JMX 監視を有効にする",
@@ -905,309 +905,309 @@
     "hide-online-players": "サーバーリスト内のオンラインプレイヤーの数を非表示にします"
   },
   "gamerules": {
-    "title": "Game Rules",
-    "subtitle": "Tweak the rules of the game. Changes apply to the running server.",
-    "search": "Search game rules...",
-    "enabled": "Enabled",
-    "disabled": "Disabled",
-    "modified": "Changed",
-    "reset_default": "Reset to default",
-    "wiki": "View on the Minecraft Wiki",
+    "title": "ゲームルール",
+    "subtitle": "ゲームのルールを調整します。変更は実行中のサーバーに適用されます。",
+    "search": "ゲームルールを検索...",
+    "enabled": "有効",
+    "disabled": "無効",
+    "modified": "変更済み",
+    "reset_default": "既定にリセット",
+    "wiki": "Minecraft Wikiで表示",
     "wiki_learn": "Wiki",
-    "updated": "{{rule}} updated",
-    "none_found": "No game rules found",
-    "none_found_hint": "This server did not report any game rules. You can still change them through the console.",
-    "no_matches": "No matching game rules",
-    "no_matches_hint": "Try a different search term."
+    "updated": "{{rule}} が更新されました",
+    "none_found": "ゲームのルールが見つかりません",
+    "none_found_hint": "このサーバーはゲームルールを報告していません。コンソールから変更することができます。",
+    "no_matches": "一致するゲームルールがありません",
+    "no_matches_hint": "別の検索語を試してみてください。"
   },
   "profiling": {
     "title": "Profiling",
-    "subtitle": "Find out where the tick goes and which plugins or mods cause lag.",
-    "start": "Start",
-    "stop": "Stop",
+    "subtitle": "どのプラグインやMODがラグを引き起こすかチェックしてください。",
+    "start": "開始",
+    "stop": "停止",
     "duration": {
-      "30s": "30 seconds",
-      "60s": "60 seconds",
-      "120s": "2 minutes",
-      "manual": "Until stopped"
+      "30s": "30 秒",
+      "60s": "60秒",
+      "120s": "2分",
+      "manual": "停止するまで"
     },
     "metrics": {
       "tps": "TPS",
       "mspt": "MSPT",
-      "memory": "Memory",
+      "memory": "メモリ",
       "gc": "GC",
-      "threads": "Threads",
-      "entities": "Entities"
+      "threads": "スレッド",
+      "entities": "エンティティ"
     },
-    "running": "Sampling… {{seconds}}s elapsed, {{samples}} samples collected",
+    "running": "サンプリング… {{seconds}}秒が経過し、 {{samples}} サンプルが収集されました",
     "empty": {
-      "title": "No profile yet",
-      "description": "Start a session to see which plugins and mods take the most server time."
+      "title": "プロファイルはまだありません",
+      "description": "どのプラグインとMODが最もサーバー時間を要するかを確認するためにセッションを開始します。"
     },
-    "byResource": "What's using the most time",
-    "summary": "{{samples}} samples · {{seconds}}s",
+    "byResource": "一番使っているもの",
+    "summary": "{{samples}} サンプル · {{seconds}}s",
     "unsupported": {
-      "title": "Profiling not available",
-      "description": "This server doesn't support profiling. Live metrics are shown above."
+      "title": "プロファイリングは利用できません",
+      "description": "このサーバーはプロファイリングをサポートしていません。ライブのメトリックは上記の通りです。"
     },
     "noSamples": {
-      "title": "No samples collected",
-      "description": "The session ended before any stack samples were taken. Try a longer duration."
+      "title": "収集したサンプルはありません",
+      "description": "任意のスタックサンプルが取られる前にセッションが終了しました。より長くお試しください。"
     },
     "tree": {
-      "title": "Where the time goes",
-      "hint": "Each row is a method; expand to drill in. Click a plugin above to highlight where it spends time.",
-      "more": "+ {{count}} smaller calls"
+      "title": "時間が経つ場所",
+      "hint": "各行はメソッドです。ドリルインを展開します。上記のプラグインをクリックすると、時間を費やす場所がハイライトされます。",
+      "more": "+ {{count}} より小さい通話"
     }
   },
   "servers": {
-    "title": "Servers",
-    "count_one": "{{count}} server",
-    "count_other": "{{count}} servers",
-    "new_server": "New server",
-    "create_server": "Create a server",
-    "start": "Start",
-    "installing": "Installing",
-    "view_log": "View log",
-    "remove_forwarding": "Remove forwarding",
-    "forward_with_playit": "Forward with playit",
-    "set_up_forwarding": "Set up forwarding",
-    "copied": "Copied to clipboard",
-    "copy_failed": "Couldn't copy",
-    "log_title": "{{name}} · log",
+    "title": "サーバー",
+    "count_one": "{{count}} サーバー",
+    "count_other": "{{count}} サーバー",
+    "new_server": "新しいサーバー",
+    "create_server": "サーバーを作成",
+    "start": "開始",
+    "installing": "インストール中",
+    "view_log": "ログを表示",
+    "remove_forwarding": "転送を削除",
+    "forward_with_playit": "Playit で転送",
+    "set_up_forwarding": "転送の設定",
+    "copied": "クリップボードにコピーしました",
+    "copy_failed": "コピーできませんでした",
+    "log_title": "{{name}} · ログ",
     "waiting_for_output": "Waiting for output…",
-    "forward_create_failed": "Failed to create forwarding",
-    "forward_created": "Forwarding created",
-    "forward_removed": "Forwarding removed",
+    "forward_create_failed": "転送の作成に失敗しました",
+    "forward_created": "転送を作成しました",
+    "forward_removed": "転送を削除しました",
     "delete": {
-      "title": "Delete \"{{name}}\"?",
-      "description": "This permanently removes the server and all of its files. This can't be undone."
+      "title": "「{{name}}」を削除しますか？",
+      "description": "サーバーとすべてのファイルを完全に削除します。元に戻すことはできません。"
     },
     "empty": {
-      "title": "No servers yet",
-      "can_create": "Create your first server. VoxelDash One downloads the software and a matching Java runtime, then starts it for you.",
-      "no_access": "You don't have access to any servers yet. Ask an administrator to grant you access."
+      "title": "サーバーはまだありません",
+      "can_create": "最初のサーバーを作成します。VoxelDash Oneはソフトウェアと一致するJavaランタイムをダウンロードし、それを起動します。",
+      "no_access": "まだどのサーバーにもアクセスできません。管理者にアクセス許可を求めてください。"
     },
     "stat": {
-      "port": "Port",
+      "port": "ポート",
       "ram": "RAM",
-      "build": "Build"
+      "build": "ビルド"
     }
   },
   "create_server": {
-    "title": "New server",
-    "server_name": "Server name",
-    "server_name_placeholder": "Survival, Lobby, Creative…",
-    "minecraft_version": "Minecraft version",
+    "title": "新しいサーバー",
+    "server_name": "サーバー名",
+    "server_name_placeholder": "サバイバル、ロビー、クリエイティブ…",
+    "minecraft_version": "Minecraft バージョン",
     "loading_versions": "Loading versions…",
-    "choose_version": "Choose a version",
-    "load_versions_failed": "Could not load versions",
-    "memory": "Memory",
-    "memory_low": "Low",
-    "memory_medium": "Medium",
-    "memory_high": "High",
-    "back": "Back",
-    "create_and_start": "Create & start",
-    "step_software": "Software",
-    "step_details": "Details",
-    "step_provision": "Provision",
-    "provision_failed": "Provisioning failed",
-    "server_online": "Server is online",
+    "choose_version": "バージョンを選択",
+    "load_versions_failed": "バージョンを読み込めませんでした",
+    "memory": "メモリ",
+    "memory_low": "低い",
+    "memory_medium": "ミディアム",
+    "memory_high": "高い",
+    "back": "戻る",
+    "create_and_start": "作成して開始",
+    "step_software": "ソフトウェア",
+    "step_details": "詳細",
+    "step_provision": "提供",
+    "provision_failed": "プロビジョニングに失敗しました",
+    "server_online": "サーバーはオンラインです",
     "setting_up": "Setting things up…",
     "starting": "Starting…",
-    "close": "Close",
-    "open_dashboard": "Open dashboard"
+    "close": "閉じる",
+    "open_dashboard": "ダッシュボードを開く"
   },
   "master": {
-    "server_manager": "Server manager",
+    "server_manager": "サーバーマネージャー",
     "nav": {
-      "servers": "Servers",
-      "forwardings": "Forwardings",
-      "users": "Users",
-      "updates": "Updates"
+      "servers": "サーバー",
+      "forwardings": "転送",
+      "users": "ユーザー",
+      "updates": "更新"
     }
   },
   "forwardings": {
-    "title": "Forwardings",
-    "active_count": "{{count}} active",
-    "disconnect": "Disconnect",
-    "tunnel": "Tunnel",
-    "disabled": "disabled",
+    "title": "転送",
+    "active_count": "{{count}} 有効",
+    "disconnect": "接続を解除",
+    "tunnel": "トンネル",
+    "disabled": "無効",
     "assigning_address": "assigning address…",
-    "copied": "Copied to clipboard",
-    "copy_failed": "Couldn't copy",
-    "restarts_one": "{{count}} restart",
-    "restarts_other": "{{count}} restarts",
-    "linked": "playit.gg linked",
-    "disconnected": "playit.gg disconnected",
-    "link_start_failed": "Failed to start linking",
-    "remove_failed": "Failed to remove forwarding",
-    "this_tunnel": "this tunnel",
+    "copied": "クリップボードにコピーしました",
+    "copy_failed": "コピーできませんでした",
+    "restarts_one": "{{count}} 再起動",
+    "restarts_other": "{{count}} が再起動します",
+    "linked": "playit.ggリンク",
+    "disconnected": "playit.ggが切断されました",
+    "link_start_failed": "リンクの開始に失敗しました",
+    "remove_failed": "転送の削除に失敗しました",
+    "this_tunnel": "このトンネルは",
     "agent": {
-      "connected": "Agent online",
+      "connected": "エージェント オンライン",
       "connecting": "Connecting…",
-      "error": "Agent error, reconnecting",
-      "stopped": "Agent stopped"
+      "error": "エージェントエラー、再接続",
+      "stopped": "エージェントが停止しました"
     },
-    "connect_title": "Connect playit.gg",
-    "connect_description": "Link a playit.gg account to give your servers public addresses without port forwarding. One-click forwarding then appears on every server.",
+    "connect_title": "playit.ggに接続",
+    "connect_description": "ポート転送せずにサーバーに公開アドレスを与えるためにplayit.ggアカウントをリンクします。ワンクリック転送は、すべてのサーバーに表示されます。",
     "waiting_approval": "Waiting for you to approve the link…",
-    "open_approval": "Open the approval page",
-    "link_account": "Link account",
+    "open_approval": "承認ページを開く",
+    "link_account": "アカウントをリンク",
     "empty": {
-      "title": "No forwardings yet",
-      "description": "Open the Servers page and hit \"Forward\" on a server to give it a public playit.gg address."
+      "title": "転送はまだありません",
+      "description": "サーバーページを開き、サーバー上で「転送」をクリックして、パブリックplayit.ggアドレスを指定します。"
     },
     "remove": {
-      "title": "Remove forwarding?",
-      "description_prefix": "Players will no longer be able to reach this server through"
+      "title": "転送を削除しますか？",
+      "description_prefix": "プレイヤーはこのサーバーにアクセスできなくなります"
     }
   },
   "updates": {
-    "title": "Updates",
-    "beta_channel": "Beta channel",
-    "release_channel": "Release channel",
-    "release_channel_description": "Choose which builds servers and the dashboard update to.",
-    "auto_updates": "Automatic updates",
-    "auto_updates_description": "When on, servers and the dashboard update themselves in the background.",
-    "update": "Update",
-    "up_to_date": "Up to date",
-    "save_failed": "Failed to save",
-    "update_failed": "Update failed",
-    "server_updated": "{{name}} updated to {{version}}",
+    "title": "更新",
+    "beta_channel": "ベータチャンネル",
+    "release_channel": "チャンネルをリリース",
+    "release_channel_description": "サーバーのビルドとダッシュボードの更新を選択します。",
+    "auto_updates": "自動アップデート",
+    "auto_updates_description": "オンにすると、サーバーとダッシュボードはバックグラウンドで自分自身を更新します。",
+    "update": "更新",
+    "up_to_date": "最新です",
+    "save_failed": "保存に失敗しました",
+    "update_failed": "更新に失敗しました",
+    "server_updated": "{{name}} は {{version}} に更新されました",
     "node_updating": "Updating to {{version}}. The dashboard will restart…",
-    "node_subtitle": "VoxelDash One dashboard",
-    "load_failed": "Couldn't load update information.",
-    "auto_on": "Automatic updates are on. VoxelDash keeps your servers and dashboard up to date on the {{channel}} channel.",
-    "everything_up_to_date": "Everything is up to date",
-    "latest_build": "Your servers and the VoxelDash One dashboard are running the latest {{channel}} build.",
+    "node_subtitle": "VoxelDash One ダッシュボード",
+    "load_failed": "更新情報を読み込めませんでした。",
+    "auto_on": "自動更新がオンになっています。VoxelDashはサーバーとダッシュボードを {{channel}} チャンネルで最新の状態に保ちます。",
+    "everything_up_to_date": "すべてが最新です",
+    "latest_build": "サーバーと VoxelDash One ダッシュボードは最新の {{channel}} ビルドを実行しています。",
     "channel": {
-      "release": "Release",
-      "release_hint": "Stable builds only",
-      "release_lower": "release",
+      "release": "リリース",
+      "release_hint": "安定したビルドのみ",
+      "release_lower": "リリース",
       "beta": "Beta",
-      "beta_hint": "Includes pre-releases",
-      "beta_lower": "beta"
+      "beta_hint": "プレリリースを含む",
+      "beta_lower": "ベータ"
     }
   },
   "master_users": {
-    "title": "Users",
-    "new_user": "New user",
-    "admin": "Admin",
-    "username": "Username",
-    "password": "Password",
-    "confirm_password": "Confirm password",
-    "new_password": "New password",
-    "create_title": "Create user",
-    "create_description": "New users start with no access until you grant permissions.",
-    "create_failed": "Failed to create user",
-    "created": "User created",
-    "rename_title": "Rename user",
-    "rename_failed": "Failed to rename",
-    "username_updated": "Username updated",
-    "change_password_title": "Change password",
-    "change_password_failed": "Failed to change password",
-    "password_updated": "Password updated",
-    "delete_failed": "Failed to delete user",
-    "deleted": "User deleted",
-    "permissions_title": "Permissions · {{username}}",
-    "permissions_description": "Control what this user can do across the servers.",
-    "permissions_update_failed": "Failed to update permissions",
-    "permissions_updated": "Permissions updated",
-    "access_all": "Access all servers",
-    "access_all_hint": "Off lets you pick specific servers.",
-    "no_servers_exist": "No servers exist yet.",
+    "title": "ユーザー",
+    "new_user": "新規ユーザー",
+    "admin": "管理者",
+    "username": "ユーザー名",
+    "password": "パスワード",
+    "confirm_password": "パスワードの確認",
+    "new_password": "新しいパスワード",
+    "create_title": "ユーザーを作成",
+    "create_description": "新しいユーザーは、権限を付与するまでアクセス権限がありません。",
+    "create_failed": "ユーザーの作成に失敗しました",
+    "created": "ユーザーが作成されました",
+    "rename_title": "ユーザー名の変更",
+    "rename_failed": "名前を変更できませんでした",
+    "username_updated": "ユーザー名が更新されました",
+    "change_password_title": "パスワードの変更",
+    "change_password_failed": "パスワードの変更に失敗しました",
+    "password_updated": "パスワードが更新されました",
+    "delete_failed": "ユーザーの削除に失敗しました",
+    "deleted": "ユーザーが削除されました",
+    "permissions_title": "権限 · {{username}}",
+    "permissions_description": "このユーザーがサーバー間でできることを制御します。",
+    "permissions_update_failed": "権限の更新に失敗しました",
+    "permissions_updated": "権限が更新されました",
+    "access_all": "すべてのサーバーにアクセス",
+    "access_all_hint": "Offでは、特定のサーバーを選択できます。",
+    "no_servers_exist": "サーバーはまだ存在しません。",
     "error": {
-      "username_length": "Username must be at least 3 characters",
-      "password_length": "Password must be at least 4 characters",
-      "passwords_mismatch": "Passwords don't match"
+      "username_length": "ユーザー名は3文字以上でなければなりません",
+      "password_length": "パスワードは4文字以上でなければなりません",
+      "passwords_mismatch": "パスワードが一致しません"
     },
     "feature": {
-      "servers": "Servers",
-      "forwardings": "Forwardings",
-      "user_management": "User management"
+      "servers": "サーバー",
+      "forwardings": "転送",
+      "user_management": "ユーザー管理"
     },
     "access": {
-      "all_servers": "All servers",
-      "no_servers": "No servers",
-      "server_count_one": "{{count}} server",
-      "server_count_other": "{{count}} servers"
+      "all_servers": "すべてのサーバー",
+      "no_servers": "サーバーがありません",
+      "server_count_one": "{{count}} サーバー",
+      "server_count_other": "{{count}} サーバー"
     },
     "perm": {
-      "full_access": "Full access",
-      "no_access": "No access",
+      "full_access": "フルアクセス",
+      "no_access": "アクセスできません",
       "full": "{{count}} full",
-      "read": "{{count}} read"
+      "read": "{{count}} の読み取り"
     },
     "col": {
-      "user": "User",
-      "permissions": "Permissions",
-      "access": "Access",
-      "actions": "Actions"
+      "user": "ユーザー",
+      "permissions": "アクセス許可",
+      "access": "アクセス",
+      "actions": "アクション"
     },
     "action": {
-      "admin_full": "The admin always has full access",
-      "edit_permissions": "Edit permissions",
-      "rename": "Rename",
-      "change_password": "Change password",
-      "delete": "Delete"
+      "admin_full": "管理者は常にフルアクセス権を持っています",
+      "edit_permissions": "権限の編集",
+      "rename": "名前の変更",
+      "change_password": "パスワードの変更",
+      "delete": "削除"
     },
     "delete": {
-      "title": "Delete {{username}}?",
-      "description": "This removes the user and their access. This can't be undone."
+      "title": "{{username}} を削除しますか？",
+      "description": "ユーザーとそのアクセス権を削除します。元に戻すことはできません。"
     }
   },
   "console": {
-    "empty": "No console output yet. Server logs will appear here.",
-    "placeholder": "Enter command...",
-    "send": "Send"
+    "empty": "コンソール出力はまだありません。サーバーのログはここに表示されます。",
+    "placeholder": "コマンドを入力...",
+    "send": "送信"
   },
   "root": {
-    "home": "Home",
+    "home": "ホーム",
     "loading": "Loading VoxelDash…",
     "connecting": "Connecting to {{name}}…",
-    "server_fallback": "server",
-    "server_fallback_cap": "Server",
-    "offline": "{{name}} is offline",
-    "offline_hint": "Start it from the server list, then open it again.",
-    "back_to_servers": "Back to servers",
-    "retry": "Retry",
+    "server_fallback": "サーバー",
+    "server_fallback_cap": "サーバー",
+    "offline": "{{name}} はオフラインです",
+    "offline_hint": "サーバーリストから起動し、もう一度開きます。",
+    "back_to_servers": "サーバーに戻る",
+    "retry": "再試行する",
     "starting": "Starting {{name}}…",
-    "booting_hint": "Booting up. Give it a sec...",
-    "file_management_hint": "File management is available. Start the server for console, players and worlds.",
+    "booting_hint": "起動中です。しばらくお待ちください...",
+    "file_management_hint": "ファイル管理が可能です。コンソール、プレイヤー、ワールドのサーバーを起動してください。",
     "starting_short": "Starting…",
-    "start_server": "Start server"
+    "start_server": "サーバーを起動"
   },
   "titlebar": {
     "minimize": "Minimize",
     "maximize": "Maximize",
-    "restore": "Restore",
-    "close": "Close"
+    "restore": "復元",
+    "close": "閉じる"
   },
   "context": {
-    "request_failed": "Request failed",
-    "create_failed": "Failed to create server",
-    "delete_failed": "Failed to delete server",
+    "request_failed": "リクエストに失敗しました",
+    "create_failed": "サーバーの作成に失敗しました",
+    "delete_failed": "サーバーの削除に失敗しました",
     "action_failed": {
-      "start": "Failed to start server",
-      "stop": "Failed to stop server"
+      "start": "サーバーの起動に失敗しました",
+      "stop": "サーバーの停止に失敗しました"
     }
   },
   "errors": {
     "notFound": {
-      "title": "Page Not Found",
-      "description": "The page you're looking for doesn't exist or has been moved.",
-      "backHome": "Back to Home"
+      "title": "ページが見つかりません",
+      "description": "お探しのページは存在しないか、移動されていません。",
+      "backHome": "ホームに戻る"
     }
   },
   "pwa": {
-    "update_available": "A new version is available",
-    "update_desc": "Reload to get the latest VoxelDash.",
+    "update_available": "新しいバージョンが利用可能です",
+    "update_desc": "最新のVoxelDashを入手するにはリロードしてください。",
     "reload": "Reload",
-    "dismiss": "Dismiss",
-    "install_title": "Install VoxelDash",
-    "install_desc": "Add it to your home screen for a faster, full-screen experience.",
-    "install": "Install",
-    "not_now": "Not now"
+    "dismiss": "却下する",
+    "install_title": "VoxelDashをインストール",
+    "install_desc": "ホーム画面に追加すると、より速くフルスクリーンの体験ができます。",
+    "install": "インストール",
+    "not_now": "今はしない"
   }
 }
