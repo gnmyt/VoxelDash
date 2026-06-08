@@ -91,7 +91,7 @@
     "restart_title": "Neustart erforderlich",
     "restart_description": "Diese Plattform verwendet den MOTD beim nächsten Serverstart. Starten Sie den Server, damit die Änderungen angezeigt werden.",
     "default_color": "Standard",
-    "hex": "Hexe",
+    "hex": "Hex",
     "no_hex_hint": "Diese Plattform rendert keine Hex-Farben, sondern wird auf die nächstgelegene klassische Farbe abgestimmt.",
     "clear": "Formatierung löschen",
     "line": "Linie {{number}}",
@@ -190,7 +190,7 @@
     "store_coming_soon_description": "Der Ressourcenspeicher ermöglicht Ihnen das Durchsuchen und Installieren von Ressourcen direkt vom Dashboard. Diese Funktion befindet sich derzeit in der Entwicklung.",
     "types": {
       "plugin": "Plugins",
-      "datapack": "Datenblätter",
+      "datapack": "Datapacks",
       "mod": "Mods",
       "extension": "Erweiterungen"
     },
@@ -573,7 +573,7 @@
     "hardcore": "Hardcore",
     "environment": {
       "normal": "Overworld",
-      "nether": "Nederland",
+      "nether": "Nether",
       "the_end": "Das Ende"
     },
     "time_of_day": {
@@ -781,7 +781,7 @@
       "stop": "Server stoppen",
       "backup": "Backup erstellen",
       "backup_input": "Backup mode (0=full, or sum of: 2=plugins, 4=configs, 8=logs)",
-      "kick_all": "Alle Spieler werfen",
+      "kick_all": "Alle Spieler runterwerfen",
       "kick_all_input": "Grund Nachricht kicken"
     },
     "error": {
@@ -970,7 +970,7 @@
     "installing": "Installiere",
     "view_log": "Log anzeigen",
     "remove_forwarding": "Weiterleitung entfernen",
-    "forward_with_playit": "Vorwärts mit Playit",
+    "forward_with_playit": "Weiter mit Playit",
     "set_up_forwarding": "Weiterleitung einrichten",
     "copied": "In Zwischenablage kopiert",
     "copy_failed": "Kopieren fehlgeschlagen",
@@ -1002,6 +1002,18 @@
     "loading_versions": "Lade Versionen…",
     "choose_version": "Version auswählen",
     "load_versions_failed": "Konnte Versionen nicht laden",
+    "choose_category": "Was für einen Server soll erstellt werden?",
+    "choose_loader": "Bitte wähle die Server-Software",
+    "category_plugins": "Mit Plugins",
+    "category_plugins_desc": "Bukkit/Spigot servers that run plugins. Paper, Purpur, Pufferfish & Folia.",
+    "category_modded": "Mit Mods",
+    "category_modded_desc": "Load Fabric, Forge or NeoForge mods for new content and mechanics.",
+    "category_vanilla": "Vanilla",
+    "category_vanilla_desc": "Originales, unverändertes Minecraft direkt von Mojang.",
+    "category_proxy": "Proxy",
+    "category_proxy_desc": "Verbinde mehrere Server zusammen zu einem Netzwerk.",
+    "option_count_one": "{{count}} option",
+    "option_count_other": "{{count}} options",
     "memory": "Speicher",
     "memory_low": "Niedrig",
     "memory_medium": "Mittel",
@@ -1173,7 +1185,7 @@
     "back_to_servers": "Zurück zu Servern",
     "retry": "Wiederholen",
     "starting": "Starte {{name}}…",
-    "booting_hint": "Booten wird gestartet. Gib es eine Sekunde...",
+    "booting_hint": "Server wird gestartet. Eine Sekunde bitte...",
     "file_management_hint": "Dateiverwaltung ist verfügbar. Starten Sie den Server für Konsole, Spieler und Welten.",
     "starting_short": "Starte…",
     "start_server": "Server starten"
