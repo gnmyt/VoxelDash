@@ -975,6 +975,28 @@
     "copied": "Copied to clipboard",
     "copy_failed": "Couldn't copy",
     "log_title": "{{name}} · log",
+    "edit_settings": "Settings",
+    "change_version": "Change version",
+    "settings": {
+      "title": "{{name}} · settings",
+      "description": "Choose how much RAM this server is allowed to use and which Java runtime it runs on.",
+      "java": "Java version",
+      "java_current": "current",
+      "java_unknown": "Detected automatically",
+      "java_hint": "Reset automatically when you change the Minecraft version.",
+      "restart_hint": "Changes take effect the next time the server starts.",
+      "updated": "Settings updated"
+    },
+    "version": {
+      "title": "{{name}} · version",
+      "description": "Upgrade or downgrade the Minecraft version. Worlds, configs, plugins and mods are kept.",
+      "current": "current",
+      "downgrade_warning": "Downgrading can corrupt existing worlds, so make a backup first. Installed plugins and mods may need matching versions.",
+      "stop_first": "Stop the server before changing its version.",
+      "change": "Change version",
+      "started": "Version change started",
+      "failed": "Failed to change version"
+    },
     "waiting_for_output": "Waiting for output…",
     "forward_create_failed": "Failed to create forwarding",
     "forward_created": "Forwarding created",
@@ -1199,6 +1221,7 @@
   "context": {
     "request_failed": "Request failed",
     "create_failed": "Failed to create server",
+    "update_failed": "Failed to update server",
     "delete_failed": "Failed to delete server",
     "action_failed": {
       "start": "Failed to start server",

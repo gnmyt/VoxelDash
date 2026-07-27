@@ -92,6 +92,7 @@ export const masterRequest = async (path: string, method = "GET", body?: unknown
 
 export const masterJson = async (path: string) => (await masterRequest(path)).json();
 export const masterPost = async (path: string, body?: unknown) => masterRequest(path, "POST", body);
+export const masterPatch = async (path: string, body?: unknown) => masterRequest(path, "PATCH", body);
 export const masterDelete = async (path: string) => masterRequest(path, "DELETE");
 
 

@@ -1,5 +1,5 @@
 import {createContext, ReactNode, useContext, useEffect, useState} from "react";
-import {getActiveServerId, masterDelete, masterJson, masterPost, setActiveServerId} from "@/lib/RequestUtil.ts";
+import {getActiveServerId, masterDelete, masterJson, masterPatch, masterPost, setActiveServerId} from "@/lib/RequestUtil.ts";
 import {useMasterAuth} from "@/contexts/MasterAuthContext.tsx";
 import {t} from "i18next";
 
@@ -23,6 +23,11 @@ interface CreatePayload {
     memoryMb?: number;
 }
 
+interface UpdatePayload {
+    memoryMb?: number;
+    javaMajor?: number;
+}
+
 interface ServerSelectionContextType {
     servers: ManagedServer[];
     loading: boolean;
@@ -31,6 +36,7 @@ interface ServerSelectionContextType {
     refresh: () => Promise<ManagedServer[]>;
     selectServer: (id: string | null) => void;
     createServer: (payload: CreatePayload) => Promise<ManagedServer>;
+    updateServer: (id: string, payload: UpdatePayload) => Promise<ManagedServer>;
     startServer: (id: string) => Promise<void>;
     stopServer: (id: string) => Promise<void>;
     deleteServer: (id: string) => Promise<void>;
@@ -63,6 +69,14 @@ export const ServerSelectionProvider = ({children}: { children: ReactNode }) => 
         const res = await masterPost("servers", payload);
         const data = await res.json();
         if (!res.ok) throw new Error(data.error || t("context.create_failed"));
+        await refresh();
+        return data.server;
+    };
+
+    const updateServer = async (id: string, payload: UpdatePayload): Promise<ManagedServer> => {
+        const res = await masterPatch(`servers/${id}`, payload);
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || t("context.update_failed"));
         await refresh();
         return data.server;
     };
@@ -101,7 +115,7 @@ export const ServerSelectionProvider = ({children}: { children: ReactNode }) => 
     return (
         <ServerSelectionContext.Provider
             value={{servers, loading, activeServerId, activeServer, refresh, selectServer, createServer,
-                startServer, stopServer, deleteServer}}>
+                updateServer, startServer, stopServer, deleteServer}}>
             {children}
         </ServerSelectionContext.Provider>
     );

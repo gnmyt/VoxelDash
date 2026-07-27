@@ -16,7 +16,8 @@ const jvmFlags = (memoryMb) => {
 export const launchServer = (server, javaPath, serverDir) => {
     const software = getSoftware(server.software);
     const launchArgs = software.launchArgs("server.jar", serverDir);
-    const args = [...jvmFlags(server.memory_mb || 2048), ...launchArgs];
+    const memoryMb = server.memory_mb || 2048;
+    const args = [...jvmFlags(memoryMb), ...launchArgs];
 
     const env = {
         ...process.env,
@@ -29,7 +30,7 @@ export const launchServer = (server, javaPath, serverDir) => {
         }),
     };
 
-    logProgress(server.id, `Launching: java ${launchArgs.join(" ")}`);
+    logProgress(server.id, `Launching: java -Xmx${memoryMb}M ${launchArgs.join(" ")}`);
 
     const proc = Bun.spawn([javaPath, ...args], {
         cwd: serverDir,
