@@ -10,8 +10,9 @@ import {PlayitTunnel} from "@/states/Servers/Forwardings/Forwardings.tsx";
 import {Button} from "@/components/ui/button.tsx";
 import {Skeleton} from "@/components/ui/skeleton.tsx";
 import {
-    Dialog, DialogContent, DialogHeader, DialogTitle,
+    Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle,
 } from "@/components/ui/dialog.tsx";
+import {MemorySlider, snapToStep, useMemoryMax} from "@/states/Servers/MemorySlider.tsx";
 import {
     DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu.tsx";
@@ -23,7 +24,7 @@ import {toast} from "@/hooks/use-toast.ts";
 import CreateServerDialog from "@/states/Servers/CreateServer.tsx";
 import {
     PlusIcon, PlayIcon, StopIcon, DotsThreeIcon, TrashIcon, TerminalWindowIcon,
-    HardDrivesIcon, SpinnerGapIcon, GlobeSimpleIcon, CopyIcon, LinkBreakIcon,
+    HardDrivesIcon, SpinnerGapIcon, GlobeSimpleIcon, CopyIcon, LinkBreakIcon, MemoryIcon,
 } from "@phosphor-icons/react";
 
 const SoftwareMark = ({software}: { software: string }) => {
@@ -66,10 +67,11 @@ const copy = (text: string) => navigator.clipboard.writeText(text).then(
     () => toast({description: t("servers.copy_failed"), variant: "destructive"})
 );
 
-const ServerRow = ({server, index, onLog, tunnel, playitLinked, canForward, onForward, onRemoveForward}: {
+const ServerRow = ({server, index, onLog, onEditMemory, tunnel, playitLinked, canForward, onForward, onRemoveForward}: {
     server: ManagedServer;
     index: number;
     onLog: (s: ManagedServer) => void;
+    onEditMemory: (s: ManagedServer) => void;
     tunnel?: PlayitTunnel;
     playitLinked: boolean;
     canForward: boolean;
@@ -165,6 +167,9 @@ const ServerRow = ({server, index, onLog, tunnel, playitLinked, canForward, onFo
                         <DropdownMenuItem onClick={() => onLog(server)}>
                             <TerminalWindowIcon className="mr-2 size-4"/> {t("servers.view_log")}
                         </DropdownMenuItem>
+                        <DropdownMenuItem disabled={server.status === "installing"} onClick={() => onEditMemory(server)}>
+                            <MemoryIcon className="mr-2 size-4"/> {t("servers.edit_memory")}
+                        </DropdownMenuItem>
                         {canForward && (tunnel ? (
                             <DropdownMenuItem disabled={busy} onClick={() => run(() => onRemoveForward(tunnel.tunnelId))}>
                                 <LinkBreakIcon className="mr-2 size-4"/> {t("servers.remove_forwarding")}
@@ -214,6 +219,50 @@ const ServerRow = ({server, index, onLog, tunnel, playitLinked, canForward, onFo
     );
 };
 
+const MemoryDialog = ({server, onClose}: { server: ManagedServer | null; onClose: () => void }) => {
+    const {updateServer} = useServerSelection();
+    const memoryMax = useMemoryMax(!!server);
+    const [memoryMb, setMemoryMb] = useState(2048);
+    const [saving, setSaving] = useState(false);
+
+    useEffect(() => {
+        if (server) setMemoryMb(snapToStep(server.memoryMb || 2048));
+    }, [server?.id]);
+
+    const save = async () => {
+        if (!server) return;
+        setSaving(true);
+        try {
+            await updateServer(server.id, {memoryMb});
+            toast({description: t("servers.memory.updated")});
+            onClose();
+        } catch (err) {
+            toast({description: (err as Error).message, variant: "destructive"});
+        } finally {
+            setSaving(false);
+        }
+    };
+
+    return (
+        <Dialog open={!!server} onOpenChange={(o) => !o && onClose()}>
+            <DialogContent className="w-full max-w-md">
+                <DialogHeader>
+                    <DialogTitle className="font-display">{t("servers.memory.title", {name: server?.name})}</DialogTitle>
+                    <DialogDescription>{t("servers.memory.description")}</DialogDescription>
+                </DialogHeader>
+                <MemorySlider value={memoryMb} max={memoryMax} onChange={setMemoryMb}/>
+                <p className="text-xs text-muted-foreground">{t("servers.memory.restart_hint")}</p>
+                <div className="flex justify-end gap-2">
+                    <Button variant="ghost" onClick={onClose}>{t("action.cancel")}</Button>
+                    <Button disabled={saving} onClick={save}>
+                        {saving ? <SpinnerGapIcon className="size-4 animate-spin"/> : t("action.save")}
+                    </Button>
+                </div>
+            </DialogContent>
+        </Dialog>
+    );
+};
+
 const LogDialog = ({server, onClose}: { server: ManagedServer | null; onClose: () => void }) => {
     const [log, setLog] = useState<string[]>([]);
 
@@ -253,6 +302,7 @@ const Servers = () => {
     const {authenticated, loading: authLoading, can} = useMasterAuth();
     const {servers, loading} = useServerSelection();
     const [logServer, setLogServer] = useState<ManagedServer | null>(null);
+    const [memoryServer, setMemoryServer] = useState<ManagedServer | null>(null);
     const [createOpen, setCreateOpen] = useState(false);
 
     const canForward = can("Forwardings", 2);
@@ -319,6 +369,7 @@ const Servers = () => {
                 <div className="space-y-2.5">
                     {servers.map((server, i) => (
                         <ServerRow key={server.id} server={server} index={i} onLog={setLogServer}
+                                   onEditMemory={setMemoryServer}
                                    tunnel={tunnelsByServer[server.id]} playitLinked={playitLinked}
                                    canForward={canForward} onForward={onForward} onRemoveForward={onRemoveForward}/>
                     ))}
@@ -326,6 +377,7 @@ const Servers = () => {
             )}
 
             <LogDialog server={logServer} onClose={() => setLogServer(null)}/>
+            <MemoryDialog server={memoryServer} onClose={() => setMemoryServer(null)}/>
             <CreateServerDialog open={createOpen} onOpenChange={setCreateOpen}/>
         </MasterLayout>
     );

@@ -975,6 +975,13 @@
     "copied": "Copied to clipboard",
     "copy_failed": "Couldn't copy",
     "log_title": "{{name}} · log",
+    "edit_memory": "Edit memory",
+    "memory": {
+      "title": "{{name}} · memory",
+      "description": "Choose how much RAM this server is allowed to use.",
+      "restart_hint": "Changes take effect the next time the server starts.",
+      "updated": "Memory updated"
+    },
     "waiting_for_output": "Waiting for output…",
     "forward_create_failed": "Failed to create forwarding",
     "forward_created": "Forwarding created",
@@ -1199,6 +1206,7 @@
   "context": {
     "request_failed": "Request failed",
     "create_failed": "Failed to create server",
+    "update_failed": "Failed to update server",
     "delete_failed": "Failed to delete server",
     "action_failed": {
       "start": "Failed to start server",

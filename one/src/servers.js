@@ -18,6 +18,16 @@ const serverDirFor = (id) => {
     return join(config.paths.servers, id);
 };
 
+const MEMORY_MINIMUM_MB = 1024;
+const MEMORY_STEP_MB = 512;
+
+const totalMemoryMb = () => Math.floor(totalmem() / (1024 * 1024));
+
+const clampMemoryMb = (memoryMb) => {
+    const snapped = Math.round(memoryMb / MEMORY_STEP_MB) * MEMORY_STEP_MB;
+    return Math.min(Math.max(snapped, MEMORY_MINIMUM_MB), Math.max(totalMemoryMb(), MEMORY_MINIMUM_MB));
+};
+
 const serialize = (row) => {
     return {
         id: row.id,
@@ -114,7 +124,7 @@ export const mountServerRoutes = (app, requireFeature) => {
     const canManage = requireFeature("Servers", LEVEL.FULL);
 
     app.get("/master/system", canView, (req, res) => {
-        res.json({totalMemoryMb: Math.floor(totalmem() / (1024 * 1024))});
+        res.json({totalMemoryMb: totalMemoryMb()});
     });
 
     app.get("/master/software", canView, (req, res) => {
@@ -158,7 +168,7 @@ export const mountServerRoutes = (app, requireFeature) => {
         db.query(
             `INSERT INTO servers (id, name, software, mc_version, game_port, api_port, api_token, memory_mb, status)
        VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'installing')`
-        ).run(id, name, softwareKey, mcVersion, gamePort, apiPort, randomToken(24), memoryMb || 2048);
+        ).run(id, name, softwareKey, mcVersion, gamePort, apiPort, randomToken(24), clampMemoryMb(memoryMb || 2048));
 
         clearLog(id);
         logProgress(id, `Creating ${software.name} server "${name}" (${mcVersion})`);
@@ -171,6 +181,17 @@ export const mountServerRoutes = (app, requireFeature) => {
         const row = getServer(req.params.id);
         if (!row) return res.status(404).json({error: "Not found"});
         res.json({server: serialize(row), log: getLog(row.id)});
+    });
+
+    app.patch("/master/servers/:id", canManage, requireServerAccess, (req, res) => {
+        const row = getServer(req.params.id);
+        if (!row) return res.status(404).json({error: "Not found"});
+        const {memoryMb} = req.body || {};
+        if (typeof memoryMb !== "number" || !Number.isFinite(memoryMb)) {
+            return res.status(400).json({error: "memoryMb must be a number"});
+        }
+        db.query("UPDATE servers SET memory_mb = ? WHERE id = ?").run(clampMemoryMb(memoryMb), row.id);
+        res.json({server: serialize(getServer(row.id))});
     });
 
     app.post("/master/servers/:id/start", canManage, requireServerAccess, async (req, res) => {
