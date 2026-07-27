@@ -1,6 +1,6 @@
 {
   "name": "voxeldash-one",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "type": "module",
   "private": true,
   "description": "VoxelDash One - unified master backend for managing Minecraft servers",
