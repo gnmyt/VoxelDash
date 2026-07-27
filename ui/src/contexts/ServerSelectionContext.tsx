@@ -24,7 +24,8 @@ interface CreatePayload {
 }
 
 interface UpdatePayload {
-    memoryMb: number;
+    memoryMb?: number;
+    javaMajor?: number;
 }
 
 interface ServerSelectionContextType {

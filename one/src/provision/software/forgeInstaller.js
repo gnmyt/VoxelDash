@@ -1,5 +1,5 @@
 import {join, relative} from "node:path";
-import {existsSync, readdirSync, readFileSync, rmSync} from "node:fs";
+import {existsSync, readdirSync, readFileSync, rmSync, statSync} from "node:fs";
 
 export const runJava = async (javaPath, args, cwd, log) => {
     const proc = Bun.spawn([javaPath, ...args], {cwd, stdout: "pipe", stderr: "pipe"});
@@ -26,12 +26,19 @@ export const runJava = async (javaPath, args, cwd, log) => {
 
 const findUnixArgs = (root) => {
     if (!existsSync(root)) return null;
+    let newest = null;
+    let newestTime = -1;
     for (const entry of readdirSync(root, {withFileTypes: true})) {
         if (!entry.isDirectory()) continue;
         const candidate = join(root, entry.name, "unix_args.txt");
-        if (existsSync(candidate)) return candidate;
+        if (!existsSync(candidate)) continue;
+        const time = statSync(candidate).mtimeMs;
+        if (time > newestTime) {
+            newest = candidate;
+            newestTime = time;
+        }
     }
-    return null;
+    return newest;
 };
 
 export const installForgeLike = async (dir, {javaPath, log, librariesSubpath, marker, label}) => {

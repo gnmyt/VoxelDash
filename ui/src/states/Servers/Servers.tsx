@@ -3,7 +3,7 @@ import {Navigate, useNavigate} from "react-router-dom";
 import {t} from "i18next";
 import {useMasterAuth} from "@/contexts/MasterAuthContext.tsx";
 import {ManagedServer, useServerSelection} from "@/contexts/ServerSelectionContext.tsx";
-import {masterDelete, masterJson, masterRequest} from "@/lib/RequestUtil.ts";
+import {masterDelete, masterJson, masterPost, masterRequest} from "@/lib/RequestUtil.ts";
 import {softwareMeta, statusMeta} from "@/lib/servers.ts";
 import {MasterLayout} from "@/states/Servers/MasterLayout.tsx";
 import {PlayitTunnel} from "@/states/Servers/Forwardings/Forwardings.tsx";
@@ -12,7 +12,9 @@ import {Skeleton} from "@/components/ui/skeleton.tsx";
 import {
     Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle,
 } from "@/components/ui/dialog.tsx";
-import {MemorySlider, snapToStep, useMemoryMax} from "@/states/Servers/MemorySlider.tsx";
+import {MemorySlider, snapToStep, useSystemInfo} from "@/states/Servers/MemorySlider.tsx";
+import {Label} from "@/components/ui/label.tsx";
+import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from "@/components/ui/select.tsx";
 import {
     DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu.tsx";
@@ -24,7 +26,8 @@ import {toast} from "@/hooks/use-toast.ts";
 import CreateServerDialog from "@/states/Servers/CreateServer.tsx";
 import {
     PlusIcon, PlayIcon, StopIcon, DotsThreeIcon, TrashIcon, TerminalWindowIcon,
-    HardDrivesIcon, SpinnerGapIcon, GlobeSimpleIcon, CopyIcon, LinkBreakIcon, MemoryIcon,
+    HardDrivesIcon, SpinnerGapIcon, GlobeSimpleIcon, CopyIcon, LinkBreakIcon,
+    GearSixIcon, ArrowsClockwiseIcon,
 } from "@phosphor-icons/react";
 
 const SoftwareMark = ({software}: { software: string }) => {
@@ -67,11 +70,12 @@ const copy = (text: string) => navigator.clipboard.writeText(text).then(
     () => toast({description: t("servers.copy_failed"), variant: "destructive"})
 );
 
-const ServerRow = ({server, index, onLog, onEditMemory, tunnel, playitLinked, canForward, onForward, onRemoveForward}: {
+const ServerRow = ({server, index, onLog, onSettings, onChangeVersion, tunnel, playitLinked, canForward, onForward, onRemoveForward}: {
     server: ManagedServer;
     index: number;
     onLog: (s: ManagedServer) => void;
-    onEditMemory: (s: ManagedServer) => void;
+    onSettings: (s: ManagedServer) => void;
+    onChangeVersion: (s: ManagedServer) => void;
     tunnel?: PlayitTunnel;
     playitLinked: boolean;
     canForward: boolean;
@@ -167,8 +171,11 @@ const ServerRow = ({server, index, onLog, onEditMemory, tunnel, playitLinked, ca
                         <DropdownMenuItem onClick={() => onLog(server)}>
                             <TerminalWindowIcon className="mr-2 size-4"/> {t("servers.view_log")}
                         </DropdownMenuItem>
-                        <DropdownMenuItem disabled={server.status === "installing"} onClick={() => onEditMemory(server)}>
-                            <MemoryIcon className="mr-2 size-4"/> {t("servers.edit_memory")}
+                        <DropdownMenuItem disabled={server.status === "installing"} onClick={() => onSettings(server)}>
+                            <GearSixIcon className="mr-2 size-4"/> {t("servers.edit_settings")}
+                        </DropdownMenuItem>
+                        <DropdownMenuItem disabled={server.status === "installing"} onClick={() => onChangeVersion(server)}>
+                            <ArrowsClockwiseIcon className="mr-2 size-4"/> {t("servers.change_version")}
                         </DropdownMenuItem>
                         {canForward && (tunnel ? (
                             <DropdownMenuItem disabled={busy} onClick={() => run(() => onRemoveForward(tunnel.tunnelId))}>
@@ -219,22 +226,30 @@ const ServerRow = ({server, index, onLog, onEditMemory, tunnel, playitLinked, ca
     );
 };
 
-const MemoryDialog = ({server, onClose}: { server: ManagedServer | null; onClose: () => void }) => {
+const FALLBACK_JAVA_MAJORS = [8, 11, 16, 17, 21, 25];
+
+const SettingsDialog = ({server, onClose}: { server: ManagedServer | null; onClose: () => void }) => {
     const {updateServer} = useServerSelection();
-    const memoryMax = useMemoryMax(!!server);
+    const {memoryMax, javaMajors} = useSystemInfo(!!server);
     const [memoryMb, setMemoryMb] = useState(2048);
+    const [javaMajor, setJavaMajor] = useState<number | null>(null);
     const [saving, setSaving] = useState(false);
 
     useEffect(() => {
-        if (server) setMemoryMb(snapToStep(server.memoryMb || 2048));
+        if (!server) return;
+        setMemoryMb(snapToStep(server.memoryMb || 2048));
+        setJavaMajor(server.javaMajor || null);
     }, [server?.id]);
+
+    const knownMajors = javaMajors.length ? javaMajors : FALLBACK_JAVA_MAJORS;
+    const javaOptions = [...new Set([...knownMajors, ...(javaMajor ? [javaMajor] : [])])].sort((a, b) => a - b);
 
     const save = async () => {
         if (!server) return;
         setSaving(true);
         try {
-            await updateServer(server.id, {memoryMb});
-            toast({description: t("servers.memory.updated")});
+            await updateServer(server.id, {memoryMb, ...(javaMajor ? {javaMajor} : {})});
+            toast({description: t("servers.settings.updated")});
             onClose();
         } catch (err) {
             toast({description: (err as Error).message, variant: "destructive"});
@@ -247,15 +262,109 @@ const MemoryDialog = ({server, onClose}: { server: ManagedServer | null; onClose
         <Dialog open={!!server} onOpenChange={(o) => !o && onClose()}>
             <DialogContent className="w-full max-w-md">
                 <DialogHeader>
-                    <DialogTitle className="font-display">{t("servers.memory.title", {name: server?.name})}</DialogTitle>
-                    <DialogDescription>{t("servers.memory.description")}</DialogDescription>
+                    <DialogTitle className="font-display">{t("servers.settings.title", {name: server?.name})}</DialogTitle>
+                    <DialogDescription>{t("servers.settings.description")}</DialogDescription>
                 </DialogHeader>
-                <MemorySlider value={memoryMb} max={memoryMax} onChange={setMemoryMb}/>
-                <p className="text-xs text-muted-foreground">{t("servers.memory.restart_hint")}</p>
+                <div className="space-y-5">
+                    <MemorySlider value={memoryMb} max={memoryMax} onChange={setMemoryMb}/>
+                    <div className="space-y-2">
+                        <Label>{t("servers.settings.java")}</Label>
+                        <Select value={javaMajor ? String(javaMajor) : undefined}
+                                onValueChange={(v) => setJavaMajor(parseInt(v, 10))}>
+                            <SelectTrigger>
+                                <SelectValue placeholder={t("servers.settings.java_unknown")}/>
+                            </SelectTrigger>
+                            <SelectContent>
+                                {javaOptions.map((major) => (
+                                    <SelectItem key={major} value={String(major)}>
+                                        Java {major}{major === server?.javaMajor ? ` · ${t("servers.settings.java_current")}` : ""}
+                                    </SelectItem>
+                                ))}
+                            </SelectContent>
+                        </Select>
+                        <p className="text-xs text-muted-foreground">{t("servers.settings.java_hint")}</p>
+                    </div>
+                </div>
+                <p className="text-xs text-muted-foreground">{t("servers.settings.restart_hint")}</p>
                 <div className="flex justify-end gap-2">
                     <Button variant="ghost" onClick={onClose}>{t("action.cancel")}</Button>
                     <Button disabled={saving} onClick={save}>
                         {saving ? <SpinnerGapIcon className="size-4 animate-spin"/> : t("action.save")}
+                    </Button>
+                </div>
+            </DialogContent>
+        </Dialog>
+    );
+};
+
+const VersionDialog = ({server, onClose, onStarted}: {
+    server: ManagedServer | null;
+    onClose: () => void;
+    onStarted: (s: ManagedServer) => void;
+}) => {
+    const [versions, setVersions] = useState<string[]>([]);
+    const [loading, setLoading] = useState(false);
+    const [mcVersion, setMcVersion] = useState("");
+    const [changing, setChanging] = useState(false);
+
+    const running = server?.status === "online" || server?.status === "starting";
+
+    useEffect(() => {
+        if (!server) return;
+        setMcVersion(server.mcVersion || "");
+        setLoading(true);
+        setVersions([]);
+        masterJson(`software/${server.software}/versions`)
+            .then((data) => setVersions((data.versions || []).filter((v: string) => !v.includes("-"))))
+            .catch(() => toast({description: t("create_server.load_versions_failed"), variant: "destructive"}))
+            .finally(() => setLoading(false));
+    }, [server?.id]);
+
+    const submit = async () => {
+        if (!server || !mcVersion) return;
+        setChanging(true);
+        try {
+            const res = await masterPost(`servers/${server.id}/version`, {mcVersion});
+            const data = await res.json();
+            if (!res.ok) throw new Error(data.error || t("servers.version.failed"));
+            toast({description: t("servers.version.started")});
+            onClose();
+            onStarted(server);
+        } catch (err) {
+            toast({description: (err as Error).message, variant: "destructive"});
+        } finally {
+            setChanging(false);
+        }
+    };
+
+    return (
+        <Dialog open={!!server} onOpenChange={(o) => !o && onClose()}>
+            <DialogContent className="w-full max-w-md">
+                <DialogHeader>
+                    <DialogTitle className="font-display">{t("servers.version.title", {name: server?.name})}</DialogTitle>
+                    <DialogDescription>{t("servers.version.description")}</DialogDescription>
+                </DialogHeader>
+                <div className="space-y-2">
+                    <Label>{t("create_server.minecraft_version")}</Label>
+                    <Select value={mcVersion} onValueChange={setMcVersion} disabled={loading}>
+                        <SelectTrigger>
+                            <SelectValue placeholder={loading ? t("create_server.loading_versions") : t("create_server.choose_version")}/>
+                        </SelectTrigger>
+                        <SelectContent className="max-h-72">
+                            {versions.map((v) => (
+                                <SelectItem key={v} value={v}>
+                                    {v}{v === server?.mcVersion ? ` · ${t("servers.version.current")}` : ""}
+                                </SelectItem>
+                            ))}
+                        </SelectContent>
+                    </Select>
+                </div>
+                <p className="text-xs text-muted-foreground">{t("servers.version.downgrade_warning")}</p>
+                {running && <p className="text-xs font-medium text-destructive">{t("servers.version.stop_first")}</p>}
+                <div className="flex justify-end gap-2">
+                    <Button variant="ghost" onClick={onClose}>{t("action.cancel")}</Button>
+                    <Button disabled={changing || loading || running || !mcVersion} onClick={submit}>
+                        {changing ? <SpinnerGapIcon className="size-4 animate-spin"/> : t("servers.version.change")}
                     </Button>
                 </div>
             </DialogContent>
@@ -302,7 +411,8 @@ const Servers = () => {
     const {authenticated, loading: authLoading, can} = useMasterAuth();
     const {servers, loading} = useServerSelection();
     const [logServer, setLogServer] = useState<ManagedServer | null>(null);
-    const [memoryServer, setMemoryServer] = useState<ManagedServer | null>(null);
+    const [settingsServer, setSettingsServer] = useState<ManagedServer | null>(null);
+    const [versionServer, setVersionServer] = useState<ManagedServer | null>(null);
     const [createOpen, setCreateOpen] = useState(false);
 
     const canForward = can("Forwardings", 2);
@@ -369,7 +479,7 @@ const Servers = () => {
                 <div className="space-y-2.5">
                     {servers.map((server, i) => (
                         <ServerRow key={server.id} server={server} index={i} onLog={setLogServer}
-                                   onEditMemory={setMemoryServer}
+                                   onSettings={setSettingsServer} onChangeVersion={setVersionServer}
                                    tunnel={tunnelsByServer[server.id]} playitLinked={playitLinked}
                                    canForward={canForward} onForward={onForward} onRemoveForward={onRemoveForward}/>
                     ))}
@@ -377,7 +487,8 @@ const Servers = () => {
             )}
 
             <LogDialog server={logServer} onClose={() => setLogServer(null)}/>
-            <MemoryDialog server={memoryServer} onClose={() => setMemoryServer(null)}/>
+            <SettingsDialog server={settingsServer} onClose={() => setSettingsServer(null)}/>
+            <VersionDialog server={versionServer} onClose={() => setVersionServer(null)} onStarted={setLogServer}/>
             <CreateServerDialog open={createOpen} onOpenChange={setCreateOpen}/>
         </MasterLayout>
     );

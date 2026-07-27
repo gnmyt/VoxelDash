@@ -18,18 +18,22 @@ const memoryMarks = (max: number) => [
     {mb: snapToStep(MEMORY_MIN + (max - MEMORY_MIN) * 0.75), label: t("create_server.memory_high")},
 ];
 
-export const useMemoryMax = (enabled: boolean) => {
+export const useSystemInfo = (enabled: boolean) => {
     const [memoryMax, setMemoryMax] = useState(MEMORY_FALLBACK_MAX);
+    const [javaMajors, setJavaMajors] = useState<number[]>([]);
 
     useEffect(() => {
         if (!enabled) return;
         masterJson("system").then((d) => {
             if (d.totalMemoryMb) setMemoryMax(Math.max(MEMORY_MIN + MEMORY_STEP * 2, snapToStep(d.totalMemoryMb)));
+            if (Array.isArray(d.javaMajors)) setJavaMajors(d.javaMajors);
         }).catch(() => {});
     }, [enabled]);
 
-    return memoryMax;
+    return {memoryMax, javaMajors};
 };
+
+export const useMemoryMax = (enabled: boolean) => useSystemInfo(enabled).memoryMax;
 
 export const MemorySlider = ({value, max, onChange}: { value: number; max: number; onChange: (mb: number) => void }) => (
     <div className="space-y-2">

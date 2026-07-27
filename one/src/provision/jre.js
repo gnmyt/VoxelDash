@@ -54,6 +54,19 @@ const findJavaBinary = (dir) => {
     return null;
 };
 
+let cachedAvailableMajors = null;
+
+export const availableJavaMajors = async () => {
+    if (cachedAvailableMajors) return cachedAvailableMajors;
+    const response = await fetch("https://api.adoptium.net/v3/info/available_releases", {
+        headers: {"User-Agent": config.userAgent, Accept: "application/json"},
+    });
+    if (!response.ok) throw new Error(`Adoptium available_releases -> ${response.status}`);
+    const data = await response.json();
+    cachedAvailableMajors = (data.available_releases || []).filter((major) => major >= 8);
+    return cachedAvailableMajors;
+};
+
 export const ensureJre = async (major, onLog) => {
     const dir = join(config.paths.jdks, String(major));
     const existing = findJavaBinary(dir);
