@@ -15,6 +15,7 @@ export const languages = [
     {code: "ja", name: "日本語", imageCode: "jp"},
     {code: "pl", name: "Polski", imageCode: "pl"},
     {code: "nl", name: "Nederlands", imageCode: "nl"},
+    {code: "vi", name: "Tiếng Việt", imageCode: "vi"},
 ]
 
 i18n.use(initReactI18next).use(LanguageDetector).use(HttpApi).init({
