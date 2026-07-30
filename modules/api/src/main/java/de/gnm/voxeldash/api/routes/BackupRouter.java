@@ -23,6 +23,10 @@ import java.io.BufferedInputStream;
 import java.io.File;
 import java.nio.file.Files;
 
+import java.util.Map;
+import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
+
 import static de.gnm.voxeldash.api.http.HTTPMethod.*;
 
 public class BackupRouter extends BaseRoute {
@@ -81,6 +85,25 @@ public class BackupRouter extends BaseRoute {
         }
 
         return new JSONResponse().add("backups", backups);
+    }
+
+    private static final Map<String, PendingDownload> pendingDownloads = new ConcurrentHashMap<>();
+    private static final long TOKEN_TTL_MS = 60_000; // 60s to actually start the download
+
+    private static final class PendingDownload {
+        private final File file;
+        private final String downloadName;
+        private final long expiresAt;
+
+        private PendingDownload(File file, String downloadName, long expiresAt) {
+            this.file = file;
+            this.downloadName = downloadName;
+            this.expiresAt = expiresAt;
+        }
+
+        File file() { return file; }
+        String downloadName() { return downloadName; }
+        long expiresAt() { return expiresAt; }
     }
 
     @ApiDoc(summary = "Generate a temporary download link for a backup", description = "Returns 60s, single-use URL that can be used to download a backup without auth headers.", tag = "Backups")
