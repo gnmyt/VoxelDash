@@ -83,13 +83,13 @@ public class BackupRouter extends BaseRoute {
         return new JSONResponse().add("backups", backups);
     }
 
-    @ApiDoc(summary = "Download a backup", description = "Streams the requested backup archive as a downloadable file.", tag = "Backups")
-    @ApiField(name = "backupName", in = ParamLocation.PATH, description = "Name/ID of the backup to download")
+    @ApiDoc(summary = "Generate a temporary download link for a backup", description = "Returns 60s, single-use URL that can be used to download a backup without auth headers.", tag = "Backups")
+    @ApiField(name = "backupName", in = ParamLocation.PATH, description = "ID of the backup to download")
     @AuthenticatedRoute
     @RequiresFeatures(Feature.Backups)
-    @Path("/backups/download/:backupName")
+    @Path("/backups/download/:backupName/link")
     @Method(GET)
-    public Response downloadFile(RawRequest request) {
+    public Response createDownloadLink(RawRequest request) {
         String backupName = request.getParameter("backupName");
 
         if (!backupHelper.backupExists(backupName)) return new JSONResponse().error("Backup not found");
@@ -97,15 +97,35 @@ public class BackupRouter extends BaseRoute {
         File backupFile = backupHelper.getBackup(backupName);
         if (backupFile == null) return new JSONResponse().error("Backup not found");
 
+        String[] nameParts = backupFile.getName().replace(".zip", "").split("-");
+        String decodedName = nameParts.length > 2 ? BackupHelper.decodeName(nameParts[2]) : "";
+        String downloadName = (decodedName.isEmpty() ? backupName : decodedName) + ".zip";
+
+        String token = UUID.randomUUID().toString();
+        pendingDownloads.put(token, new PendingDownload(backupFile, downloadName, System.currentTimeMillis() + TOKEN_TTL_MS));
+
+        return new JSONResponse().add("url", "/api/backups/download/token/" + token);
+    }
+
+    @ApiDoc(summary = "Download a backup via temporary token", description = "Streams the backup archive using a single-use token minted by the link endpoint. No auth headers required.", tag = "Backups")
+    @ApiField(name = "token", in = ParamLocation.PATH, description = "Single-use token from the download-link endpoint")
+    @Path("/backups/download/token/:token")
+    @Method(GET)
+    public Response downloadFile(RawRequest request) {
+        String token = request.getParameter("token");
+        if (token == null) return new JSONResponse().error("Missing token");
+
+        PendingDownload pending = pendingDownloads.remove(token); 
+        if (pending == null) return new JSONResponse().error("Invalid or expired token");
+        if (System.currentTimeMillis() > pending.expiresAt()) return new JSONResponse().error("Token expired");
+        if (!pending.file().exists()) return new JSONResponse().error("Backup not found");
+
         try {
-            BufferedInputStream in = new BufferedInputStream(Files.newInputStream(backupFile.toPath()));
-            String[] nameParts = backupFile.getName().replace(".zip", "").split("-");
-            String decodedName = nameParts.length > 2 ? BackupHelper.decodeName(nameParts[2]) : "";
-            String downloadName = (decodedName.isEmpty() ? backupName : decodedName) + ".zip";
+            BufferedInputStream in = new BufferedInputStream(Files.newInputStream(pending.file().toPath()));
             return new Response()
                     .header("Content-Type", "application/octet-stream")
-                    .header("Content-Disposition", "attachment; filename=\"" + downloadName + "\"")
-                    .header("Content-Length", String.valueOf(backupFile.length()))
+                    .header("Content-Disposition", "attachment; filename=\"" + pending.downloadName() + "\"")
+                    .header("Content-Length", String.valueOf(pending.file().length()))
                     .stream(in);
         } catch (Exception e) {
             return new JSONResponse().error("Error downloading file: " + e.getMessage());
