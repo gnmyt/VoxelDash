@@ -70,17 +70,17 @@ export const patchRequest = async (path: string, body = {}, headers = {}) => {
 }
 
 export const downloadRequest = async (path: string, body = {}, headers = {}) => {
-    const file = await request(path, "GET", body, headers);
-    const element = document.createElement('a');
-    const url = file.headers.get('Content-Disposition')?.split('filename=')[1] || "file";
-    element.setAttribute("download", url.replaceAll("\"", ""));
+    const linkResp = await request(`${path}/link`, "GET", body, headers, false);
+    if (!linkResp.ok) throw new Error(`Failed to get download link: ${linkResp.status}`);
+    const { url } = await linkResp.json();
 
-    const blob = await file.blob();
-    element.href = window.URL.createObjectURL(blob);
-    document.body.appendChild(element);
-    element.click();
-    element.remove();
-}
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = '';
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+};
 
 export const masterRequest = async (path: string, method = "GET", body?: unknown) => {
     return await fetch("/master/" + path, {
