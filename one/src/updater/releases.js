@@ -72,6 +72,7 @@ export const findServerAsset = (release, artifact) =>
     (release?.assets || []).find((a) => a.name.includes(`voxeldash-${artifact}-`) && a.name.endsWith(".jar")) || null;
 
 export const findNodeAsset = (release, platform = config.platform) => {
-    const suffix = platform === "windows" ? "-windows-x64.zip" : "-linux-x64.tar.gz";
+    const linuxArch = process.arch === "arm64" ? "arm64" : "x64";
+    const suffix = platform === "windows" ? "-windows-x64.zip" : `-linux-${linuxArch}.tar.gz`;
     return (release?.assets || []).find((a) => a.name.startsWith("voxeldash-one-") && a.name.endsWith(suffix)) || null;
 };

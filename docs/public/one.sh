@@ -53,8 +53,9 @@ ARCH="$(uname -m)"
 [ "$OS" = "Linux" ] || die "This installer only supports Linux. On Windows, download the .zip from https://github.com/$REPO/releases."
 
 case "$ARCH" in
-    x86_64|amd64) TARGET="linux-x64" ;;
-    *)            die "Unsupported architecture '$ARCH'. Only x86_64 is published right now." ;;
+    x86_64|amd64)  TARGET="linux-x64" ;;
+    aarch64|arm64) TARGET="linux-arm64" ;;
+    *)             die "Unsupported architecture '$ARCH'. Only x86_64 and aarch64 are published right now." ;;
 esac
 
 if [ "$(id -u)" -eq 0 ]; then
