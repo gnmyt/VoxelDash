@@ -23,6 +23,7 @@ jobs:
       matrix:
         target:
           - { id: linux-x64, bun: bun-linux-x64, bin: voxeldash-one, archive: tar.gz }
+          - { id: linux-arm64, bun: bun-linux-arm64, bin: voxeldash-one, archive: tar.gz }
           - { id: windows-x64, bun: bun-windows-x64, bin: voxeldash-one.exe, archive: zip }
     steps:
       - name: Checkout
